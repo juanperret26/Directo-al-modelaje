@@ -1,0 +1,1 @@
+//Crear struct, un new camion y los metodos que sean necesario
