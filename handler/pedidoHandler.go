@@ -1,0 +1,1 @@
+//Crear struct, new objeto y metodos
