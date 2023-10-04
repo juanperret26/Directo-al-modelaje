@@ -5,24 +5,35 @@ import (
 	"time"
 
 	"github.com/juanperret/Directo-al-modelaje/model"
+	"github.com/juanperret/Directo-al-modelaje/utils"
 )
 
 type Pedido struct {
-	id_Pedido      int
-	estado         string
-	fecha_creacion time.Time
-	productos      []Producto
-	actualizacion  time.Time
-	destino        Ciudad
+	Id_Pedido      string
+	Estado         string
+	Fecha_creacion time.Time
+	Productos      []PedidoProducto
+	Actualizacion  time.Time
+	Destino        string
 }
 
 func NewPedido(pedido model.Pedido) *Pedido {
 	return &Pedido{
-		id_Pedido:      model.GetIntIDFromObjectID(pedido.id_Pedido),
-		estado:         pedido.estado,
-		fecha_creacion: pedido.fecha_creacion,
-		productos:      pedido.productos,
-		actualizacion:  pedido.actualizacion,
-		destino:        pedido.destino,
+		Id_Pedido:      utils.GetStringIDFromObjectID(pedido.Id_Pedido),
+		Estado:         pedido.Estado,
+		Fecha_creacion: time.Now(),
+		Productos:      []PedidoProducto{},
+		Actualizacion:  pedido.Actualizacion,
+		Destino:        pedido.Destino,
+	}
+}
+func (pedido Pedido) GetModel() model.Pedido {
+	return model.Pedido{
+		Id_Pedido:      utils.GetObjectIDFromStringID(pedido.Id_Pedido),
+		Estado:         pedido.Estado,
+		Fecha_creacion: pedido.Fecha_creacion,
+		Productos:      []model.PedidoProducto{},
+		Actualizacion:  pedido.Actualizacion,
+		Destino:        pedido.Destino,
 	}
 }

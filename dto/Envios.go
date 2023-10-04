@@ -1,30 +1,41 @@
-// Crear struct y un new envio con los metodos que sean necesario
-//
 package dto
 
 import (
 	"time"
 
 	"github.com/juanperret/Directo-al-modelaje/model"
+	"github.com/juanperret/Directo-al-modelaje/utils"
 )
 
 type Envio struct {
-	id_Envio int
-	patente int
-	paradas[] Ciudad
-	fecha_creacion time.Time
-	pedidos[] Pedido
-	actualizacion time.Time
-	costo_total int
+	Id_envio       string
+	Estado         string
+	Paradas        []Paradas
+	Fecha_creacion time.Time
+	Pedido         []string
+	Actualizacion  time.Time
+	Costo_total    int
 }
-func NewEnvio(envio model.Envio) *Envio {
-	return &Envio{
-		id_Envio: model.GetIntIDFromObjectID(envio.id_Envio),
-		patente: envio.patente,
-		paradas: envio.paradas,
-		fecha_creacion: envio.fecha_creacion,
-		pedidos: envio.pedidos,
-		actualizacion: envio.actualizacion,
-		costo_total: envio.costo_total,
+
+func NewEnvio(envio model.Envio) model.Envio {
+	return model.Envio{
+		Id_envio:       utils.GetObjectIDFromStringID(envio.Id_envio.Hex()),
+		Estado:         envio.Estado,
+		Paradas:        envio.Paradas,
+		Fecha_creacion: time.Now(),
+		Pedido:         envio.Pedido,
+		Actualizacion:  envio.Actualizacion,
+		Costo_total:    envio.Costo_total,
+	}
+}
+func (envio Envio) GetModel() model.Envio {
+	return model.Envio{
+		Id_envio:       utils.GetObjectIDFromStringID(envio.Id_envio),
+		Estado:         envio.Estado,
+		Paradas:        []model.Paradas{},
+		Fecha_creacion: envio.Fecha_creacion,
+		Pedido:         envio.Pedido,
+		Actualizacion:  envio.Actualizacion,
+		Costo_total:    envio.Costo_total,
 	}
 }

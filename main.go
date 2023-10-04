@@ -5,12 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	//Agregar imports de todas las clases, handlers, middlewares, etc
-
 )
 
 var (
 	//Agregar handlers
-	router      *gin.Engine
+	router *gin.Engine
 )
 
 func main() {
@@ -32,9 +31,9 @@ func mappingRoutes() {
 	//authMiddleware := middlewares.NewAuthMiddleware(authClient)
 
 	//Listado de rutas
-	group := router.Group("/aulas")
+	// group := router.Group("/aulas")
 	//Uso del middleware para todas las rutas del grupo de rutas y hago todos los POST, GET y DELETE
-	
+
 }
 
 // Generacion de los objetos que se van a usar en la api

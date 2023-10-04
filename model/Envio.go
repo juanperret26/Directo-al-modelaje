@@ -7,11 +7,11 @@ import (
 )
 
 type Envio struct {
-	id_Envio       primitive.ObjectID `bson:"_id,omitempty"`
-	estado         string             `bson:"estado"`
-	paradas        []Ciudad           `bson:"paradas"`
-	fecha_creacion time.Time          `bson:"fecha_creacion"`
-	productos      []Producto         `bson:"productos"`
-	actualizacion  time.Time          `bson:"actualizacion"`
-	costo_total    int                `bson:"costo_total"`
+	Id_envio       primitive.ObjectID `bson:"_id,omitempty"`
+	Estado         string             `bson:"estado"`
+	Paradas        []Paradas          `bson:"paradas"`
+	Fecha_creacion time.Time          `bson:"fecha_creacion"`
+	Pedido         []string           `bson:"productos"`
+	Actualizacion  time.Time          `bson:"actualizacion"`
+	Costo_total    int                `bson:"costo_total"`
 }
