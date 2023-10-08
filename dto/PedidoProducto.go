@@ -1,10 +1,10 @@
 package dto
 
 type PedidoProducto struct {
-	id_pedidoProducto int
-	nombre            string
-	cantidad          int
-	precio_unitario   float64
-	stock             int
-	tipo              string
+	Id              string
+	Nombre          string
+	Cantidad        int
+	Precio_unitario float64
+	Stock           int
+	Tipo            string
 }

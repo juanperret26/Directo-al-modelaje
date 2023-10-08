@@ -9,7 +9,7 @@ import (
 )
 
 type Pedido struct {
-	Id_Pedido      string
+	Id             string
 	Estado         string
 	Fecha_creacion time.Time
 	Productos      []PedidoProducto
@@ -19,7 +19,7 @@ type Pedido struct {
 
 func NewPedido(pedido model.Pedido) *Pedido {
 	return &Pedido{
-		Id_Pedido:      utils.GetStringIDFromObjectID(pedido.Id_Pedido),
+		Id:             utils.GetStringIDFromObjectID(pedido.Id),
 		Estado:         pedido.Estado,
 		Fecha_creacion: time.Now(),
 		Productos:      []PedidoProducto{},
@@ -29,7 +29,7 @@ func NewPedido(pedido model.Pedido) *Pedido {
 }
 func (pedido Pedido) GetModel() model.Pedido {
 	return model.Pedido{
-		Id_Pedido:      utils.GetObjectIDFromStringID(pedido.Id_Pedido),
+		Id:             utils.GetObjectIDFromStringID(pedido.Id),
 		Estado:         pedido.Estado,
 		Fecha_creacion: pedido.Fecha_creacion,
 		Productos:      []model.PedidoProducto{},

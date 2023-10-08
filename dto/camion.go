@@ -8,6 +8,7 @@ import (
 )
 
 type Camion struct {
+	ID             string
 	Patente        string
 	Peso_maximo    int
 	Costo_km       int
@@ -17,7 +18,8 @@ type Camion struct {
 
 func NewCamion(camion model.Camion) *Camion {
 	return &Camion{
-		Patente:        utils.GetStringIDFromObjectID(camion.Patente),
+		ID:             utils.GetStringIDFromObjectID(camion.ID),
+		Patente:       	camion.Patente,
 		Peso_maximo:    camion.Peso_maximo,
 		Costo_km:       camion.Costo_km,
 		Fecha_creacion: time.Now(),
@@ -26,7 +28,8 @@ func NewCamion(camion model.Camion) *Camion {
 }
 func (camion Camion) GetModel() model.Camion {
 	return model.Camion{
-		Patente:        utils.GetObjectIDFromStringID(camion.Patente),
+		ID: 		   	utils.GetObjectIDFromStringID(camion.ID),
+		Patente:        camion.Patente,
 		Peso_maximo:    camion.Peso_maximo,
 		Costo_km:       camion.Costo_km,
 		Fecha_creacion: camion.Fecha_creacion,

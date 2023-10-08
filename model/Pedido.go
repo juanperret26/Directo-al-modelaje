@@ -7,7 +7,7 @@ import (
 )
 
 type Pedido struct {
-	Id_Pedido      primitive.ObjectID `bson:"_id,omitempty"`
+	Id    primitive.ObjectID `bson:"_id,omitempty"`
 	Estado         string             `bson:"estado"`
 	Fecha_creacion time.Time          `bson:"fecha_creacion"`
 	Productos      []PedidoProducto   `bson:"productos"`
