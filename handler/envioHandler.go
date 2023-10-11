@@ -42,3 +42,17 @@ func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
 	resultado := handler.envioService.InsertarEnvio(&envio)
 	c.JSON(http.StatusCreated, resultado)
 }
+func (handler *EnvioHandler) EliminarEnvio(c *gin.Context) {
+	id := c.Param("id")
+	resultado := handler.envioService.EliminarEnvio(id)
+	c.JSON(http.StatusOK, resultado)
+}
+func (handler *EnvioHandler) ActualizarEnvio(c *gin.Context) {
+	var envio dto.Envio
+	if err := c.ShouldBindJSON(&envio); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	resultado := handler.envioService.ActualizarEnvio(&envio)
+	c.JSON(http.StatusOK, resultado)
+}
