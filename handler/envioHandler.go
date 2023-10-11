@@ -19,17 +19,17 @@ func NewEnvioHandler(envioService services.EnvioInterface) *EnvioHandler {
 		envioService: envioService,
 	}
 }
-func (handler *EnvioHandler) GetEnvios(c *gin.Context) {
+func (handler *EnvioHandler) ObtenerEnvios(c *gin.Context) {
 	//invocamos al metodo
-	envios := handler.envioService.GetEnvios()
+	envios := handler.envioService.ObtenerEnvios()
 	//Agregamos un log para indicar informacion
-	log.Printf("[handelr:EnvioHandler] [method:GetEnvios] [envios:%v] [cantidad:%d]", envios, len(envios))
+	log.Printf("[handler:EnvioHandler] [method:ObtenerEnvios] [envios:%v] [cantidad:%d]", envios, len(envios))
 	c.JSON(http.StatusOK, envios)
 }
-func (handler *EnvioHandler) GetEnvio(c *gin.Context) {
+func (handler *EnvioHandler) ObtenerEnvioPorId(c *gin.Context) {
 	id := c.Param("id")
 	//invocamos al metodo
-	envio := handler.envioService.GetEnvio(id)
+	envio := handler.envioService.ObtenerEnvioPorId(id)
 	//Agregamos un log para indicar informacion
 	c.JSON(http.StatusOK, envio)
 }

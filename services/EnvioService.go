@@ -9,8 +9,8 @@ import (
 
 type EnvioInterface interface {
 	//Metodos para implementar en el handler
-	GetEnvios() []*dto.Envio
-	GetEnvio(id string) *dto.Envio
+	ObtenerEnvios() []*dto.Envio
+	ObtenerEnvioPorId(id string) *dto.Envio
 	InsertarEnvio(envio *dto.Envio) bool
 	EliminarEnvio(id string) bool
 	ActualizarEnvio(envio *dto.Envio) bool
@@ -24,8 +24,8 @@ func NewEnvioService(envioRepository repositories.EnvioRepositoryInterface) *env
 		envioRepository: envioRepository,
 	}
 }
-func (service *envioService) GetEnvios() []*dto.Envio {
-	envioDB, _ := service.envioRepository.GetEnvios()
+func (service *envioService) ObtenerEnvios() []*dto.Envio {
+	envioDB, _ := service.envioRepository.ObtenerEnvios()
 	var envios []*dto.Envio
 	for _, envioDB := range envioDB {
 		envio := dto.NewEnvio(envioDB)
@@ -33,8 +33,8 @@ func (service *envioService) GetEnvios() []*dto.Envio {
 	}
 	return envios
 }
-func (service *envioService) GetEnvio(id string) *dto.Envio {
-	envioDB, _ := service.envioRepository.GetEnvio(id)
+func (service *envioService) ObtenerEnvioPorId(id string) *dto.Envio {
+	envioDB, _ := service.envioRepository.ObtenerEnvioPorId(id)
 	envio := dto.NewEnvio(envioDB)
 	return envio
 }

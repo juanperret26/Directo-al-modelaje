@@ -40,9 +40,12 @@ func mappingRoutes() {
 	groupEnvio := router.Group("/envios")
 	//Uso del middleware para todas las rutas del grupo de rutas y hago todos los POST, GET y DELETE
 	// groupEnvio.Use(authMiddleware.ValidateToken)
-	groupEnvio.GET("/", envioHandler.GetEnvios)
-	groupEnvio.GET("/:id", envioHandler.GetEnvio)
+	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
+	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
+	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)
+	groupEnvio.PUT("/", envioHandler.ActualizarEnvio)
+
 }
 
 // Generacion de los objetos que se van a usar en la api

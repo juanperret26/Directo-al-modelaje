@@ -7,14 +7,18 @@ import (
 
 	"github.com/juanperret/Directo-al-modelaje/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type EnvioRepositoryInterface interface {
-	GetEnvios() ([]model.Envio, error)
-	GetEnvio(id string) (model.Envio, error)
+	ObtenerEnvios() ([]model.Envio, error)
+	ObtenerEnvioPorId(id string) (model.Envio, error)
 	InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error)
+	EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error)
+	ActualizarEnvio(envio model.Envio) (*mongo.UpdateResult, error)
 }
+
 type EnvioRepository struct {
 	db DB
 }
@@ -22,7 +26,7 @@ type EnvioRepository struct {
 func NewEnvioRepository(db DB) *EnvioRepository {
 	return &EnvioRepository{db: db}
 }
-func (repository EnvioRepository) GetEnvios() ([]model.Envio, error) {
+func (repository EnvioRepository) ObtenerEnvios() ([]model.Envio, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
 	filtro := bson.M{}
 	cursor, err := collection.Find(context.Background(), filtro)
@@ -40,9 +44,9 @@ func (repository EnvioRepository) GetEnvios() ([]model.Envio, error) {
 	return envios, err
 
 }
-func (repository EnvioRepository) GetEnvio(id string) (model.Envio, error) {
+func (repository EnvioRepository) ObtenerEnvioPorId(id string) (model.Envio, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{"_id": id}
+	filtro := bson.M{"_id": id} // obtener objeto id desde string
 	var envio model.Envio
 	err := collection.FindOne(context.Background(), filtro).Decode(&envio)
 	return envio, err
@@ -50,5 +54,19 @@ func (repository EnvioRepository) GetEnvio(id string) (model.Envio, error) {
 func (repository EnvioRepository) InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
 	resultado, err := collection.InsertOne(context.Background(), envio)
+	return resultado, err
+}
+
+func (repository EnvioRepository) EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	filtro := bson.M{"_id": id}
+	resultado, err := collection.DeleteOne(context.TODO(), filtro)
+	return resultado, err
+}
+func (repository EnvioRepository) ActualizarEnvio(envio model.Envio) (*mongo.UpdateResult, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	filtro := bson.M{"_id": envio.Id}
+	entidad := bson.M{"$set": bson.M{"estado": envio.Estado}}
+	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
 	return resultado, err
 }
