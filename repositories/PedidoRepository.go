@@ -11,3 +11,5 @@ type PedidoRepository struct {
 func NewPedidoRepository(db DB) *PedidoRepository {
 	return &PedidoRepository{db: db}
 }
+
+func CrearPedido

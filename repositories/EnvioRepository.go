@@ -18,7 +18,6 @@ type EnvioRepositoryInterface interface {
 	EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error)
 	ActualizarEnvio(envio model.Envio) (*mongo.UpdateResult, error)
 }
-
 type EnvioRepository struct {
 	db DB
 }
