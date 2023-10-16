@@ -19,16 +19,16 @@ type Camion struct {
 func NewCamion(camion model.Camion) *Camion {
 	return &Camion{
 		ID:             utils.GetStringIDFromObjectID(camion.ID),
-		Patente:       	camion.Patente,
+		Patente:        camion.Patente,
 		Peso_maximo:    camion.Peso_maximo,
 		Costo_km:       camion.Costo_km,
 		Fecha_creacion: time.Now(),
-		Actualizacion:  camion.Actualizacion,
+		Actualizacion:  time.Now(),
 	}
 }
 func (camion Camion) GetModel() model.Camion {
 	return model.Camion{
-		ID: 		   	utils.GetObjectIDFromStringID(camion.ID),
+		ID:             utils.GetObjectIDFromStringID(camion.ID),
 		Patente:        camion.Patente,
 		Peso_maximo:    camion.Peso_maximo,
 		Costo_km:       camion.Costo_km,

@@ -24,7 +24,7 @@ func NewEnvio(envio model.Envio) *Envio {
 		Paradas:       []Paradas{},
 		Creacion:      time.Now(),
 		Pedido:        envio.Pedido,
-		Actualizacion: envio.Actualizacion,
+		Actualizacion: time.Now(),
 		Costo:         envio.Costo,
 	}
 }

@@ -38,7 +38,16 @@ func (service *envioService) ObtenerEnvioPorId(id string) *dto.Envio {
 	envio := dto.NewEnvio(envioDB)
 	return envio
 }
-func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
+func (service *envioService) InsertarEnvio(envio *dto.Envio, pedidos []*dto.Pedido) bool {
+	pesoTotal := 0
+	for i, pedido := range pedidos {
+		pesoPorPedido := pedido.PedidoProductos[i].Producto.Peso * pedido.PedidoProductos[i].Cantidad
+		pesoTotal += pesoPorPedido
+		if pedido.Estado == "Aceptado" {
+
+		}
+	}
+
 	service.envioRepository.InsertarEnvio(envio.GetModel())
 	return true
 }

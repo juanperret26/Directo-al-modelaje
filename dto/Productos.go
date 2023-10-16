@@ -29,7 +29,7 @@ func NewProducto(producto model.Producto) *Producto {
 		Stock:         producto.Stock,
 		Stock_minimo:  producto.Stock_minimo,
 		Tipo:          producto.Tipo,
-		Actualizacion: producto.Actualizacion,
+		Actualizacion: time.Now(),
 		Creacion:      time.Now(),
 	}
 }

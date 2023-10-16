@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/juanperret/Directo-al-modelaje/model"
+	"github.com/juanperret/Directo-al-modelaje/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -45,7 +46,8 @@ func (repository EnvioRepository) ObtenerEnvios() ([]model.Envio, error) {
 }
 func (repository EnvioRepository) ObtenerEnvioPorId(id string) (model.Envio, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{"_id": id} // obtener objeto id desde string
+	objectID := utils.GetObjectIDFromStringID(id)
+	filtro := bson.M{"_id": objectID}
 	var envio model.Envio
 	err := collection.FindOne(context.Background(), filtro).Decode(&envio)
 	return envio, err

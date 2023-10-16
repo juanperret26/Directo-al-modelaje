@@ -14,11 +14,22 @@ type PedidoProducto struct {
 	Tipo            string
 }
 
-func GetModel(producto model.Producto, pedido model.Pedido) *PedidoProducto {
+func NewPedidoProducto(producto model.Producto) *PedidoProducto {
 	return &PedidoProducto{
 		Id:              utils.GetStringIDFromObjectID(producto.Id),
 		Nombre:          producto.Nombre,
-		Cantidad:        len(pedido.Productos),
+		Cantidad:        0,
+		Precio_unitario: producto.Precio,
+		Stock:           producto.Stock,
+		Tipo:            producto.Tipo,
+	}
+}
+
+func GetModel(producto model.Producto) *PedidoProducto {
+	return &PedidoProducto{
+		Id:              utils.GetStringIDFromObjectID(producto.Id),
+		Nombre:          producto.Nombre,
+		Cantidad:        0,
 		Precio_unitario: producto.Precio,
 		Stock:           producto.Stock,
 		Tipo:            producto.Tipo,

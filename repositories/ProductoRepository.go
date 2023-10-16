@@ -75,6 +75,7 @@ func (repository *ProductoRepository) InsertarProducto(producto model.Producto) 
 
 func (repository *ProductoRepository) ActualizarProducto(producto model.Producto) (*mongo.UpdateResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
+	producto.Actualizacion = time.Now()
 	filtro := bson.M{"_id": producto.Id}
 	entidad := bson.M{"$set": bson.M{"nombre": producto.Nombre, "precio": producto.Precio, "stock": producto.Stock, "stock_,minimo": producto.Stock_minimo, "fehca_actualizacion": time.Now(), "fecha_creacion": time.Now()}}
 	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)

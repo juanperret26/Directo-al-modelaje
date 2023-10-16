@@ -45,14 +45,14 @@ func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
 	}
 	return producto
 }
-func (service *productoService) InsertarProducto(aula *dto.Producto) bool {
-	service.productoRepository.InsertarProducto(aula.GetModel())
+func (service *productoService) InsertarProducto(producto *dto.Producto) bool {
+	service.productoRepository.InsertarProducto(producto.GetModel())
 
 	return true
 }
 
-func (service *productoService) ActualizarProducto(aula *dto.Producto) bool {
-	service.productoRepository.ActualizarProducto(aula.GetModel())
+func (service *productoService) ActualizarProducto(producto *dto.Producto) bool {
+	service.productoRepository.ActualizarProducto(producto.GetModel())
 
 	return true
 }
