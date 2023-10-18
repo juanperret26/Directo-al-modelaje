@@ -38,7 +38,7 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
 	pedido := dto.NewPedido(pedidoDB)
 	return pedido
 }
-func (service *pedidoService) InsertarPedido(pedido *dto.Pedido, producto *dto.Producto, cantidad int) bool {
+func (service *pedidoService) InsertarPedido(pedido *dto.Pedido, producto *dto.Producto, cantidad float64) bool {
 	service.pedidoRepository.InsertarPedido(pedido.GetModel())
 	pedidoProducto := dto.NewPedidoProducto(producto.GetModel())
 	pedidoProducto.Cantidad = cantidad

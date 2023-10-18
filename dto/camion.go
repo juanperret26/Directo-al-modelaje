@@ -10,7 +10,7 @@ import (
 type Camion struct {
 	ID             string
 	Patente        string
-	Peso_maximo    int
+	Peso_maximo    float64
 	Costo_km       int
 	Fecha_creacion time.Time
 	Actualizacion  time.Time

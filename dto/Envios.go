@@ -11,6 +11,7 @@ type Envio struct {
 	Id            string
 	Estado        string
 	Paradas       []Paradas
+	Destino       string
 	Creacion      time.Time
 	Pedido        []string
 	Actualizacion time.Time

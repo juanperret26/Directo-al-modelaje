@@ -2,7 +2,10 @@
 package services
 
 import (
+	"log"
+
 	"github.com/juanperret/Directo-al-modelaje/dto"
+	"github.com/juanperret/Directo-al-modelaje/model"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 	"github.com/juanperret/Directo-al-modelaje/utils"
 )
@@ -16,7 +19,9 @@ type EnvioInterface interface {
 	ActualizarEnvio(envio *dto.Envio) bool
 }
 type envioService struct {
-	envioRepository repositories.EnvioRepositoryInterface
+	envioRepository    repositories.EnvioRepositoryInterface
+	pedidoRepository   repositories.PedidoRepository
+	productoRepository repositories.ProductoRepository
 }
 
 func NewEnvioService(envioRepository repositories.EnvioRepositoryInterface) *envioService {
@@ -38,18 +43,40 @@ func (service *envioService) ObtenerEnvioPorId(id string) *dto.Envio {
 	envio := dto.NewEnvio(envioDB)
 	return envio
 }
-func (service *envioService) InsertarEnvio(envio *dto.Envio, pedidos []*dto.Pedido) bool {
-	pesoTotal := 0
-	for i, pedido := range pedidos {
-		pesoPorPedido := pedido.PedidoProductos[i].Producto.Peso * pedido.PedidoProductos[i].Cantidad
-		pesoTotal += pesoPorPedido
-		if pedido.Estado == "Aceptado" {
+func (service *envioService) InsertarEnvio(envio *dto.Envio, pedidos []string, camion *dto.Camion) bool {
+	var pesoTotal float64 = 0.0
+	var resultado = false
+	for _, idPedido := range pedidos {
 
+		// Buscar el pedido correspondiente al ID
+		var pedido model.Pedido
+		pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+		if pedido.Estado == "Aceptado" {
+			for _, productoPedido := range pedido.PedidoProductos {
+				// Buscar el producto correspondiente al codigo
+				producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+				PesoPedido := producto.Peso_unitario * productoPedido.Cantidad
+				pesoTotal += PesoPedido
+
+				if err != nil {
+					log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
+				}
+
+			}
+		}
+
+		if err != nil {
+			// Manejar el error
+			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
+		}
+		if pesoTotal <= camion.Peso_maximo {
+			envio.Estado = "A DESPACHAR"
+			service.envioRepository.InsertarEnvio(envio.GetModel())
+			pedido.Estado = "PARA ENVIAR"
+			resultado = true
 		}
 	}
-
-	service.envioRepository.InsertarEnvio(envio.GetModel())
-	return true
+	return resultado
 }
 func (service *envioService) EliminarEnvio(id string) bool {
 	service.envioRepository.EliminarEnvio(utils.GetObjectIDFromStringID(id))

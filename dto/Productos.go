@@ -9,40 +9,43 @@ import (
 )
 
 type Producto struct {
-	Id            string
-	Nombre        string
-	Peso_unitario float64
-	Precio        float64
-	Stock         int
-	Stock_minimo  int
-	Tipo          string
-	Actualizacion time.Time
-	Creacion      time.Time
+	Id             string
+	CodigoProducto string
+	Nombre         string
+	Peso_unitario  float64
+	Precio         float64
+	Stock          float64
+	Stock_minimo   int
+	Tipo           string
+	Actualizacion  time.Time
+	Creacion       time.Time
 }
 
 func NewProducto(producto model.Producto) *Producto {
 	return &Producto{
-		Id:            utils.GetStringIDFromObjectID(producto.Id),
-		Nombre:        producto.Nombre,
-		Peso_unitario: producto.Peso_unitario,
-		Precio:        producto.Precio,
-		Stock:         producto.Stock,
-		Stock_minimo:  producto.Stock_minimo,
-		Tipo:          producto.Tipo,
-		Actualizacion: time.Now(),
-		Creacion:      time.Now(),
+		Id:             utils.GetStringIDFromObjectID(producto.Id),
+		CodigoProducto: producto.CodigoProducto,
+		Nombre:         producto.Nombre,
+		Peso_unitario:  producto.Peso_unitario,
+		Precio:         producto.Precio,
+		Stock:          producto.Stock,
+		Stock_minimo:   producto.Stock_minimo,
+		Tipo:           producto.Tipo,
+		Actualizacion:  time.Now(),
+		Creacion:       time.Now(),
 	}
 }
 func (producto Producto) GetModel() model.Producto {
 	return model.Producto{
-		Id:            utils.GetObjectIDFromStringID(producto.Id),
-		Nombre:        producto.Nombre,
-		Peso_unitario: producto.Peso_unitario,
-		Precio:        producto.Precio,
-		Stock:         producto.Stock,
-		Stock_minimo:  producto.Stock_minimo,
-		Tipo:          producto.Tipo,
-		Actualizacion: producto.Actualizacion,
-		Creacion:      producto.Creacion,
+		Id:             utils.GetObjectIDFromStringID(producto.Id),
+		CodigoProducto: producto.CodigoProducto,
+		Nombre:         producto.Nombre,
+		Peso_unitario:  producto.Peso_unitario,
+		Precio:         producto.Precio,
+		Stock:          producto.Stock,
+		Stock_minimo:   producto.Stock_minimo,
+		Tipo:           producto.Tipo,
+		Actualizacion:  producto.Actualizacion,
+		Creacion:       producto.Creacion,
 	}
 }

@@ -7,31 +7,31 @@ import (
 
 type PedidoProducto struct {
 	Id              string
+	CodigoProducto  string
 	Nombre          string
-	Cantidad        int
+	Cantidad        float64
 	Precio_unitario float64
-	Stock           int
 	Tipo            string
 }
 
 func NewPedidoProducto(producto model.Producto) *PedidoProducto {
 	return &PedidoProducto{
 		Id:              utils.GetStringIDFromObjectID(producto.Id),
+		CodigoProducto:  producto.CodigoProducto,
 		Nombre:          producto.Nombre,
 		Cantidad:        0,
 		Precio_unitario: producto.Precio,
-		Stock:           producto.Stock,
 		Tipo:            producto.Tipo,
 	}
 }
 
 func GetModel(producto model.Producto) *PedidoProducto {
 	return &PedidoProducto{
-		Id:              utils.GetStringIDFromObjectID(producto.Id),
+		Id: utils.GetStringIDFromObjectID(producto.Id),
+
 		Nombre:          producto.Nombre,
 		Cantidad:        0,
 		Precio_unitario: producto.Precio,
-		Stock:           producto.Stock,
 		Tipo:            producto.Tipo,
 	}
 }
