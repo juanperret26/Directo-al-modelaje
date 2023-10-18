@@ -19,6 +19,7 @@ type CamionInterface interface {
 }
 type camionService struct {
 	camionRepository repositories.CamionRepositoryInterface
+	envioRepository  repositories.EnvioRepositoryInterface
 }
 
 func NewCamionService(camionRepository repositories.CamionRepositoryInterface) *camionService {

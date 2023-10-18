@@ -17,6 +17,7 @@ type EnvioInterface interface {
 	InsertarEnvio(envio *dto.Envio) bool
 	EliminarEnvio(id string) bool
 	ActualizarEnvio(envio *dto.Envio) bool
+	ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas)
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
@@ -69,6 +70,7 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio, pedidos []string, c
 			// Manejar el error
 			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
 		}
+
 		if pesoTotal <= camion.Peso_maximo {
 			envio.Estado = "A DESPACHAR"
 			service.envioRepository.InsertarEnvio(envio.GetModel())
@@ -85,4 +87,36 @@ func (service *envioService) EliminarEnvio(id string) bool {
 func (service *envioService) ActualizarEnvio(envio *dto.Envio) bool {
 	service.envioRepository.ActualizarEnvio(envio.GetModel())
 	return true
+}
+func (service *envioService) ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas) {
+	if inicio {
+		envio.Estado = "En ruta"
+		service.envioRepository.ActualizarEnvio(envio.GetModel())
+		envio.Paradas = append(envio.Paradas, parada)
+		if parada.Ciudad == envio.Destino {
+			envio.Estado = "Despachado"
+			service.envioRepository.ActualizarEnvio(envio.GetModel())
+			for _, idPedido := range envio.Pedido {
+				var pedido model.Pedido
+				pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+				if err != nil {
+					log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
+				}
+
+				for _, productoPedido := range pedido.PedidoProductos {
+					// Buscar el producto correspondiente al codigo
+					producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+					if err != nil {
+						log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
+					}
+					producto.Stock -= productoPedido.Cantidad
+					service.productoRepository.ActualizarProducto(producto)
+
+				}
+				pedido.Estado = "Enviado"
+				service.pedidoRepository.ActualizarPedido(pedido)
+			}
+
+		}
+	}
 }
