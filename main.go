@@ -18,7 +18,7 @@ var (
 	camionHandler   *handler.CamionHandler
 	productoHandler *handler.ProductoHandler
 	pedidoHandler   *handler.PedidoHandler
-	//Agregar router
+	// Agregar router
 	router *gin.Engine
 )
 
@@ -46,7 +46,7 @@ func mappingRoutes() {
 	groupProducto := router.Group("/productos")
 	groupPedido := router.Group("/pedidos")
 	//Uso del middleware para todas las rutas del grupo de rutas y hago todos los POST, GET y DELETE
-	// groupEnvio.Use(authMiddleware.ValidateToken)
+	//groupEnvio.Use(authMiddleware.ValidateToken)
 	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
 	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
@@ -103,7 +103,7 @@ func dependencies() {
 	productoService = services.NewProductoService(productoRepository)
 	productoHandler = handler.NewProductoHandler(productoService)
 
-	//Pedidos
+	// //Pedidos
 	var pedidoRepository repositories.PedidoRepositoryInterface
 	var pedidoService services.PedidoInterface
 	pedidoRepository = repositories.NewPedidoRepository(database)

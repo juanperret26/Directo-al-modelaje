@@ -9,5 +9,4 @@ type PedidoProducto struct {
 	Cantidad          float64            `bson:"cantidad"`
 	Precio_unitario   float64            `bson:"precio_unitario"`
 	Stock             int                `bson:"stock"`
-	Tipo              string             `bson:"tipo"`
 }

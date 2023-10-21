@@ -48,6 +48,14 @@ func (repository *ProductoRepository) ObtenerProductos() ([]model.Producto, erro
 	return productos, err
 }
 
+// Obtener Productos que tengan stock menor al minimo y filtrar por tipo de producto
+func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
+	filtro := bson.M{"stock": bson.M{"$lt": "stock_minimo"}}
+	cursor, err := collection.Find(context.Background(), filtro)
+
+}
+
 func (repository *ProductoRepository) ObtenerProductoPorId(id string) (model.Producto, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
 	objectID := utils.GetObjectIDFromStringID(id)
