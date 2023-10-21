@@ -2,15 +2,19 @@
 package services
 
 import (
+	"time"
+
 	"github.com/juanperret/Directo-al-modelaje/dto"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 	"github.com/juanperret/Directo-al-modelaje/utils"
+	
 )
 
 type PedidoInterface interface {
 	//Metodos para implementar en el handler
 	ObtenerPedidos() []*dto.Pedido
 	ObtenerPedidoPorId(id string) *dto.Pedido
+	ObtenerPedidosFiltrados(codigoEnvio string, estado string, fecha time.Time) []*dto.Pedido
 	InsertarPedido(pedido *dto.Pedido) bool
 	EliminarPedido(id string) bool
 	ActualizarPedido(pedido *dto.Pedido) bool
@@ -38,6 +42,16 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
 	pedido := dto.NewPedido(pedidoDB)
 	return pedido
 }
+func (service *pedidoService)ObtenerPedidosFiltrados(codigoEnvio string, estado string, fecha time.Time) []*dto.Pedido {
+	pedidoDB, _ := service.pedidoRepository.ObtenerPedidosFiltrados(codigoEnvio, estado, fecha)
+
+	var pedidos []*dto.Pedido
+	for _, pedidoDB := range pedidoDB {
+		pedido := dto.NewPedido(pedidoDB)
+		pedidos = append(pedidos, pedido)
+	}
+	return pedidos
+}
 func (service *pedidoService) InsertarPedido(pedido *dto.Pedido, producto *dto.Producto, cantidad float64) bool {
 	service.pedidoRepository.InsertarPedido(pedido.GetModel())
 	pedidoProducto := dto.NewPedidoProducto(producto.GetModel())
@@ -49,7 +63,7 @@ func (service *pedidoService) InsertarPedido(pedido *dto.Pedido, producto *dto.P
 	}
 	return true
 }
-func (service *pedidoService) EliminarPedido(id string) bool {
+func (service *pedidoService) EliminarPedido(pedido *dto.Pedido, id string)bool{
 	service.pedidoRepository.EliminarPedido(utils.GetObjectIDFromStringID(id))
 	return true
 }

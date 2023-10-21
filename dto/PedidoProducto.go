@@ -11,7 +11,6 @@ type PedidoProducto struct {
 	Nombre          string
 	Cantidad        float64
 	Precio_unitario float64
-	Tipo            string
 }
 
 func NewPedidoProducto(producto model.Producto) *PedidoProducto {
@@ -21,7 +20,6 @@ func NewPedidoProducto(producto model.Producto) *PedidoProducto {
 		Nombre:          producto.Nombre,
 		Cantidad:        0,
 		Precio_unitario: producto.Precio,
-		Tipo:            producto.Tipo,
 	}
 }
 
@@ -32,6 +30,5 @@ func GetModel(producto model.Producto) *PedidoProducto {
 		Nombre:          producto.Nombre,
 		Cantidad:        0,
 		Precio_unitario: producto.Precio,
-		Tipo:            producto.Tipo,
 	}
 }

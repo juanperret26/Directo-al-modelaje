@@ -31,7 +31,6 @@ func (repository EnvioRepository) ObtenerEnvios() ([]model.Envio, error) {
 	filtro := bson.M{}
 	cursor, err := collection.Find(context.Background(), filtro)
 	defer cursor.Close(context.Background())
-
 	var envios []model.Envio
 	for cursor.Next(context.Background()) {
 		var envio model.Envio

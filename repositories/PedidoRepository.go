@@ -17,6 +17,7 @@ type PedidoRepositoryInterface interface {
 	//Metodos para implementar en el service
 	ObtenerPedidos() ([]model.Pedido, error)
 	ObtenerPedidoPorId(id string) (model.Pedido, error)
+	ObtenerPedidosFiltrados(codigoEnvio string, estado string, fecha time.Time) ([]model.Pedido, error)
 	InsertarPedido(pedido model.Pedido) (*mongo.InsertOneResult, error)
 	EliminarPedido(id primitive.ObjectID) (*mongo.UpdateResult, error)
 	ActualizarPedido(pedido model.Pedido) (*mongo.UpdateResult, error)
@@ -62,8 +63,31 @@ func (repository *PedidoRepository) ObtenerPedidoPorId(id string) (model.Pedido,
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
+		
 	}
 	return pedido, err
+}
+//Lista de pedidos. Se puede filtrar por código de envío, estado, rango de fecha de creación.
+func (repository *PedidoRepository) ObtenerPedidosFiltrados(codigoEnvio string, estado string, fecha time.Time) ([]model.Pedido, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	filtro := bson.M{"codigo_envio": codigoEnvio, "estado": estado}
+	
+	cursor, err := collection.Find(context.Background(), filtro)
+	defer cursor.Close(context.Background())
+	var pedidos []model.Pedido
+	for cursor.Next(context.Background()) {
+		var pedido model.Pedido
+		err:=cursor.Decode(&pedidos)
+		if pedido.Fecha_creacion.Before(fecha) {
+			pedidos = append(pedidos, pedido)
+		}
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+		
+	}
+	return pedidos, err
+
 }
 func (repository *PedidoRepository) InsertarPedido(pedido model.Pedido) (*mongo.InsertOneResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
