@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/juanperret/Directo-al-modelaje/model"
-	"github.com/juanperret/Directo-al-modelaje/utils"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,7 +16,7 @@ import (
 type CamionRepositoryInterface interface {
 	//Metodos para implementar en el service
 	OtenerCamiones() ([]model.Camion, error)
-	ObtenerCamionPorId(id string) (model.Camion, error)
+	ObtenerCamionPorPatente(patente string) (model.Camion, error)
 	InsertarCamion(camion model.Camion) (*mongo.InsertOneResult, error)
 	EliminarCamion(id primitive.ObjectID) (*mongo.DeleteResult, error)
 	ActualizarCamion(camion model.Camion) (*mongo.UpdateResult, error)
@@ -48,10 +48,9 @@ func (repository CamionRepository) OtenerCamiones() ([]model.Camion, error) {
 	return camiones, err
 }
 
-func (repository CamionRepository) ObtenerCamionPorId(id string) (model.Camion, error) {
+func (repository CamionRepository) ObtenerCamionPorPatente(patente string) (model.Camion, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
-	objectID := utils.GetObjectIDFromStringID(id)
-	filtro := bson.M{"_id": objectID}
+	filtro := bson.M{"patente": patente}
 	cursor, err := collection.Find(context.TODO(), filtro)
 	defer cursor.Close(context.Background())
 	var camion model.Camion

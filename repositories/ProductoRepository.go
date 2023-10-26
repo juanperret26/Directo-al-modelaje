@@ -51,8 +51,8 @@ func (repository *ProductoRepository) ObtenerProductos() ([]model.Producto, erro
 
 func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	filtro:= bson.M{"tipo_producto": tipoProducto}
-	
+	filtro := bson.M{"tipo_producto": tipoProducto}
+
 	cursor, err := collection.Find(context.Background(), filtro)
 	defer cursor.Close(context.Background())
 	var productos []model.Producto
@@ -66,7 +66,7 @@ func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto s
 			productos = append(productos, producto)
 		}
 	}
-	return	 productos, err
+	return productos, err
 }
 
 func (repository *ProductoRepository) ObtenerProductoPorId(id string) (model.Producto, error) {
@@ -103,9 +103,10 @@ func (repository *ProductoRepository) ActualizarProducto(producto model.Producto
 	return resultado, err
 }
 
-func (repository *ProductoRepository) EliminarProducto(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+func (repository *ProductoRepository) EliminarProducto(id string) (*mongo.DeleteResult, error) {
+	objectID := utils.GetObjectIDFromStringID(id)
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	filtro := bson.M{"_id": id}
+	filtro := bson.M{"_id": objectID}
 	resultado, err := collection.DeleteOne(context.Background(), filtro)
 	return resultado, err
 }

@@ -56,7 +56,7 @@ func mappingRoutes() {
 	//Camiones
 	//grupoCamion.Use(authMiddleware.ValidateToken)
 	groupCamion.GET("/", camionHandler.ObtenerCamiones)
-	groupCamion.GET("/:id", camionHandler.ObtenerCamionPorId)
+	groupCamion.GET("/:id", camionHandler.ObtenerCamionPorPatente)
 	groupCamion.POST("/", camionHandler.InsertarCamion)
 	groupCamion.DELETE("/:id", camionHandler.EliminarCamion)
 	groupCamion.PUT("/", camionHandler.ActualizarCamion)
@@ -83,6 +83,7 @@ func dependencies() {
 	//Envios
 	var database repositories.DB
 	database = repositories.NewMongoDB()
+
 	var envioRepository repositories.EnvioRepositoryInterface
 	var envioService services.EnvioInterface
 	envioRepository = repositories.NewEnvioRepository(database)

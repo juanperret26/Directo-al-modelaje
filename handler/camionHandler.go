@@ -24,10 +24,10 @@ func (handler *CamionHandler) ObtenerCamiones(c *gin.Context) {
 	c.JSON(http.StatusOK, camiones)
 }
 
-func (handler *CamionHandler) ObtenerCamionPorId(c *gin.Context) {
-	id := c.Param("id")
+func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
+	patente := c.Param("patente")
 	//invocamos al metodo
-	camion := handler.camionService.ObtenerCamionPorId(id)
+	camion := handler.camionService.ObtenerCamionPorPatente(patente)
 	//Agregamos un log para indicar informacion
 	c.JSON(http.StatusOK, camion)
 }

@@ -3,6 +3,7 @@ package services
 
 import (
 	"log"
+	"time"
 
 	"github.com/juanperret/Directo-al-modelaje/dto"
 	"github.com/juanperret/Directo-al-modelaje/model"
@@ -14,6 +15,8 @@ type EnvioInterface interface {
 	//Metodos para implementar en el handler
 	ObtenerEnvios() []*dto.Envio
 	ObtenerEnvioPorId(id string) *dto.Envio
+	ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]*dto.Pedido, error)
+	ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]*dto.Envio, error)
 	InsertarEnvio(envio *dto.Envio) bool
 	EliminarEnvio(id string) bool
 	ActualizarEnvio(envio *dto.Envio) bool
@@ -23,6 +26,7 @@ type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
 	pedidoRepository   repositories.PedidoRepository
 	productoRepository repositories.ProductoRepository
+	camionRepository   repositories.CamionRepository
 }
 
 func NewEnvioService(envioRepository repositories.EnvioRepositoryInterface) *envioService {
@@ -39,14 +43,42 @@ func (service *envioService) ObtenerEnvios() []*dto.Envio {
 	}
 	return envios
 }
+func (service *envioService) ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]*dto.Envio, error) {
+
+	enviosDB, err := service.envioRepository.ObtenerEnviosPorParametros(patente, estado, ultimaParada, fechaCreacionDesde, fechaCreacionHasta)
+	if err != nil {
+		return nil, err
+	}
+
+	var envios []*dto.Envio
+	for _, envioDB := range enviosDB {
+		envio := dto.NewEnvio(envioDB)
+		envios = append(envios, envio)
+	}
+	return envios, nil
+}
 func (service *envioService) ObtenerEnvioPorId(id string) *dto.Envio {
 	envioDB, _ := service.envioRepository.ObtenerEnvioPorId(id)
 	envio := dto.NewEnvio(envioDB)
 	return envio
 }
-func (service *envioService) InsertarEnvio(envio *dto.Envio, pedidos []string, camion *dto.Camion) bool {
+func (service *envioService) ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]*dto.Pedido, error) {
+
+	pedidoDB, _ := service.envioRepository.ObtenerPedidosFiltrados(codigoEnvio, estado, fechaInicio, fechaFinal)
+	var pedidos []*dto.Pedido
+	for _, pedidoDB := range pedidoDB {
+		pedido := dto.NewPedido(pedidoDB)
+		pedidos = append(pedidos, pedido)
+	}
+	return pedidos, nil
+}
+
+func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 	var pesoTotal float64 = 0.0
 	var resultado = false
+	var camion, _ = service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+	var pedidos = envio.Pedido
+
 	for _, idPedido := range pedidos {
 
 		// Buscar el pedido correspondiente al ID
@@ -73,9 +105,15 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio, pedidos []string, c
 
 		if pesoTotal <= camion.Peso_maximo {
 			envio.Estado = "A DESPACHAR"
+			envio.PatenteCamion = camion.Patente
 			service.envioRepository.InsertarEnvio(envio.GetModel())
 			pedido.Estado = "PARA ENVIAR"
 			resultado = true
+			service.pedidoRepository.ActualizarPedido(pedido)
+			service.envioRepository.ActualizarEnvio(envio.GetModel())
+		}
+		if pesoTotal > camion.Peso_maximo {
+			log.Printf("No se puede cargar el envio en el camion")
 		}
 	}
 	return resultado

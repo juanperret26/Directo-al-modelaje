@@ -9,7 +9,8 @@ import (
 
 type Envio struct {
 	Id            string
-	CodEnvio	  string
+	CodEnvio      string
+	PatenteCamion string
 	Estado        string
 	Paradas       []Paradas
 	Destino       string
@@ -22,7 +23,8 @@ type Envio struct {
 func NewEnvio(envio model.Envio) *Envio {
 	return &Envio{
 		Id:            utils.GetStringIDFromObjectID(envio.Id),
-		CodEnvio:	   envio.CodEnvio,
+		CodEnvio:      envio.CodEnvio,
+		PatenteCamion: envio.PatenteCamion,
 		Estado:        envio.Estado,
 		Paradas:       []Paradas{},
 		Destino:       envio.Destino,
@@ -35,7 +37,8 @@ func NewEnvio(envio model.Envio) *Envio {
 func (envio Envio) GetModel() model.Envio {
 	return model.Envio{
 		Id:            utils.GetObjectIDFromStringID(envio.Id),
-		CodEnvio:	   envio.CodEnvio,
+		CodEnvio:      envio.CodEnvio,
+		PatenteCamion: envio.PatenteCamion,
 		Estado:        envio.Estado,
 		Paradas:       []model.Paradas{},
 		Destino:       envio.Destino,

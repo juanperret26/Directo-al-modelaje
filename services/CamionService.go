@@ -12,7 +12,7 @@ import (
 type CamionInterface interface {
 	//Metodos para implementar en el handler
 	ObtenerCamiones() []*dto.Camion
-	ObtenerCamionPorId(id string) *dto.Camion
+	ObtenerCamionPorPatente(patente string) *dto.Camion
 	InsertarCamion(camion *dto.Camion) bool
 	EliminarCamion(id string) bool
 	ActualizarCamion(camion *dto.Camion) bool
@@ -36,13 +36,13 @@ func (service *camionService) ObtenerCamiones() []*dto.Camion {
 	return camiones
 }
 
-func (service *camionService) ObtenerCamionPorId(id string) *dto.Camion {
-	camionDB, err := service.camionRepository.ObtenerCamionPorId(id)
+func (service *camionService) ObtenerCamionPorPatente(id string) *dto.Camion {
+	camionDB, err := service.camionRepository.ObtenerCamionPorPatente(id)
 	var camion *dto.Camion
 	if err == nil {
 		camion = dto.NewCamion(camionDB)
 	} else {
-		log.Printf("[service:CamionService][method:ObtenerCamionPorId][reason:NOT_FOUND][id:%d]", id)
+		log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:NOT_FOUND][patente:%d]", camion.Patente)
 	}
 	return camion
 }
