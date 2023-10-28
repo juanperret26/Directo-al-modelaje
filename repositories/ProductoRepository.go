@@ -8,7 +8,6 @@ import (
 	"github.com/juanperret/Directo-al-modelaje/model"
 	"github.com/juanperret/Directo-al-modelaje/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -17,7 +16,7 @@ type ProductoRepositoryInterface interface {
 	ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error)
 	ObtenerProductoPorId(id string) (model.Producto, error)
 	InsertarProducto(producto model.Producto) (*mongo.InsertOneResult, error)
-	EliminarProducto(id primitive.ObjectID) (*mongo.DeleteResult, error)
+	EliminarProducto(id string) (*mongo.DeleteResult, error)
 	ActualizarProducto(producto model.Producto) (*mongo.UpdateResult, error)
 }
 

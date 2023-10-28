@@ -6,7 +6,6 @@ import (
 
 	"github.com/juanperret/Directo-al-modelaje/dto"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
-	"github.com/juanperret/Directo-al-modelaje/utils"
 )
 
 type ProductoInterface interface {
@@ -35,7 +34,7 @@ func (service *productoService) ObtenerProductos() []*dto.Producto {
 	}
 	return productos
 }
-func(service *productoService) ObtenerProductosStockMinimo(tipoProducto string) []*dto.Producto {
+func (service *productoService) ObtenerProductosStockMinimo(tipoProducto string) []*dto.Producto {
 	productoDB, _ := service.productoRepository.ObtenerProductosStockMinimo(tipoProducto)
 	var productos []*dto.Producto
 	for _, productoDB := range productoDB {
@@ -70,6 +69,6 @@ func (service *productoService) ActualizarProducto(producto *dto.Producto) bool 
 }
 
 func (service *productoService) EliminarProducto(id string) bool {
-	service.productoRepository.EliminarProducto(utils.GetObjectIDFromStringID(id))
+	service.productoRepository.EliminarProducto(id)
 	return true
 }

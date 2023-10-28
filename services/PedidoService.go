@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/juanperret/Directo-al-modelaje/dto"
-	"github.com/juanperret/Directo-al-modelaje/model"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 )
 
@@ -57,17 +56,18 @@ func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error 
 	}
 
 	//Verifica que haya stock disponible para aceptar el pedido
-	if !service.hayStockDisponiblePedido(pedido) {
+	if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
 		return errors.New("no hay stock disponible para aceptar el pedido")
 	}
 
 	//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
-	if pedido.Estado != model.Aceptado {
-		pedido.Estado = model.Aceptado
+	if pedido.Estado != "Aceptado" {
+		pedido.Estado = "Aceptado"
 	}
 
 	//Actualiza el pedido en la base de datos
-	return service.pedidoRepository.ActualizarPedido(*pedido)
+	service.pedidoRepository.ActualizarPedido(pedido)
+	return err
 }
 
 func (service *pedidoService) hayStockDisponiblePedido(pedido *dto.Pedido) bool {

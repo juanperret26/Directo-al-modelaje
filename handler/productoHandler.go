@@ -25,7 +25,7 @@ func (handler *ProductoHandler) ObtenerProductos(c *gin.Context) {
 	c.JSON(http.StatusOK, productos)
 
 }
-func (handler *ProductoHandler)ObtenerProductosStockMinimo(c *gin.Context){
+func (handler *ProductoHandler) ObtenerProductosStockMinimo(c *gin.Context) {
 	tipoProducto := c.Param("tipoProducto")
 	productos := handler.ProductoService.ObtenerProductosStockMinimo(tipoProducto)
 	c.JSON(http.StatusOK, productos)
@@ -43,6 +43,9 @@ func (handler *ProductoHandler) InsertarProducto(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 
+	} else {
+		resultado := handler.ProductoService.InsertarProducto(&producto)
+		c.JSON(http.StatusCreated, resultado)
 	}
 }
 
