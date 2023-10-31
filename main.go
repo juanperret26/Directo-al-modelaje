@@ -2,9 +2,13 @@ package main
 
 import (
 	//Agregar imports de todas las clases, handlers, middlewares, etc
+	"html/template"
 	"log"
+	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 	"github.com/juanperret/Directo-al-modelaje/handler"
 	//"github.com/juanperret/Directo-al-modelaje/middlewares"
@@ -20,14 +24,25 @@ var (
 	pedidoHandler   *handler.PedidoHandler
 	// Agregar router
 	router *gin.Engine
+	tmpl   *template.Template
 )
 
 func main() {
 	router = gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	router.Use(cors.New(config))
+
 	//Iniciar objetos de handler
 	dependencies()
 	//Iniciar rutas
 	mappingRoutes()
+
+	router.LoadHTMLGlob("html/*")
+
+	router.Static("/static", "./static")
 
 	log.Println("Iniciando el servidor...")
 	router.Run(":8080")
@@ -74,6 +89,37 @@ func mappingRoutes() {
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)
 
+	//rutas html
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
+	router.GET("/htmlproductos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "productos.html", nil)
+	})
+	router.GET("/htmlpedidos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "pedidos.html", nil)
+	})
+	router.GET("/htmlinformes", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "informes.html", nil)
+	})
+	router.GET("/htmlenvios", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "envios.html", nil)
+	})
+	router.GET("/htmlcamiones", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "camiones.html", nil)
+	})
+	router.GET("/formProductos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formProductos.html", nil)
+	})
+	router.GET("/formPedidos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formPedidos.html", nil)
+	})
+	router.GET("/formEnvios", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formEnvios.html", nil)
+	})
+	router.GET("/formCamiones", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formCamiones.html", nil)
+	})
 }
 
 // Generacion de los objetos que se van a usar en la api
