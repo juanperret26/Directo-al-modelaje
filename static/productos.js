@@ -7,8 +7,8 @@ function cargarDatos(){
     .then(response => {
       if (!response.ok) {
         throw new Error("Error al obtener datos de productos.");
-        return response.json();
-    }
+      }
+      return response.json();
     })
     .then(data => {
       mostrarDatosTabla(data);
@@ -35,36 +35,36 @@ function mostrarDatosTabla(datos){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.id;
+        celdaId.textContent = element.CodigoProducto;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
 
         var celdaNombre = document.createElement("td");
-        celdaNombre.textContent = element.nombre;
+        celdaNombre.textContent = element.Nombre;
         fila.appendChild(celdaNombre);
 
         var celdaTipo = document.createElement("td");
-        celdaTipo.textContent = element.tipo;
+        celdaTipo.textContent = element.TipoProducto;
         fila.appendChild(celdaTipo);
 
         var celdaPeso = document.createElement("td");
-        celdaPeso.textContent = element.peso;
+        celdaPeso.textContent = element.Peso_unitario;
         fila.appendChild(celdaPeso);
 
         var celdaPrecio = document.createElement("td");
-        celdaPrecio.textContent = element.precio;
+        celdaPrecio.textContent = element.Precio;
         fila.appendChild(celdaPrecio);
 
         var celdaStock = document.createElement("td");
-        celdaStock.textContent = element.stock;
+        celdaStock.textContent = element.Stock;
         fila.appendChild(celdaStock);
 
         var celdaActualizacion = document.createElement("td");
-        celdaActualizacion.textContent = element.actualizacion;
+        celdaActualizacion.textContent = obtenerFechaDesdeCadena(element.Actualizacion);
         fila.appendChild(celdaActualizacion);
 
         var celdaCreacion = document.createElement("td");
-        celdaCreacion.textContent = element.creacion;
+        celdaCreacion.textContent = obtenerFechaDesdeCadena(element.Creacion);
         fila.appendChild(celdaCreacion);
 
         var celdaEditar = document.createElement("td");
@@ -97,3 +97,9 @@ document.addEventListener("keyup",e=>{
     };
 });
 
+function obtenerFechaDesdeCadena(cadenaFechaHora) {
+    const partes = cadenaFechaHora.split("T");
+    const fecha = partes[0];
+    
+    return fecha;
+}

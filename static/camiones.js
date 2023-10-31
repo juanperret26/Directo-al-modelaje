@@ -1,32 +1,48 @@
 document.addEventListener("DOMContentLoaded",function(){
-    let arreglo = new Array;
-    arreglo[0] = {id: "1321", patente: "324UEQ", peso: "500", costo: "1000"};
-    arreglo[1] = {id: "5657", patente: "574HJK", peso: "500", costo: "1000"};
-    arreglo[2] = {id: "6432", patente: "928BNM", peso: "500", costo: "1000"};
-    arreglo[3] = {id: "8756", patente: "431DFG", peso: "500", costo: "1000"};
-    arreglo[4] = {id: "0912", patente: "390MNF", peso: "500", costo: "1000"};
+    cargarDatos();  
+});    
+  
+  function cargarDatos(){
+      fetch("/camiones", { method: "GET" })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Error al obtener datos de camiones.");
+        }
+        return response.json();
+      })
+      .then(data => {
+        mostrarDatosTabla(data);
+      })
+      .catch(error => {
+        console.error("Error al obtener datos de camiones:", error);
+      });  
+    };
+
+
+
+function mostrarDatosTabla(datos){
 
     var table = document.getElementById("TablaPrincipal");
     var tbody = document.getElementById("TableBody");
-
-    arreglo.forEach(function(element){
+    
+    datos.forEach(function(element){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.id;
+        celdaId.textContent = element.ID;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
 
         var celdaPatente = document.createElement("td");
-        celdaPatente.textContent = element.patente;
+        celdaPatente.textContent = element.Patente;
         fila.appendChild(celdaPatente);
 
         var celdaPeso = document.createElement("td");
-        celdaPeso.textContent = element.peso;
+        celdaPeso.textContent = element.Peso_maximo;
         fila.appendChild(celdaPeso);
 
         var celdaCosto = document.createElement("td");
-        celdaCosto.textContent = element.costo;
+        celdaCosto.textContent = element.Costo_km;
         fila.appendChild(celdaCosto);
 
         var celdaEditar = document.createElement("td");
@@ -45,7 +61,8 @@ document.addEventListener("DOMContentLoaded",function(){
 
         tbody.appendChild(fila);
     });
-})
+}
+
 document.addEventListener("keyup",e=>{
     if(e.target.matches("#barraBuscador")){
         document.querySelectorAll(".nombreCelda").forEach(id =>{
