@@ -15,7 +15,7 @@ type Producto struct {
 	TipoProducto   string
 	Peso_unitario  float64
 	Precio         float64
-	Stock          float64
+	Stock          int
 	Stock_minimo   int
 	Actualizacion  time.Time
 	Creacion       time.Time

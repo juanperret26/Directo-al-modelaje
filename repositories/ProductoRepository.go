@@ -61,7 +61,7 @@ func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto s
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
-		if producto.Stock < float64(producto.Stock_minimo) {
+		if producto.Stock < producto.Stock_minimo {
 			productos = append(productos, producto)
 		}
 	}

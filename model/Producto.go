@@ -13,7 +13,7 @@ type Producto struct {
 	TipoProducto   string             `bson:"tipo_producto"`
 	Peso_unitario  float64            `bson:"peso"`
 	Precio         float64            `bson:"precio"`
-	Stock          float64            `bson:"stock"`
+	Stock          int                `bson:"stock"`
 	Stock_minimo   int                `bson:"stock_minimo"`
 	Actualizacion  time.Time          `bson:"actualizacion"`
 	Creacion       time.Time          `bson:"creacion"`

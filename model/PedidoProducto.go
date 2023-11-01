@@ -6,7 +6,7 @@ type PedidoProducto struct {
 	Id_pedidoProducto primitive.ObjectID `bson:"id_pedidoProducto"`
 	CodigoProducto    string             `bson:"codigo_producto"`
 	Nombre            string             `bson:"nombre"`
-	Cantidad          float64            `bson:"cantidad"`
+	Cantidad          int                `bson:"cantidad"`
 	Precio_unitario   float64            `bson:"precio_unitario"`
 	Stock             int                `bson:"stock"`
 }

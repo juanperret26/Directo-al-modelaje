@@ -77,7 +77,7 @@ func (service *pedidoService) hayStockDisponiblePedido(pedido *dto.Pedido) bool 
 	//Recorro los productos del pedido
 	for _, productoPedido := range productosPedido {
 		//Armo un objeto producto con el ID para buscar en la base de datos
-		productoParaBuscar := dto.Producto{CodigoProducto: productoPedido.CodigoProducto}
+		productoParaBuscar := dto.Producto{CodigoProducto: productoPedido.CodigoProducto} //Buscar productos con el ObjectId
 
 		//Busco el producto en la base de datos
 		producto, err := service.productoRepository.ObtenerProductoPorId(productoParaBuscar.Id)

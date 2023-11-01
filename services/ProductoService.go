@@ -39,7 +39,7 @@ func (service *productoService) ObtenerProductosStockMinimo(tipoProducto string)
 	var productos []*dto.Producto
 	for _, productoDB := range productoDB {
 		producto := dto.NewProducto(productoDB)
-		if producto.Stock < float64(producto.Stock_minimo) && producto.TipoProducto == tipoProducto {
+		if producto.Stock < producto.Stock_minimo && producto.TipoProducto == tipoProducto {
 			productos = append(productos, producto)
 		}
 	}

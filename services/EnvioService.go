@@ -88,7 +88,7 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 			for _, productoPedido := range pedido.PedidoProductos {
 				// Buscar el producto correspondiente al codigo
 				producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
-				PesoPedido := producto.Peso_unitario * productoPedido.Cantidad
+				PesoPedido := producto.Peso_unitario * float64(productoPedido.Cantidad)
 				pesoTotal += PesoPedido
 
 				if err != nil {

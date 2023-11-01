@@ -22,7 +22,7 @@ func NewPedido(pedido model.Pedido) *Pedido {
 		Id:              utils.GetStringIDFromObjectID(pedido.Id),
 		Estado:          pedido.Estado,
 		Fecha_creacion:  time.Now(),
-		PedidoProductos: []PedidoProducto{},
+		PedidoProductos: NewProductosPedido(pedido.PedidoProductos),
 		Actualizacion:   time.Now(),
 		Destino:         pedido.Destino,
 	}
@@ -32,8 +32,26 @@ func (pedido Pedido) GetModel() model.Pedido {
 		Id:              utils.GetObjectIDFromStringID(pedido.Id),
 		Estado:          pedido.Estado,
 		Fecha_creacion:  pedido.Fecha_creacion,
-		PedidoProductos: []model.PedidoProducto{},
+		PedidoProductos: pedido.getProductosElegidos(),
 		Actualizacion:   pedido.Actualizacion,
 		Destino:         pedido.Destino,
 	}
+}
+
+// Hacer una funcion privada para transformar el model en dto.
+func (pedido Pedido) getProductosElegidos() []model.PedidoProducto {
+	var productosElegidos []model.PedidoProducto
+	for _, producto := range pedido.PedidoProductos {
+		productosElegidos = append(productosElegidos, producto.GetModel())
+	}
+	return productosElegidos
+}
+
+// Metodo para convertir una lista de ProductoPedido del modelo a una lista de ProductoPedido del dto
+func NewProductosPedido(productosElegidos []model.PedidoProducto) []PedidoProducto {
+	var productosElegidosDto []PedidoProducto
+	for _, producto := range productosElegidos {
+		productosElegidosDto = append(productosElegidosDto, *NewPedidoProducto(producto))
+	}
+	return productosElegidosDto
 }
