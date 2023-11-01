@@ -15,6 +15,7 @@ type PedidoInterface interface {
 	hayStockDisponiblePedido(pedido *dto.Pedido) bool
 	InsertarPedido(pedido *dto.Pedido) bool
 	EliminarPedido(id string) bool
+	AceptarPedido(pedido *dto.Pedido) error
 	ActualizarPedido(pedido *dto.Pedido) bool
 }
 type pedidoService struct {
@@ -22,9 +23,10 @@ type pedidoService struct {
 	productoRepository repositories.ProductoRepositoryInterface
 }
 
-func NewPedidoService(pedidoRepository repositories.PedidoRepositoryInterface) *pedidoService {
+func NewPedidoService(pedidoRepository repositories.PedidoRepositoryInterface, productoRepository repositories.ProductoRepositoryInterface) *pedidoService {
 	return &pedidoService{
-		pedidoRepository: pedidoRepository,
+		pedidoRepository:   pedidoRepository,
+		productoRepository: productoRepository,
 	}
 }
 func (service *pedidoService) ObtenerPedidos() []*dto.Pedido {
@@ -43,6 +45,7 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
 }
 
 func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) bool {
+
 	service.pedidoRepository.InsertarPedido(pedido.GetModel())
 
 	return true
@@ -77,10 +80,9 @@ func (service *pedidoService) hayStockDisponiblePedido(pedido *dto.Pedido) bool 
 	//Recorro los productos del pedido
 	for _, productoPedido := range productosPedido {
 		//Armo un objeto producto con el ID para buscar en la base de datos
-		productoParaBuscar := dto.Producto{CodigoProducto: productoPedido.CodigoProducto} //Buscar productos con el ObjectId
 
 		//Busco el producto en la base de datos
-		producto, err := service.productoRepository.ObtenerProductoPorId(productoParaBuscar.Id)
+		producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
 
 		if err != nil {
 			return false

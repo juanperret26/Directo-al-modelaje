@@ -48,3 +48,14 @@ func (handler *PedidoHandler) EliminarPedido(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo eliminar el pedido"})
 	}
 }
+func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
+	id := c.Param("id")
+	pedido := handler.pedidoService.ObtenerPedidoPorId(id)
+
+	if err := c.ShouldBindJSON(&pedido); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	resultado := handler.pedidoService.AceptarPedido(pedido)
+	c.JSON(http.StatusCreated, resultado)
+}

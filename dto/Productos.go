@@ -9,43 +9,41 @@ import (
 )
 
 type Producto struct {
-	Id             string
-	CodigoProducto string
-	Nombre         string
-	TipoProducto   string
-	Peso_unitario  float64
-	Precio         float64
-	Stock          int
-	Stock_minimo   int
-	Actualizacion  time.Time
-	Creacion       time.Time
+	Id string
+
+	Nombre        string
+	TipoProducto  string
+	Peso_unitario float64
+	Precio        float64
+	Stock         int
+	Stock_minimo  int
+	Actualizacion time.Time
+	Creacion      time.Time
 }
 
 func NewProducto(producto model.Producto) *Producto {
 	return &Producto{
-		Id:             utils.GetStringIDFromObjectID(producto.Id),
-		CodigoProducto: producto.CodigoProducto,
-		Nombre:         producto.Nombre,
-		TipoProducto:   producto.TipoProducto,
-		Peso_unitario:  producto.Peso_unitario,
-		Precio:         producto.Precio,
-		Stock:          producto.Stock,
-		Stock_minimo:   producto.Stock_minimo,
-		Actualizacion:  time.Now(),
-		Creacion:       time.Now(),
+		Id:            utils.GetStringIDFromObjectID(producto.Id),
+		Nombre:        producto.Nombre,
+		TipoProducto:  producto.TipoProducto,
+		Peso_unitario: producto.Peso_unitario,
+		Precio:        producto.Precio,
+		Stock:         producto.Stock,
+		Stock_minimo:  producto.Stock_minimo,
+		Actualizacion: time.Now(),
+		Creacion:      time.Now(),
 	}
 }
 func (producto Producto) GetModel() model.Producto {
 	return model.Producto{
-		Id:             utils.GetObjectIDFromStringID(producto.Id),
-		CodigoProducto: producto.CodigoProducto,
-		Nombre:         producto.Nombre,
-		TipoProducto:   producto.TipoProducto,
-		Peso_unitario:  producto.Peso_unitario,
-		Precio:         producto.Precio,
-		Stock:          producto.Stock,
-		Stock_minimo:   producto.Stock_minimo,
-		Actualizacion:  producto.Actualizacion,
-		Creacion:       producto.Creacion,
+		Id:            utils.GetObjectIDFromStringID(producto.Id),
+		Nombre:        producto.Nombre,
+		TipoProducto:  producto.TipoProducto,
+		Peso_unitario: producto.Peso_unitario,
+		Precio:        producto.Precio,
+		Stock:         producto.Stock,
+		Stock_minimo:  producto.Stock_minimo,
+		Actualizacion: producto.Actualizacion,
+		Creacion:      producto.Creacion,
 	}
 }

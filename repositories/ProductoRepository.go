@@ -73,12 +73,12 @@ func (repository *ProductoRepository) ObtenerProductoPorId(id string) (model.Pro
 	objectID := utils.GetObjectIDFromStringID(id)
 	filtro := bson.M{"_id": objectID}
 
-	cursor, err := collection.Find(context.TODO(), filtro)
+	cursor, err := collection.Find(context.Background(), filtro)
 	defer cursor.Close(context.Background())
 
 	var producto model.Producto
 	for cursor.Next(context.Background()) {
-
+		err := cursor.Decode(&producto)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}

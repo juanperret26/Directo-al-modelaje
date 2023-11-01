@@ -51,17 +51,30 @@ func (repository CamionRepository) OtenerCamiones() ([]model.Camion, error) {
 func (repository CamionRepository) ObtenerCamionPorPatente(patente string) (model.Camion, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
 	filtro := bson.M{"patente": patente}
-	cursor, err := collection.Find(context.TODO(), filtro)
-	defer cursor.Close(context.Background())
 	var camion model.Camion
-	for cursor.Next(context.Background()) {
-		err := cursor.Decode(&camion)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
-	}
+	err := collection.FindOne(context.Background(), filtro).Decode(&camion)
 	return camion, err
 }
+
+// func (repository *CamionRepository) ObtenerCamionPorPatente(patente string) (model.Camion, error) {
+// 	if repository == nil || repository.db == nil || repository.db.GetClient() == nil {
+// 		return model.Camion{}, errors.New("El repositorio es nulo")
+// 	}
+
+// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
+// 	if collection == nil {
+// 		return model.Camion{}, errors.New("La colección de la base de datos es nula")
+// 	}
+
+// 	filtro := bson.M{"patente": patente}
+// 	var camion model.Camion
+// 	err := collection.FindOne(context.Background(), filtro).Decode(&camion)
+// 	if err != nil {
+// 		return model.Camion{}, err
+// 	}
+
+// 	return camion, nil
+// }
 
 func (repository CamionRepository) InsertarCamion(camion model.Camion) (*mongo.InsertOneResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")

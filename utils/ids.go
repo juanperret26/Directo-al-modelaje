@@ -13,5 +13,3 @@ func GetObjectIDFromStringID(id string) primitive.ObjectID {
 func GetStringIDFromObjectID(id primitive.ObjectID) string {
 	return id.Hex()
 }
-
-//Hacer una funcion que convierta una lista de productos en una lista de pedidos productos

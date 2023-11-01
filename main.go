@@ -71,7 +71,7 @@ func mappingRoutes() {
 	//Camiones
 	//grupoCamion.Use(authMiddleware.ValidateToken)
 	groupCamion.GET("/", camionHandler.ObtenerCamiones)
-	groupCamion.GET("/:id", camionHandler.ObtenerCamionPorPatente)
+	groupCamion.GET("/:patente", camionHandler.ObtenerCamionPorPatente)
 	groupCamion.POST("/", camionHandler.InsertarCamion)
 	groupCamion.DELETE("/:id", camionHandler.EliminarCamion)
 	groupCamion.PUT("/", camionHandler.ActualizarCamion)
@@ -88,6 +88,7 @@ func mappingRoutes() {
 	groupPedido.GET("/:id", pedidoHandler.ObtenerPedidoPorId)
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)
+	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
 
 	//rutas html
 	router.GET("/", func(c *gin.Context) {
@@ -130,12 +131,6 @@ func dependencies() {
 	var database repositories.DB
 	database = repositories.NewMongoDB()
 
-	var envioRepository repositories.EnvioRepositoryInterface
-	var envioService services.EnvioInterface
-	envioRepository = repositories.NewEnvioRepository(database)
-	envioService = services.NewEnvioService(envioRepository)
-	envioHandler = handler.NewEnvioHandler(envioService)
-
 	//Camiones
 	var camionRepository repositories.CamionRepositoryInterface
 	var camionService services.CamionInterface
@@ -154,7 +149,12 @@ func dependencies() {
 	var pedidoRepository repositories.PedidoRepositoryInterface
 	var pedidoService services.PedidoInterface
 	pedidoRepository = repositories.NewPedidoRepository(database)
-	pedidoService = services.NewPedidoService(pedidoRepository)
+	pedidoService = services.NewPedidoService(pedidoRepository, productoRepository)
 	pedidoHandler = handler.NewPedidoHandler(pedidoService)
 
+	var envioRepository repositories.EnvioRepositoryInterface
+	var envioService services.EnvioInterface
+	envioRepository = repositories.NewEnvioRepository(database)
+	envioService = services.NewEnvioService(envioRepository, camionRepository, pedidoRepository, productoRepository)
+	envioHandler = handler.NewEnvioHandler(envioService)
 }

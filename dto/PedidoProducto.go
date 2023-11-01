@@ -13,7 +13,7 @@ type PedidoProducto struct {
 
 func NewPedidoProductoFromPedido(producto model.Producto, cantidad int) *PedidoProducto {
 	return &PedidoProducto{
-		CodigoProducto:  producto.CodigoProducto,
+		CodigoProducto:  producto.Id.String(),
 		Nombre:          producto.Nombre,
 		Cantidad:        cantidad,
 		Precio_unitario: producto.Precio,

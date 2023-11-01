@@ -24,14 +24,17 @@ type EnvioInterface interface {
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
-	pedidoRepository   repositories.PedidoRepository
-	productoRepository repositories.ProductoRepository
-	camionRepository   repositories.CamionRepository
+	pedidoRepository   repositories.PedidoRepositoryInterface
+	productoRepository repositories.ProductoRepositoryInterface
+	camionRepository   repositories.CamionRepositoryInterface
 }
 
-func NewEnvioService(envioRepository repositories.EnvioRepositoryInterface) *envioService {
+func NewEnvioService(envioRepository repositories.EnvioRepositoryInterface, camionRepository repositories.CamionRepositoryInterface, pedidoRepository repositories.PedidoRepositoryInterface, productoRepository repositories.ProductoRepositoryInterface) *envioService {
 	return &envioService{
-		envioRepository: envioRepository,
+		envioRepository:    envioRepository,
+		camionRepository:   camionRepository,
+		pedidoRepository:   pedidoRepository,
+		productoRepository: productoRepository,
 	}
 }
 func (service *envioService) ObtenerEnvios() []*dto.Envio {
@@ -76,7 +79,8 @@ func (service *envioService) ObtenerPedidosFiltrados(codigoEnvio string, estado 
 func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 	var pesoTotal float64 = 0.0
 	var resultado = false
-	var camion, _ = service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+	var camion, err = service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+	log.Printf("camion: %v", err)
 	var pedidos = envio.Pedido
 
 	for _, idPedido := range pedidos {
@@ -107,7 +111,6 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 			envio.Estado = "A DESPACHAR"
 			envio.PatenteCamion = camion.Patente
 			service.envioRepository.InsertarEnvio(envio.GetModel())
-			pedido.Estado = "PARA ENVIAR"
 			resultado = true
 			service.pedidoRepository.ActualizarPedido(pedido)
 			service.envioRepository.ActualizarEnvio(envio.GetModel())

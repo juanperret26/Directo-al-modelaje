@@ -17,6 +17,7 @@ type PedidoRepositoryInterface interface {
 	//Metodos para implementar en el service
 	ObtenerPedidos() ([]model.Pedido, error)
 	ObtenerPedidoPorId(id string) (model.Pedido, error)
+	ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error)
 	InsertarPedido(pedido model.Pedido) (*mongo.InsertOneResult, error)
 	EliminarPedido(id string) (*mongo.UpdateResult, error)
 	ActualizarPedido(pedido model.Pedido) (*mongo.UpdateResult, error)
@@ -66,6 +67,24 @@ func (repository *PedidoRepository) ObtenerPedidoPorId(id string) (model.Pedido,
 	}
 	return pedido, err
 }
+func (repository *PedidoRepository) ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
+	filtro := bson.M{"estado": estado}
+
+	cursor, err := collection.Find(context.Background(), filtro)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var pedidos []model.Pedido
+	for cursor.Next(context.Background()) {
+		var pedido model.Pedido
+		pedidos = append(pedidos, pedido)
+	}
+
+	return pedidos, nil
+}
 
 //Lista de pedidos. Se puede filtrar por código de envío, estado, rango de fecha de creación.
 
@@ -84,6 +103,14 @@ func (repository *PedidoRepository) EliminarPedido(id string) (*mongo.UpdateResu
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 	filtro := bson.M{"_id": objectID}
 	entidad := bson.M{"$set": bson.M{"estado": "Cancelado", "actualizacion": time.Now()}}
+	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
+	return resultado, err
+}
+func (repository *PedidoRepository) AceptarPedido(id string) (*mongo.UpdateResult, error) {
+	objectID := utils.GetObjectIDFromStringID(id)
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
+	filtro := bson.M{"_id": objectID}
+	entidad := bson.M{"$set": bson.M{"estado": "Aceptado", "actualizacion": time.Now()}}
 	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
 	return resultado, err
 }
