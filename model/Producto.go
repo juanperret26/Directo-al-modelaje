@@ -15,7 +15,6 @@ type Producto struct {
 	Precio         float64            `bson:"precio"`
 	Stock          float64            `bson:"stock"`
 	Stock_minimo   int                `bson:"stock_minimo"`
-	Tipo           string             `bson:"tipo"`
 	Actualizacion  time.Time          `bson:"actualizacion"`
 	Creacion       time.Time          `bson:"creacion"`
 }

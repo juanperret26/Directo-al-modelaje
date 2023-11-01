@@ -17,7 +17,6 @@ type Producto struct {
 	Precio         float64
 	Stock          float64
 	Stock_minimo   int
-	Tipo           string
 	Actualizacion  time.Time
 	Creacion       time.Time
 }
@@ -32,7 +31,6 @@ func NewProducto(producto model.Producto) *Producto {
 		Precio:         producto.Precio,
 		Stock:          producto.Stock,
 		Stock_minimo:   producto.Stock_minimo,
-		Tipo:           producto.Tipo,
 		Actualizacion:  time.Now(),
 		Creacion:       time.Now(),
 	}
@@ -47,7 +45,6 @@ func (producto Producto) GetModel() model.Producto {
 		Precio:         producto.Precio,
 		Stock:          producto.Stock,
 		Stock_minimo:   producto.Stock_minimo,
-		Tipo:           producto.Tipo,
 		Actualizacion:  producto.Actualizacion,
 		Creacion:       producto.Creacion,
 	}

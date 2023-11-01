@@ -74,7 +74,7 @@ func (repository *PedidoRepository) InsertarPedido(pedido model.Pedido) (*mongo.
 	pedido.Fecha_creacion = time.Now()
 	pedido.Actualizacion = time.Now()
 	pedido.Estado = "Pendiente"
-	resultado, err := collection.InsertOne(context.TODO(), pedido)
+	resultado, err := collection.InsertOne(context.Background(), pedido)
 	return resultado, err
 }
 
