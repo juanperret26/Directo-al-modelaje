@@ -21,6 +21,7 @@ type EnvioRepositoryInterface interface {
 	InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error)
 	EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error)
 	ActualizarEnvio(envio model.Envio) (*mongo.UpdateResult, error)
+	ObtenerCantidadEnviosPorEstado(estado string) (int, error)
 }
 type EnvioRepository struct {
 	db DB
@@ -146,4 +147,13 @@ func (repository EnvioRepository) ActualizarEnvio(envio model.Envio) (*mongo.Upd
 	entidad := bson.M{"$set": bson.M{"estado": envio.Estado}}
 	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
 	return resultado, err
+}
+func (repository EnvioRepository) ObtenerCantidadEnviosPorEstado(estado string) (int, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	filtro := bson.M{"estado": estado}
+	cursor, err := collection.CountDocuments(context.Background(), filtro)
+	if err != nil {
+		return 0, err
+	}
+	return int(cursor), nil
 }

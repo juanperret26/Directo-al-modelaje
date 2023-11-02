@@ -17,6 +17,7 @@ type PedidoInterface interface {
 	EliminarPedido(id string) bool
 	AceptarPedido(pedido *dto.Pedido) error
 	ActualizarPedido(pedido *dto.Pedido) bool
+	ObtenerCantidadPedidosPorEstado(estado string) ([]int, error)
 }
 type pedidoService struct {
 	pedidoRepository   repositories.PedidoRepositoryInterface
@@ -104,4 +105,46 @@ func (service *pedidoService) EliminarPedido(id string) bool {
 func (service *pedidoService) ActualizarPedido(pedido *dto.Pedido) bool {
 	service.pedidoRepository.ActualizarPedido(pedido.GetModel())
 	return true
+}
+
+// Obtener la cantidad de pedidos por estado
+func (service *pedidoService) ObtenerCantidadPedidosPorEstado(estado string) ([]int, error) {
+	//Por cada estado posible de pedidos, obtengo la cantidad de pedidos en ese estado
+	var cantidadPedidos []int
+	switch estado {
+	case "Pendiente":
+		cantidadPedidosPendientes, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadPedidos = append(cantidadPedidos, cantidadPedidosPendientes)
+	case "Aceptado":
+		cantidadPedidosAceptados, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadPedidos = append(cantidadPedidos, cantidadPedidosAceptados)
+	case "Cancelado":
+		cantidadPedidosCancelados, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadPedidos = append(cantidadPedidos, cantidadPedidosCancelados)
+	case "ParaEnviar":
+		cantidadPedidosParaEnviar, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadPedidos = append(cantidadPedidos, cantidadPedidosParaEnviar)
+	case "Enviado":
+		cantidadPedidosEnviados, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadPedidos = append(cantidadPedidos, cantidadPedidosEnviados)
+	default:
+		return nil, errors.New("El estado ingresado no es valido")
+	}
+
+	return cantidadPedidos, nil
 }
