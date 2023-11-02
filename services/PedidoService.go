@@ -6,6 +6,7 @@ import (
 
 	"github.com/juanperret/Directo-al-modelaje/dto"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
+	"github.com/juanperret/Directo-al-modelaje/utils"
 )
 
 type PedidoInterface interface {
@@ -17,7 +18,7 @@ type PedidoInterface interface {
 	EliminarPedido(id string) bool
 	AceptarPedido(pedido *dto.Pedido) error
 	ActualizarPedido(pedido *dto.Pedido) bool
-	ObtenerCantidadPedidosPorEstado(estado string) ([]int, error)
+	ObtenerCantidadPedidosPorEstado(estado string) ([]utils.Estados, error)
 }
 type pedidoService struct {
 	pedidoRepository   repositories.PedidoRepositoryInterface
@@ -108,9 +109,10 @@ func (service *pedidoService) ActualizarPedido(pedido *dto.Pedido) bool {
 }
 
 // Obtener la cantidad de pedidos por estado
-func (service *pedidoService) ObtenerCantidadPedidosPorEstado(estado string) ([]int, error) {
+func (service *pedidoService) ObtenerCantidadPedidosPorEstado(estado string) ([]utils.Estados, error) {
 	//Por cada estado posible de pedidos, obtengo la cantidad de pedidos en ese estado
 	var cantidadPedidos []int
+	var listaEstados []utils.Estados
 	switch estado {
 	case "Pendiente":
 		cantidadPedidosPendientes, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
@@ -118,33 +120,38 @@ func (service *pedidoService) ObtenerCantidadPedidosPorEstado(estado string) ([]
 			return nil, err
 		}
 		cantidadPedidos = append(cantidadPedidos, cantidadPedidosPendientes)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "Pendiente", Cantidad: cantidadPedidosPendientes})
 	case "Aceptado":
 		cantidadPedidosAceptados, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
 		if err != nil {
 			return nil, err
 		}
 		cantidadPedidos = append(cantidadPedidos, cantidadPedidosAceptados)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "Aceptado", Cantidad: cantidadPedidosAceptados})
 	case "Cancelado":
 		cantidadPedidosCancelados, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
 		if err != nil {
 			return nil, err
 		}
 		cantidadPedidos = append(cantidadPedidos, cantidadPedidosCancelados)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "Cancelado", Cantidad: cantidadPedidosCancelados})
 	case "ParaEnviar":
 		cantidadPedidosParaEnviar, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
 		if err != nil {
 			return nil, err
 		}
 		cantidadPedidos = append(cantidadPedidos, cantidadPedidosParaEnviar)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "ParaEnviar", Cantidad: cantidadPedidosParaEnviar})
 	case "Enviado":
 		cantidadPedidosEnviados, err := service.pedidoRepository.ObtenerCantidadPedidosPorEstado(estado)
 		if err != nil {
 			return nil, err
 		}
 		cantidadPedidos = append(cantidadPedidos, cantidadPedidosEnviados)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "Enviado", Cantidad: cantidadPedidosEnviados})
 	default:
 		return nil, errors.New("El estado ingresado no es valido")
 	}
 
-	return cantidadPedidos, nil
+	return listaEstados, nil
 }

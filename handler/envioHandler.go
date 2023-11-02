@@ -123,3 +123,12 @@ func (handler *EnvioHandler) ActualizarEnvio(c *gin.Context) {
 	resultado := handler.envioService.ActualizarEnvio(&envio)
 	c.JSON(http.StatusOK, resultado)
 }
+func (handler *EnvioHandler) ObtenerCantidadEnviosPorEstado(c *gin.Context) {
+	estado := c.Param("estado")
+	cantidad, err := handler.envioService.ObtenerCantidadEnviosPorEstado(estado)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, cantidad)
+}

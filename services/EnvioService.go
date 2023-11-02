@@ -21,6 +21,7 @@ type EnvioInterface interface {
 	EliminarEnvio(id string) bool
 	ActualizarEnvio(envio *dto.Envio) bool
 	ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas)
+	ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error)
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
@@ -160,4 +161,34 @@ func (service *envioService) ValidacionViaje(envio *dto.Envio, inicio bool, para
 
 		}
 	}
+}
+func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error) {
+	var cantidadEnvios []int
+	var listaEstados []utils.Estados
+	switch estado {
+	case "A despachar":
+		cantidadEnviosADespachar, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadEnvios = append(cantidadEnvios, cantidadEnviosADespachar)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "A despachar", Cantidad: cantidadEnviosADespachar})
+	case "En ruta":
+		cantidadEnviosEnRuta, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadEnvios = append(cantidadEnvios, cantidadEnviosEnRuta)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "En ruta", Cantidad: cantidadEnviosEnRuta})
+	case "Despachado":
+		cantidadEnviosDespachados, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
+		if err != nil {
+			return nil, err
+		}
+		cantidadEnvios = append(cantidadEnvios, cantidadEnviosDespachados)
+		listaEstados = append(listaEstados, utils.Estados{Estado: "Despachado", Cantidad: cantidadEnviosDespachados})
+	default:
+		log.Printf("El estado ingresado no es valido")
+	}
+	return listaEstados, nil
 }

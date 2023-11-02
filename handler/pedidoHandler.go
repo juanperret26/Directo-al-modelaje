@@ -59,3 +59,12 @@ func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
 	resultado := handler.pedidoService.AceptarPedido(pedido)
 	c.JSON(http.StatusCreated, resultado)
 }
+func (handler *PedidoHandler) ObtenerCantidadPedidosPorEstado(c *gin.Context) {
+	estado := c.Param("estado")
+	cantidad, err := handler.pedidoService.ObtenerCantidadPedidosPorEstado(estado)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, cantidad)
+}

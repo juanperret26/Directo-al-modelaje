@@ -11,7 +11,7 @@ import (
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 	"github.com/juanperret/Directo-al-modelaje/handler"
-	//"github.com/juanperret/Directo-al-modelaje/middlewares"
+	"github.com/juanperret/Directo-al-modelaje/middlewares"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 	"github.com/juanperret/Directo-al-modelaje/services"
 )
@@ -22,9 +22,11 @@ var (
 	camionHandler   *handler.CamionHandler
 	productoHandler *handler.ProductoHandler
 	pedidoHandler   *handler.PedidoHandler
+
 	// Agregar router
 	router *gin.Engine
-	tmpl   *template.Template
+
+	tmpl *template.Template
 )
 
 func main() {
@@ -50,10 +52,7 @@ func main() {
 
 func mappingRoutes() {
 	//cliente para api externa
-	// var authClient clients.AuthClientInterface
-	// authClient = clients.NewAuthClient()
-	// //creacion de middleware de autenticacion
-	// authMiddleware := middlewares.NewAuthMiddleware(authClient)
+	router.Use(middlewares.CORSMiddleware())
 
 	// //Listado de rutas
 	groupEnvio := router.Group("/envios")
@@ -64,6 +63,7 @@ func mappingRoutes() {
 	//groupEnvio.Use(authMiddleware.ValidateToken)
 	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
 	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
+	groupEnvio.GET("/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
 	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)
 	groupEnvio.PUT("/", envioHandler.ActualizarEnvio)
@@ -86,6 +86,7 @@ func mappingRoutes() {
 	//grupoPedido.Use(authMiddleware.ValidateToken)
 	groupPedido.GET("/", pedidoHandler.ObtenerPedidos)
 	groupPedido.GET("/:id", pedidoHandler.ObtenerPedidoPorId)
+	groupPedido.GET("/:estado", pedidoHandler.ObtenerCantidadPedidosPorEstado)
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)
 	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
