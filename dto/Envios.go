@@ -12,7 +12,7 @@ type Envio struct {
 	PatenteCamion string    `json:"patente_camion"`
 	Estado        string    `json:"estado"`
 	Paradas       []Paradas `json:"paradas"`
-	Destino       string    `json:"destino"`
+	Destino       Paradas   `json:"destino"`
 	Creacion      time.Time `json:"fecha_creacion"`
 	Pedido        []string  `json:"pedidos"`
 	Actualizacion time.Time `json:"actualizacion"`
@@ -25,7 +25,7 @@ func NewEnvio(envio model.Envio) *Envio {
 		PatenteCamion: envio.PatenteCamion,
 		Estado:        envio.Estado,
 		Paradas:       NewParadas(envio.Paradas),
-		Destino:       envio.Destino,
+		Destino:       NewDestino(envio.Destino),
 		Creacion:      time.Now(),
 		Pedido:        envio.Pedido,
 		Actualizacion: time.Now(),
@@ -38,7 +38,7 @@ func (envio Envio) GetModel() model.Envio {
 		PatenteCamion: envio.PatenteCamion,
 		Estado:        envio.Estado,
 		Paradas:       envio.getParadas(),
-		Destino:       envio.Destino,
+		Destino:       envio.GetDestino(),
 		Creacion:      envio.Creacion,
 		Pedido:        envio.Pedido,
 		Actualizacion: envio.Actualizacion,
@@ -62,4 +62,20 @@ func NewParadas(paradas []model.Paradas) []Paradas {
 		paradasEnvio = append(paradasEnvio, *NewParada(&parada))
 	}
 	return paradasEnvio
+}
+
+func NewDestino(parada model.Paradas) Paradas {
+	return Paradas{
+		Ciudad:     parada.Nombre_ciudad,
+		Kilometros: parada.Kilometros_recorridos,
+	}
+}
+
+func (envio Envio) GetDestino() model.Paradas {
+	var destino model.Paradas
+	{
+		destino.Nombre_ciudad = envio.Destino.Ciudad
+		destino.Kilometros_recorridos = envio.Destino.Kilometros
+	}
+	return destino
 }

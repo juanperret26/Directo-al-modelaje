@@ -11,7 +11,7 @@ import (
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 	"github.com/juanperret/Directo-al-modelaje/handler"
-	"github.com/juanperret/Directo-al-modelaje/middlewares"
+	//"github.com/juanperret/Directo-al-modelaje/middlewares"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 	"github.com/juanperret/Directo-al-modelaje/services"
 )
@@ -52,7 +52,7 @@ func main() {
 
 func mappingRoutes() {
 	//cliente para api externa
-	router.Use(middlewares.CORSMiddleware())
+	//router.Use(middlewares.CORSMiddleware())
 
 	// //Listado de rutas
 	groupEnvio := router.Group("/envios")

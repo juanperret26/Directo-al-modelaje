@@ -22,6 +22,7 @@ type EnvioInterface interface {
 	ActualizarEnvio(envio *dto.Envio) bool
 	ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas)
 	ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error)
+	AgregarParada(envio *dto.Envio, parada dto.Paradas) bool
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
@@ -107,12 +108,12 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 			// Manejar el error
 			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
 		}
-
 		if pesoTotal <= camion.Peso_maximo {
 			envio.Estado = "A DESPACHAR"
 			envio.PatenteCamion = camion.Patente
 			service.envioRepository.InsertarEnvio(envio.GetModel())
 			resultado = true
+			pedido.Estado = "Para enviar"
 			service.pedidoRepository.ActualizarPedido(pedido)
 			service.envioRepository.ActualizarEnvio(envio.GetModel())
 		}
@@ -132,14 +133,23 @@ func (service *envioService) ActualizarEnvio(envio *dto.Envio) bool {
 }
 func (service *envioService) ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas) {
 	if inicio {
+		camionAsignado, err := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+		if err != nil {
+			log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:NOT_FOUND][id:%d]", envio.PatenteCamion)
+		}
 		envio.Estado = "En ruta"
+
 		service.envioRepository.ActualizarEnvio(envio.GetModel())
-		envio.Paradas = append(envio.Paradas, parada)
-		if parada.Ciudad == envio.Destino {
+
+		ultimaParada := envio.Paradas[len(envio.Paradas)-1]
+		if envio.Destino == ultimaParada {
 			envio.Estado = "Despachado"
 			service.envioRepository.ActualizarEnvio(envio.GetModel())
+			//Calcular el stock de los productos y actualizarlo
 			for _, idPedido := range envio.Pedido {
 				var pedido model.Pedido
+				pedido.Estado = "Para enviar"
+				service.pedidoRepository.ActualizarPedido(pedido)
 				pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
 				if err != nil {
 					log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
@@ -158,10 +168,23 @@ func (service *envioService) ValidacionViaje(envio *dto.Envio, inicio bool, para
 				pedido.Estado = "Enviado"
 				service.pedidoRepository.ActualizarPedido(pedido)
 			}
+			var costototal = 0
+			//recorrer paradas
+			for _, parada := range envio.Paradas {
+				costototal += parada.Kilometros * camionAsignado.Costo_km
+			}
+			envio.Costo = costototal
 
 		}
 	}
 }
+
+func (service *envioService) AgregarParada(envio *dto.Envio, parada dto.Paradas) bool {
+	envio.Paradas = append(envio.Paradas, parada)
+	service.envioRepository.ActualizarEnvio(envio.GetModel())
+	return true
+}
+
 func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error) {
 	var cantidadEnvios []int
 	var listaEstados []utils.Estados

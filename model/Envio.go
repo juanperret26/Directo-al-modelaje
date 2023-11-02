@@ -11,7 +11,7 @@ type Envio struct {
 	PatenteCamion string             `bson:"patente_camion"`
 	Estado        string             `bson:"estado"`
 	Paradas       []Paradas          `bson:"paradas"`
-	Destino       string             `bson:"destino"`
+	Destino       Paradas            `bson:"destino"`
 	Creacion      time.Time          `bson:"fecha_creacion"`
 	Pedido        []string           `bson:"productos"`
 	Actualizacion time.Time          `bson:"actualizacion"`
