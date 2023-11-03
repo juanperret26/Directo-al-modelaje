@@ -76,6 +76,7 @@ function mostrarDatosTabla(datos){
 
         tbody.appendChild(fila);
     });
+  //evento boton editar  
     tbody.addEventListener("click", function (event) {
       if (event.target.classList.contains("boton-editar")) {
           const botonEditar = event.target;
@@ -83,6 +84,16 @@ function mostrarDatosTabla(datos){
           manejarEdicion(fila);
       }
   });
+  //evento boton eliminar
+  tbody.addEventListener("click", function (event) {
+    if (event.target.classList.contains("boton-eliminar")) {
+        const botonEditar = event.target;
+        const fila = botonEditar.closest("tr");
+        const primeraCelda = fila.querySelector("td:first-child");
+        const textoPrimeraCelda = primeraCelda.textContent;
+        eliminar(textoPrimeraCelda);
+    }
+});
 };
 
 
@@ -131,4 +142,23 @@ function manejarEdicion(fila) {
   // Redirigir a la página "formProductos" y enviar los valores como parámetros
   const queryString = new URLSearchParams(valoresCeldas).toString();
   window.location.href = `/formProductos?productoID=${productoID}&${queryString}`;
+}
+
+//eliminar
+function eliminar(ID) {
+  const id = ID;
+  const url = `/productos/${id}`;
+  fetch(url, {
+    method: "DELETE"
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error al eliminar el producto.");
+      }
+      location.reload();
+      console.log("Producto eliminado con éxito.");
+    })
+    .catch(error => {
+      console.error("Error al eliminar el producto:", error);
+    });
 }

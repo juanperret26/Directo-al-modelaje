@@ -61,6 +61,17 @@ function mostrarDatosTabla(datos){
 
         tbody.appendChild(fila);
     });
+    
+    //evento boton eliminar
+  tbody.addEventListener("click", function (event) {
+    if (event.target.classList.contains("boton-eliminar")) {
+        const botonEditar = event.target;
+        const fila = botonEditar.closest("tr");
+        const primeraCelda = fila.querySelector("td:first-child");
+        const textoPrimeraCelda = primeraCelda.textContent;
+        eliminar(textoPrimeraCelda);
+    }
+  });
 }
 
 document.addEventListener("keyup",e=>{
@@ -72,3 +83,21 @@ document.addEventListener("keyup",e=>{
         });
     };
 });
+
+function eliminar(ID) {
+  const id = ID;
+  const url = `/camiones/${id}`;
+  fetch(url, {
+    method: "DELETE"
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error al eliminar.");
+      }
+      location.reload();
+      console.log("eliminado con éxito.");
+    })
+    .catch(error => {
+      console.error("Error al eliminar:", error);
+    });
+}

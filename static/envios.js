@@ -1,19 +1,33 @@
 document.addEventListener("DOMContentLoaded",function(){
-    let arreglo = new Array;
-    arreglo[0] = {id: "1321", estado: "Pendiente", paradas: "Rafaela, Santa Fe", destino: "Rosario", creacion: "24/10/2023", pedido: "Heladera, Silla, Mesa, Horno", actualizacion:"25/10/2023", costo: "234532"};
-    arreglo[1] = {id: "5657", estado: "Pendiente", paradas: "Rafaela, Santa Fe", destino: "Rosario", creacion: "24/10/2023", pedido: "Heladera, Silla, Mesa, Horno", actualizacion:"25/10/2023", costo: "234532"};
-    arreglo[2] = {id: "6432", estado: "Pendiente", paradas: "Rafaela, Santa Fe", destino: "Rosario", creacion: "24/10/2023", pedido: "Heladera, Silla, Mesa, Horno", actualizacion:"25/10/2023", costo: "234532"};
-    arreglo[3] = {id: "8756", estado: "Pendiente", paradas: "Rafaela, Santa Fe", destino: "Rosario", creacion: "24/10/2023", pedido: "Heladera, Silla, Mesa, Horno", actualizacion:"25/10/2023", costo: "234532"};
-    arreglo[4] = {id: "0912", estado: "Pendiente", paradas: "Rafaela, Santa Fe", destino: "Rosario", creacion: "24/10/2023", pedido: "Heladera, Silla, Mesa, Horno", actualizacion:"25/10/2023", costo: "234532"};
+    cargarDatos();  
+  });    
+  
+  function cargarDatos(){
+      fetch("/envios", { method: "GET" })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Error al obtener datos de envios.");
+        }
+        return response.json();
+      })
+      .then(data => {
+        mostrarDatosTabla(data);
+      })
+      .catch(error => {
+        console.error("Error al obtener datos de envios:", error);
+      });
+  };
+  
 
+function mostrarDatosTabla(datos){
     var table = document.getElementById("TablaPrincipal");
     var tbody = document.getElementById("TableBody");
 
-    arreglo.forEach(function(element){
+    datos.forEach(function(element){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.id;
+        celdaId.textContent = element.Id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
 
@@ -61,7 +75,8 @@ document.addEventListener("DOMContentLoaded",function(){
 
         tbody.appendChild(fila);
     });
-})
+};
+
 document.addEventListener("keyup",e=>{
     if(e.target.matches("#barraBuscador")){
         document.querySelectorAll(".nombreCelda").forEach(id =>{

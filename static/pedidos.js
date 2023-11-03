@@ -1,32 +1,58 @@
-document.addEventListener("DOMContentLoaded",function(){
-    let arreglo = new Array;
-    arreglo[0] = {id: "1321", productos: "Bicicleta, Inflador, Rueda, Frenos...", ciudad: "Rafaela", estado: "Pendiente"};
-    arreglo[1] = {id: "5657", productos: "Bicicleta, Inflador, Rueda, Frenos...", ciudad: "Rafaela", estado: "Pendiente"};
-    arreglo[2] = {id: "6432", productos: "Bicicleta, Inflador, Rueda, Frenos...", ciudad: "Rafaela", estado: "Pendiente"};
-    arreglo[3] = {id: "8756", productos: "Bicicleta, Inflador, Rueda, Frenos...", ciudad: "Rafaela", estado: "Pendiente"};
-    arreglo[4] = {id: "0912", productos: "Bicicleta, Inflador, Rueda, Frenos...", ciudad: "Rafaela", estado: "Pendiente"};
+//import { makeRequest, Method, ContentType, CallType } from 'request.js';
 
+document.addEventListener("DOMContentLoaded",function(){
+    cargarDatos();  
+  });    
+  
+  function cargarDatos(){
+      fetch("/pedidos", { method: "GET" })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Error al obtener datos de pedidos.");
+        }
+        return response.json();
+      })
+      .then(data => {
+        mostrarDatosTabla(data);
+      })
+      .catch(error => {
+        console.error("Error al obtener datos de pedidos:", error);
+      });
+  };
+  
+
+function mostrarDatosTabla(datos){
     var table = document.getElementById("TablaPrincipal");
     var tbody = document.getElementById("TableBody");
-
-    arreglo.forEach(function(element){
+    datos.forEach(function(element){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.id;
+        celdaId.textContent = element.Id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
+        /*
+        var celdaProductos = document.createElement("td");
+        celdaProductos.textContent = element.PedidoProductos;
+        fila.appendChild(celdaProductos);*/
 
         var celdaProductos = document.createElement("td");
-        celdaProductos.textContent = element.productos;
+        if (element.PedidoProductos && Array.isArray(element.PedidoProductos)) {
+                var nombresProductos = element.PedidoProductos.map(function(producto) {
+                return producto.Nombre;
+        });
+            celdaProductos.textContent = nombresProductos.join(", ");
+        } else {
+            celdaProductos.textContent = "N/A"; // O cualquier otro mensaje que desees mostrar
+        }
         fila.appendChild(celdaProductos);
 
         var celdaCiudad = document.createElement("td");
-        celdaCiudad.textContent = element.ciudad;
+        celdaCiudad.textContent = element.Destino;
         fila.appendChild(celdaCiudad);
 
         var celdaEstado = document.createElement("td");
-        celdaEstado.textContent = element.estado;
+        celdaEstado.textContent = element.Estado;
         fila.appendChild(celdaEstado);
 
         var celdaAceptar = document.createElement("td");
@@ -52,7 +78,26 @@ document.addEventListener("DOMContentLoaded",function(){
 
         tbody.appendChild(fila);
     });
-})
+    //eliminar
+    tbody.addEventListener("click", function (event) {
+        if (event.target.classList.contains("boton-eliminar")) {
+            const botonEditar = event.target;
+            const fila = botonEditar.closest("tr");
+            const primeraCelda = fila.querySelector("td:first-child");
+            const textoPrimeraCelda = primeraCelda.textContent;
+            eliminar(textoPrimeraCelda);
+        }
+    });
+    tbody.addEventListener("click", function (event) {
+      if (event.target.classList.contains("boton-aceptar")) {
+          const botonEditar = event.target;
+          const fila = botonEditar.closest("tr");
+          const primeraCelda = fila.querySelector("td:first-child");
+          const textoPrimeraCelda = primeraCelda.textContent;
+          aceptar(textoPrimeraCelda);
+      }
+  });
+};
 document.addEventListener("keyup",e=>{
     if(e.target.matches("#barraBuscador")){
         document.querySelectorAll(".nombreCelda").forEach(nombre =>{
@@ -62,3 +107,70 @@ document.addEventListener("keyup",e=>{
         });
     };
 });
+
+//eliminar
+function eliminar(ID) {
+    const id = ID;
+    const url = `/pedidos/${id}`;
+    fetch(url, {
+      method: "DELETE"
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Error al eliminar el pedido.");
+        }
+        location.reload();
+        console.log("Pedido eliminado con éxito.");
+      })
+      .catch(error => {
+        console.error("Error al eliminar el pedido:", error);
+      });
+};
+
+function aceptar(ID) {
+  /*const id = ID;
+  const url = `/pedidos/${id}`;
+  const datos = {};
+  makeRequest(
+      url,
+      Method.PUT, 
+      datos,
+      ContentType.JSON,
+      CallType.PRIVATE,
+      exitoSolicitud,
+      errorSolicitud
+  );
+*/
+
+const id = ID;
+const url = `/pedidos/${id}`;
+fetch(url, {
+  method: "PUT",
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({}),
+
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Error al aceptar el pedido.");
+    }
+    location.reload();
+    console.log("Pedido aceptado con éxito.");
+  })
+  .catch(error => {
+    console.error("Error al aceptar el pedido:", error);
+  });
+
+  function exitoSolicitud(data) {
+      console.log("éxito.");
+      location.reload();
+      // Realiza otras acciones si es necesario
+  }
+
+  function errorSolicitud(status, response) {
+      console.error("Error . Estado:", status, "Respuesta:", response);
+      // Maneja el error de acuerdo a tus necesidades
+  }
+}

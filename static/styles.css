@@ -177,3 +177,7 @@ li a:hover {
 #edicionProducto{
     display: none;
 }
+
+.input-cantidad{
+    width: 30px;
+}
