@@ -108,7 +108,11 @@ function editar(productoID) {
         stock: stock
     };
 
-    fetch("/productos", {
+    
+        const id = productoID;
+        const url = `/productos/${id}`;
+
+    fetch(url, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"

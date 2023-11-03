@@ -95,6 +95,15 @@ function mostrarDatosTabla(datos){
           aceptar(textoPrimeraCelda);
       }
   });
+    //evento boton editar  
+    tbody.addEventListener("click", function (event) {
+      if (event.target.classList.contains("boton-editar")) {
+          const botonEditar = event.target;
+          const fila = botonEditar.closest("tr");
+          manejarEdicion(fila);
+      }
+  });
+
 };
 document.addEventListener("keyup",e=>{
     if(e.target.matches("#barraBuscador")){
@@ -171,4 +180,34 @@ fetch(url, {
       console.error("Error . Estado:", status, "Respuesta:", response);
       // Maneja el error de acuerdo a tus necesidades
   }
+}
+
+
+//Boton editar
+function manejarEdicion(fila) {
+  // Obtener elementos de la fila
+  const celdas = fila.querySelectorAll("td");
+
+  // Crear un objeto para almacenar los valores de las celdas
+  const valoresCeldas = {};
+  var pedidoID = "";
+  const encabezado = document.querySelector("table thead tr");
+
+  celdas.forEach((celda, index) => {
+    if (index >= 0 && index <= 7) {
+      if(index == 0){
+        var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
+        valoresCeldas[tituloCelda] = celda.textContent.trim();    
+        pedidoID = valoresCeldas[tituloCelda].toString();
+      }
+      else{
+      var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
+      valoresCeldas[tituloCelda] = celda.textContent.trim();
+      }
+    }
+  });
+
+  // Redirigir a la página "formPedidos" y enviar los valores como parámetros
+  const queryString = new URLSearchParams(valoresCeldas).toString();
+  window.location.href = `/formPedidos?pedidoID=${pedidoID}&${queryString}`;
 }
