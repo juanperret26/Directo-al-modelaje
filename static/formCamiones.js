@@ -8,8 +8,8 @@ function crearNuevoCamion() {
     const costoKM = parseInt(document.querySelector('input[placeholder="Costo por Km"]').value);
     const nuevoCamion = {
         patente: patente,
-        pesoMax: pesoMax,
-        costoKM: costoKM
+        peso_maximo: pesoMax,
+        costo_km: costoKM
     };
 
     fetch("/camiones", {

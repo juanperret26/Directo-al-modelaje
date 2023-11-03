@@ -16,26 +16,17 @@ function cargarDatos(){
     .catch(error => {
       console.error("Error al obtener datos de productos:", error);
     });
-    /*fetch("/productos",{method: "GET"})
-    .then(response =>response.json())
-    .then(data =>
-        {mostrarDatosTabla(data);
-    })
-    .catch(error => {
-        console.error("Error al obtener datos de pedidos:", error);
-        console.log(response.textContent);
-    });*/
 };
 
 function mostrarDatosTabla(datos){
     var table = document.getElementById("TablaPrincipal");
     var tbody = document.getElementById("TableBody");
 
-    datos.forEach(function(element){
+    datos.forEach(function(element,index){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.CodigoProducto;
+        celdaId.textContent = element.Id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
 
@@ -70,6 +61,7 @@ function mostrarDatosTabla(datos){
         var celdaEditar = document.createElement("td");
         var botonEditar = document.createElement("button");
         botonEditar.className = "boton-editar";
+        botonEditar.id = "editar-" + index;
         botonEditar.innerHTML = `<i class="fa-solid fa-pen" style="color: #ffffff;"></i>`;
         celdaEditar.appendChild(botonEditar);
         fila.appendChild(celdaEditar);
@@ -77,12 +69,20 @@ function mostrarDatosTabla(datos){
         var celdaEliminar = document.createElement("td");
         var botonEliminar = document.createElement("button");
         botonEliminar.className = "boton-eliminar";
+        botonEliminar.id = "eliminar-" + index;
         botonEliminar.innerHTML = `<i class="fa-solid fa-trash" style="color: #ffffff;"></i>`;
         celdaEliminar.appendChild(botonEliminar);
         fila.appendChild(celdaEliminar);
 
         tbody.appendChild(fila);
     });
+    tbody.addEventListener("click", function (event) {
+      if (event.target.classList.contains("boton-editar")) {
+          const botonEditar = event.target;
+          const fila = botonEditar.closest("tr");
+          manejarEdicion(fila);
+      }
+  });
 };
 
 
@@ -102,4 +102,33 @@ function obtenerFechaDesdeCadena(cadenaFechaHora) {
     const fecha = partes[0];
     
     return fecha;
+}
+
+//Boton editar
+function manejarEdicion(fila) {
+  // Obtener elementos de la fila
+  const celdas = fila.querySelectorAll("td");
+
+  // Crear un objeto para almacenar los valores de las celdas
+  const valoresCeldas = {};
+  var productoID = "";
+  const encabezado = document.querySelector("table thead tr");
+
+  celdas.forEach((celda, index) => {
+    if (index >= 0 && index <= 7) {
+      if(index == 0){
+        var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
+        valoresCeldas[tituloCelda] = celda.textContent.trim();    
+        productoID = valoresCeldas[tituloCelda].toString();
+      }
+      else{
+      var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
+      valoresCeldas[tituloCelda] = celda.textContent.trim();
+      }
+    }
+  });
+
+  // Redirigir a la página "formProductos" y enviar los valores como parámetros
+  const queryString = new URLSearchParams(valoresCeldas).toString();
+  window.location.href = `/formProductos?productoID=${productoID}&${queryString}`;
 }

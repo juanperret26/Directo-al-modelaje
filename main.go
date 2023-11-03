@@ -62,8 +62,8 @@ func mappingRoutes() {
 	//Uso del middleware para todas las rutas del grupo de rutas y hago todos los POST, GET y DELETE
 	//groupEnvio.Use(authMiddleware.ValidateToken)
 	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
-	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
-	groupEnvio.GET("/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
+	groupEnvio.GET("/id/:id", envioHandler.ObtenerEnvioPorId)
+	groupEnvio.GET("/estado/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
 	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)
 	groupEnvio.PUT("/", envioHandler.ActualizarEnvio)
@@ -85,8 +85,8 @@ func mappingRoutes() {
 	//Pedidos
 	//grupoPedido.Use(authMiddleware.ValidateToken)
 	groupPedido.GET("/", pedidoHandler.ObtenerPedidos)
-	groupPedido.GET("/:id", pedidoHandler.ObtenerPedidoPorId)
-	groupPedido.GET("/:estado", pedidoHandler.ObtenerCantidadPedidosPorEstado)
+	groupPedido.GET("/id/:id", pedidoHandler.ObtenerPedidoPorId)
+	groupPedido.GET("/estado/:estado", pedidoHandler.ObtenerCantidadPedidosPorEstado)
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)
 	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
