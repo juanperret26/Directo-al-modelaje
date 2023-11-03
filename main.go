@@ -64,6 +64,7 @@ func mappingRoutes() {
 	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
 	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
 	groupEnvio.GET("/estado/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
+	groupEnvio.GET("/envios/fechas", envioHandler.ObtenerBeneficiosEntreFechas)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
 	groupEnvio.PUT("/:id/parada", envioHandler.AgregarParada)
 	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)

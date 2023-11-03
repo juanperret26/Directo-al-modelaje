@@ -88,14 +88,7 @@ func (repository *PedidoRepository) EliminarPedido(id string) (*mongo.UpdateResu
 	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
 	return resultado, err
 }
-func (repository *PedidoRepository) AceptarPedido(id string) (*mongo.UpdateResult, error) {
-	objectID := utils.GetObjectIDFromStringID(id)
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
-	filtro := bson.M{"_id": objectID}
-	entidad := bson.M{"$set": bson.M{"estado": "Aceptado", "actualizacion": time.Now()}}
-	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
-	return resultado, err
-}
+
 func (repository *PedidoRepository) ActualizarPedido(pedido model.Pedido) (*mongo.UpdateResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 	filtro := bson.M{"_id": pedido.Id}
