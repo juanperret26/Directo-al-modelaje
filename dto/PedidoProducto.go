@@ -5,10 +5,10 @@ import (
 )
 
 type PedidoProducto struct {
-	CodigoProducto  string
-	Nombre          string
-	Cantidad        int
-	Precio_unitario float64
+	CodigoProducto  string  `json:"codigoProducto"`
+	Nombre          string  `json:"nombre"`
+	Cantidad        int     `json:"cantidad"`
+	Precio_unitario float64 `json:"precio_unitario"`
 }
 
 func NewPedidoProductoFromPedido(producto model.Producto, cantidad int) *PedidoProducto {

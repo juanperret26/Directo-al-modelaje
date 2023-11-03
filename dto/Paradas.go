@@ -5,8 +5,8 @@ import (
 )
 
 type Paradas struct {
-	Ciudad     string
-	Kilometros int
+	Ciudad     string `json:"ciudad"`
+	Kilometros int    `json:"kilometros"`
 }
 
 func (parada Paradas) GetModel() model.Paradas {

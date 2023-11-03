@@ -9,12 +9,12 @@ import (
 )
 
 type Pedido struct {
-	Id              string
-	Estado          string
-	Fecha_creacion  time.Time
-	PedidoProductos []PedidoProducto
-	Actualizacion   time.Time
-	Destino         string
+	Id              string           `json:"id"`
+	Estado          string           `json:"estado"`
+	Fecha_creacion  time.Time        `json:"fecha_creacion"`
+	PedidoProductos []PedidoProducto `json:"pedido_productos"`
+	Actualizacion   time.Time        `json:"actualizacion"`
+	Destino         string           `json:"destino"`
 }
 
 func NewPedido(pedido model.Pedido) *Pedido {
