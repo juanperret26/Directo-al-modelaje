@@ -189,6 +189,14 @@ func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
 	if envioDB.Destino.Nombre_ciudad == envio.Paradas[0].Ciudad {
 		envioDB.Estado = "Despachado"
+		for _, idPedido := range envioDB.Pedido {
+			pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+			if err != nil {
+				log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
+			}
+			pedido.Estado = "Enviado"
+			service.pedidoRepository.ActualizarPedido(pedido)
+		}
 
 	}
 	//Actualizamos el envio en la base de datos, que ahora tiene la nueva parada
