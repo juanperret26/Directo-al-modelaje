@@ -63,7 +63,7 @@ func (service *productoService) InsertarProducto(producto *dto.Producto) bool {
 }
 
 func (service *productoService) ActualizarProducto(producto *dto.Producto) bool {
-	service.productoRepository.ActualizarProducto(producto.Id)
+	service.productoRepository.ActualizarProducto(producto.GetModel())
 
 	return true
 }

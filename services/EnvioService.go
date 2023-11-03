@@ -104,6 +104,8 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 				}
 
 			}
+		} else {
+			log.Printf("El pedido no esta aceptado")
 		}
 
 		if err != nil {
@@ -167,7 +169,7 @@ func (service *envioService) DescontarStock(pedido model.Pedido) {
 		}
 		producto.Stock -= productoPedido.Cantidad
 
-		service.productoRepository.ActualizarProducto(utils.GetStringIDFromObjectID(producto.Id))
+		service.productoRepository.ActualizarProducto(producto)
 	}
 }
 
