@@ -210,7 +210,7 @@ func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	//Agregamos la nueva parada al envio
 	envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
 	envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
-	if envioDB.Destino == envio.Paradas[0].GetModel() {
+	if envioDB.Destino.Nombre_ciudad == envioDB.Paradas[0].Nombre_ciudad {
 		envioDB.Estado = "Despachado"
 
 	}
