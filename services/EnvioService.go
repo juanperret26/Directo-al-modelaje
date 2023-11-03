@@ -85,13 +85,15 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 	var resultado = false
 	var camion, err = service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
 	log.Printf("camion: %v", err)
-	var pedidos = envio.Pedido
 
-	for _, idPedido := range pedidos {
+	for _, idPedido := range envio.Pedido {
 
 		// Buscar el pedido correspondiente al ID
-		var pedido model.Pedido
 		pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+		if err != nil {
+			// Manejar el error
+			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
+		}
 		if pedido.Estado == "Aceptado" {
 			for _, productoPedido := range pedido.PedidoProductos {
 				// Buscar el producto correspondiente al codigo
@@ -102,27 +104,22 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 				if err != nil {
 					log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
 				}
+				if pesoTotal <= camion.Peso_maximo {
+					envio.Estado = "A despachar"
+					envio.PatenteCamion = camion.Patente
+					service.envioRepository.InsertarEnvio(envio.GetModel())
+					resultado = true
+					pedido.Estado = "Para enviar"
+					service.pedidoRepository.ActualizarPedido(pedido)
+					service.envioRepository.ActualizarEnvio(envio.GetModel())
+				}
+				if pesoTotal > camion.Peso_maximo {
+					log.Printf("No se puede cargar el envio en el camion")
+				}
 
 			}
 		} else {
 			log.Printf("El pedido no esta aceptado")
-		}
-
-		if err != nil {
-			// Manejar el error
-			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
-		}
-		if pesoTotal <= camion.Peso_maximo {
-			envio.Estado = "A despachar"
-			envio.PatenteCamion = camion.Patente
-			service.envioRepository.InsertarEnvio(envio.GetModel())
-			resultado = true
-			pedido.Estado = "Para enviar"
-			service.pedidoRepository.ActualizarPedido(pedido)
-			service.envioRepository.ActualizarEnvio(envio.GetModel())
-		}
-		if pesoTotal > camion.Peso_maximo {
-			log.Printf("No se puede cargar el envio en el camion")
 		}
 	}
 	return resultado
