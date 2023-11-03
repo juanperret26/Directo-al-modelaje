@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -17,7 +18,7 @@ type ProductoRepositoryInterface interface {
 	ObtenerProductoPorId(id string) (model.Producto, error)
 	InsertarProducto(producto model.Producto) (*mongo.InsertOneResult, error)
 	EliminarProducto(id string) (*mongo.DeleteResult, error)
-	ActualizarProducto(producto model.Producto) (*mongo.UpdateResult, error)
+	ActualizarProducto(id string) error
 }
 
 type ProductoRepository struct {
@@ -93,14 +94,47 @@ func (repository *ProductoRepository) InsertarProducto(producto model.Producto) 
 	return resultado, err
 }
 
-func (repository *ProductoRepository) ActualizarProducto(producto model.Producto) (*mongo.UpdateResult, error) {
+func (repository *ProductoRepository) ActualizarProducto(id string) error {
+	//Actualizamos la fecha de actualizacion del producto
+	objectID := utils.GetObjectIDFromStringID(id)
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	producto.Actualizacion = time.Now()
-	filtro := bson.M{"_id": producto.Id}
-	entidad := bson.M{"$set": bson.M{"nombre": producto.Nombre, "precio": producto.Precio, "stock": producto.Stock, "stock_,minimo": producto.Stock_minimo, "fehca_actualizacion": time.Now(), "fecha_creacion": time.Now()}}
-	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
-	return resultado, err
+
+	filtro := bson.M{"_id": objectID}
+	producto, err := repository.ObtenerProductoPorId(id)
+	if err != nil {
+		return err
+	}
+	//Creo una operacion personalizada, para que no actualice nunca la fecha de creacion o el id del creador
+	actualizacion := bson.M{
+		"$set": bson.M{
+			"nombre":        producto.Nombre,
+			"tipoProducto":  producto.TipoProducto,
+			"Peso_unitario": producto.Peso_unitario,
+			"precio":        producto.Precio,
+			"stock":         producto.Stock,
+			"stock_minimo":  producto.Stock_minimo,
+			"actualizacion": time.Now(),
+			"creacion":      producto.Creacion,
+		},
+	}
+
+	operacion, err := collection.UpdateOne(context.Background(), filtro, actualizacion)
+
+	if operacion.MatchedCount == 0 {
+		return errors.New("no se encontró el producto a actualizar")
+	}
+
+	return err
 }
+
+// // func (repository *PedidoRepository) EliminarPedido(id string) (*mongo.UpdateResult, error) {
+// 	objectID := utils.GetObjectIDFromStringID(id)
+// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
+// 	filtro := bson.M{"_id": objectID}
+// 	entidad := bson.M{"$set": bson.M{"estado": "Cancelado", "actualizacion": time.Now()}}
+// 	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
+// 	return resultado, err
+// }
 
 func (repository *ProductoRepository) EliminarProducto(id string) (*mongo.DeleteResult, error) {
 	objectID := utils.GetObjectIDFromStringID(id)

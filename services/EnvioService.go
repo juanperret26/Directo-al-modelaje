@@ -158,29 +158,6 @@ func (service *envioService) IniciarViaje(envio *dto.Envio) error {
 	return err
 }
 
-// func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
-// 	//Primero buscamos el pedido a aceptar
-// 	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(pedidoPorAceptar.Id)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	//Verifica que haya stock disponible para aceptar el pedido
-// 	if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
-// 		return errors.New("no hay stock disponible para aceptar el pedido")
-// 	}
-
-// 	//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
-// 	if pedido.Estado != "Aceptado" {
-// 		pedido.Estado = "Aceptado"
-// 	}
-
-// 	//Actualiza el pedido en la base de datos
-// 	service.pedidoRepository.ActualizarPedido(pedido)
-// 	return err
-// }
-
 func (service *envioService) DescontarStock(pedido model.Pedido) {
 	for _, productoPedido := range pedido.PedidoProductos {
 		// Buscar el producto correspondiente al codigo
@@ -189,7 +166,8 @@ func (service *envioService) DescontarStock(pedido model.Pedido) {
 			log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
 		}
 		producto.Stock -= productoPedido.Cantidad
-		service.productoRepository.ActualizarProducto(producto)
+
+		service.productoRepository.ActualizarProducto(utils.GetStringIDFromObjectID(producto.Id))
 	}
 }
 
@@ -210,7 +188,7 @@ func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	//Agregamos la nueva parada al envio
 	envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
 	envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
-	if envioDB.Destino.Nombre_ciudad == envioDB.Paradas[0].Nombre_ciudad {
+	if envioDB.Destino.Nombre_ciudad == envio.Paradas[0].Ciudad {
 		envioDB.Estado = "Despachado"
 
 	}

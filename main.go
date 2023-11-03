@@ -82,9 +82,10 @@ func mappingRoutes() {
 	//grupoProducto.Use(authMiddleware.ValidateToken)
 	groupProducto.GET("/", productoHandler.ObtenerProductos)
 	groupProducto.GET("/:id", productoHandler.ObtenerProductoPorId)
+	// groupProducto.GET("/:tipoProducto", productoHandler.ObtenerProductosStockMinimo)
 	groupProducto.POST("/", productoHandler.InsertarProducto)
 	groupProducto.DELETE("/:id", productoHandler.EliminarProducto)
-	groupProducto.PUT("/", productoHandler.ActualizarProducto)
+	groupProducto.PUT("/:id", productoHandler.ActualizarProducto)
 	//Pedidos
 	//grupoPedido.Use(authMiddleware.ValidateToken)
 	groupPedido.GET("/", pedidoHandler.ObtenerPedidos)
