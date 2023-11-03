@@ -34,7 +34,7 @@ function crear() {
 }
 
 
-//traer tabla pedidos
+//traer tabla productos
 document.addEventListener("DOMContentLoaded",function(){
     cargarDatos();  
   });    

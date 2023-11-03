@@ -1,5 +1,3 @@
-//import { makeRequest, Method, ContentType, CallType } from 'request.js';
-
 document.addEventListener("DOMContentLoaded",function(){
     cargarDatos();  
   });    
