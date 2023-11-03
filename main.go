@@ -65,8 +65,8 @@ func mappingRoutes() {
 	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
 	groupEnvio.GET("/estado/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
-	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)
 	groupEnvio.PUT("/:id/parada", envioHandler.AgregarParada)
+	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)
 	groupEnvio.PUT("/", envioHandler.ActualizarEnvio)
 	groupEnvio.PUT("/:id/iniciar", envioHandler.IniciarViaje)
 

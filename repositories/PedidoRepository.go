@@ -68,25 +68,6 @@ func (repository *PedidoRepository) ObtenerPedidoPorId(id string) (model.Pedido,
 	return pedido, err
 }
 
-// func (repository *PedidoRepository) ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error) {
-// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
-// 	filtro := bson.M{"estado": estado}
-
-// 	cursor, err := collection.Find(context.Background(), filtro)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer cursor.Close(context.Background())
-
-// 	var pedidos []model.Pedido
-// 	for cursor.Next(context.Background()) {
-// 		var pedido model.Pedido
-// 		pedidos = append(pedidos, pedido)
-// 	}
-
-// 	return pedidos, nil
-// }
-
 //Lista de pedidos. Se puede filtrar por código de envío, estado, rango de fecha de creación.
 
 func (repository *PedidoRepository) InsertarPedido(pedido model.Pedido) (*mongo.InsertOneResult, error) {
@@ -135,3 +116,22 @@ func (repository *PedidoRepository) ObtenerCantidadPedidosPorEstado(estado strin
 
 	return int(cantidad), nil
 }
+
+// func (repository *PedidoRepository) ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error) {
+// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
+// 	filtro := bson.M{"estado": estado}
+
+// 	cursor, err := collection.Find(context.Background(), filtro)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer cursor.Close(context.Background())
+
+// 	var pedidos []model.Pedido
+// 	for cursor.Next(context.Background()) {
+// 		var pedido model.Pedido
+// 		pedidos = append(pedidos, pedido)
+// 	}
+
+// 	return pedidos, nil
+// }

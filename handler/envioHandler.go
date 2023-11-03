@@ -188,3 +188,27 @@ func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
 
 	c.JSON(http.StatusOK, true)
 }
+func (handler *EnvioHandler) ObtenerBeneficiosEntreFechas(c *gin.Context) {
+	fechaDesdeStr := c.DefaultQuery("fechaDesde", "0001-01-01T00:00:00Z")
+	fechaDesde, err := time.Parse(time.RFC3339, fechaDesdeStr)
+	if err != nil {
+		fechaDesde = time.Time{}
+	}
+	fechaHastaStr := c.DefaultQuery("fechaHasta", "0001-01-01T00:00:00Z")
+	fechaHasta, err := time.Parse(time.RFC3339, fechaHastaStr)
+	if err != nil {
+		fechaHasta = time.Time{}
+	}
+	// Manejo de errores
+	beneficios, err := handler.envioService.ObtnerBeneficiosEntreFecha(fechaDesde, fechaHasta)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Registro de información
+	log.Printf("Se obtuvieron beneficios entre fechas %s, %s", fechaDesde, fechaHasta)
+	response := map[string]int{"beneficio": beneficios}
+	// Respuesta exitosa
+	c.JSON(http.StatusOK, response)
+}

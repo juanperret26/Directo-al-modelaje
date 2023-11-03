@@ -24,6 +24,7 @@ type EnvioInterface interface {
 	IniciarViaje(envio *dto.Envio) error
 	ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error)
 	AgregarParada(envio *dto.Envio) (bool, error)
+	ObtnerBeneficiosEntreFecha(fechaInicio time.Time, fechaFinal time.Time) (int, error)
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
@@ -246,4 +247,28 @@ func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]ut
 		log.Printf("El estado ingresado no es valido")
 	}
 	return listaEstados, nil
+}
+func (service *envioService) ObtnerBeneficiosEntreFecha(fechaInicio time.Time, fechaFinal time.Time) (int, error) {
+	var beneficio int = 0
+	envios, err := service.envioRepository.ObtenerEnviosPorParametros("", "", "", fechaInicio, fechaFinal)
+	if err != nil {
+		return 0, err
+	}
+	for _, envio := range envios {
+		for _, pedido := range envio.Pedido {
+			pedidoDB, err := service.pedidoRepository.ObtenerPedidoPorId(pedido)
+			if err != nil {
+				return 0, err
+			}
+			for _, productoPedido := range pedidoDB.PedidoProductos {
+				// Buscar el producto correspondiente al codigo
+				producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+				if err != nil {
+					log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
+				}
+				beneficio += int(producto.Precio) * productoPedido.Cantidad
+			}
+		}
+	}
+	return beneficio, nil
 }
