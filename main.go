@@ -11,7 +11,7 @@ import (
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 	"github.com/juanperret/Directo-al-modelaje/handler"
-	//"github.com/juanperret/Directo-al-modelaje/middlewares"
+	"github.com/juanperret/Directo-al-modelaje/middlewares"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 	"github.com/juanperret/Directo-al-modelaje/services"
 )
@@ -52,7 +52,7 @@ func main() {
 
 func mappingRoutes() {
 	//cliente para api externa
-	//router.Use(middlewares.CORSMiddleware())
+	router.Use(middlewares.CORSMiddleware())
 
 	// //Listado de rutas
 	groupEnvio := router.Group("/envios")
@@ -62,11 +62,13 @@ func mappingRoutes() {
 	//Uso del middleware para todas las rutas del grupo de rutas y hago todos los POST, GET y DELETE
 	//groupEnvio.Use(authMiddleware.ValidateToken)
 	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
-	groupEnvio.GET("/id/:id", envioHandler.ObtenerEnvioPorId)
+	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
 	groupEnvio.GET("/estado/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
 	groupEnvio.POST("/", envioHandler.InsertarEnvio)
 	groupEnvio.DELETE("/:id", envioHandler.EliminarEnvio)
+	groupEnvio.PUT("/:id/parada", envioHandler.AgregarParada)
 	groupEnvio.PUT("/", envioHandler.ActualizarEnvio)
+	groupEnvio.PUT("/:id/iniciar", envioHandler.IniciarViaje)
 
 	//Camiones
 	//grupoCamion.Use(authMiddleware.ValidateToken)
@@ -85,7 +87,7 @@ func mappingRoutes() {
 	//Pedidos
 	//grupoPedido.Use(authMiddleware.ValidateToken)
 	groupPedido.GET("/", pedidoHandler.ObtenerPedidos)
-	groupPedido.GET("/id/:id", pedidoHandler.ObtenerPedidoPorId)
+	groupPedido.GET("/:id", pedidoHandler.ObtenerPedidoPorId)
 	groupPedido.GET("/estado/:estado", pedidoHandler.ObtenerCantidadPedidosPorEstado)
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)

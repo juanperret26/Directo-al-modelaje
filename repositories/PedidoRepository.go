@@ -123,7 +123,7 @@ func (repository *PedidoRepository) ActualizarPedido(pedido model.Pedido) (*mong
 	return resultado, err
 }
 func (repository *PedidoRepository) ObtenerCantidadPedidosPorEstado(estado string) (int, error) {
-	collection := repository.db.GetClient().Database("empresa").Collection("pedidos")
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 
 	filtro := bson.M{"estado": estado}
 

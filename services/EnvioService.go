@@ -2,6 +2,7 @@
 package services
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -20,9 +21,9 @@ type EnvioInterface interface {
 	InsertarEnvio(envio *dto.Envio) bool
 	EliminarEnvio(id string) bool
 	ActualizarEnvio(envio *dto.Envio) bool
-	ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas)
+	IniciarViaje(envio *dto.Envio) error
 	ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error)
-	AgregarParada(envio *dto.Envio, parada dto.Paradas) bool
+	AgregarParada(envio *dto.Envio) (bool, error)
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
@@ -109,7 +110,7 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
 		}
 		if pesoTotal <= camion.Peso_maximo {
-			envio.Estado = "A DESPACHAR"
+			envio.Estado = "A despachar"
 			envio.PatenteCamion = camion.Patente
 			service.envioRepository.InsertarEnvio(envio.GetModel())
 			resultado = true
@@ -131,58 +132,89 @@ func (service *envioService) ActualizarEnvio(envio *dto.Envio) bool {
 	service.envioRepository.ActualizarEnvio(envio.GetModel())
 	return true
 }
-func (service *envioService) ValidacionViaje(envio *dto.Envio, inicio bool, parada dto.Paradas) {
-	if inicio {
-		camionAsignado, err := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+func (service *envioService) IniciarViaje(envio *dto.Envio) error {
+	envioABuscar, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
+	if err != nil {
+		return err
+	}
+	envioABuscar.Estado = "En ruta"
+
+	//Calcular el stock de los productos y actualizarlo
+	for _, idPedido := range envioABuscar.Pedido {
+		var pedido model.Pedido
+
+		pedido.Estado = "Para enviar"
+		service.pedidoRepository.ActualizarPedido(pedido)
+		pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+
 		if err != nil {
-			log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:NOT_FOUND][id:%d]", envio.PatenteCamion)
+			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
 		}
-		envio.Estado = "En ruta"
+		service.DescontarStock(pedido)
+		service.pedidoRepository.ActualizarPedido(pedido)
+	}
+	service.envioRepository.ActualizarEnvio(envioABuscar)
+	return err
+}
 
-		service.envioRepository.ActualizarEnvio(envio.GetModel())
+// func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
+// 	//Primero buscamos el pedido a aceptar
+// 	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(pedidoPorAceptar.Id)
 
-		ultimaParada := envio.Paradas[len(envio.Paradas)-1]
-		if envio.Destino == ultimaParada {
-			envio.Estado = "Despachado"
-			service.envioRepository.ActualizarEnvio(envio.GetModel())
-			//Calcular el stock de los productos y actualizarlo
-			for _, idPedido := range envio.Pedido {
-				var pedido model.Pedido
-				pedido.Estado = "Para enviar"
-				service.pedidoRepository.ActualizarPedido(pedido)
-				pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
-				if err != nil {
-					log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
-				}
+// 	if err != nil {
+// 		return err
+// 	}
 
-				for _, productoPedido := range pedido.PedidoProductos {
-					// Buscar el producto correspondiente al codigo
-					producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
-					if err != nil {
-						log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
-					}
-					producto.Stock -= productoPedido.Cantidad
-					service.productoRepository.ActualizarProducto(producto)
+// 	//Verifica que haya stock disponible para aceptar el pedido
+// 	if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
+// 		return errors.New("no hay stock disponible para aceptar el pedido")
+// 	}
 
-				}
-				pedido.Estado = "Enviado"
-				service.pedidoRepository.ActualizarPedido(pedido)
-			}
-			var costototal = 0
-			//recorrer paradas
-			for _, parada := range envio.Paradas {
-				costototal += parada.Kilometros * camionAsignado.Costo_km
-			}
-			envio.Costo = costototal
+// 	//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
+// 	if pedido.Estado != "Aceptado" {
+// 		pedido.Estado = "Aceptado"
+// 	}
 
+// 	//Actualiza el pedido en la base de datos
+// 	service.pedidoRepository.ActualizarPedido(pedido)
+// 	return err
+// }
+
+func (service *envioService) DescontarStock(pedido model.Pedido) {
+	for _, productoPedido := range pedido.PedidoProductos {
+		// Buscar el producto correspondiente al codigo
+		producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+		if err != nil {
+			log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
 		}
+		producto.Stock -= productoPedido.Cantidad
+		service.productoRepository.ActualizarProducto(producto)
 	}
 }
 
-func (service *envioService) AgregarParada(envio *dto.Envio, parada dto.Paradas) bool {
-	envio.Paradas = append(envio.Paradas, parada)
-	service.envioRepository.ActualizarEnvio(envio.GetModel())
-	return true
+func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
+	//En teoria, recibimos un envio que tiene solamente id y la nueva parada
+	//Primero buscamos el envio por id
+	envioDB, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
+	camion, err := service.camionRepository.ObtenerCamionPorPatente(envioDB.PatenteCamion)
+	if err != nil {
+		return false, err
+	}
+
+	//Validamos que el envio esté en estado EnRuta
+	if envioDB.Estado != "En ruta" {
+		return false, errors.New("el envio no esta en ruta")
+	}
+
+	//Agregamos la nueva parada al envio
+	envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
+	envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
+	if envioDB.Destino == envio.Paradas[0].GetModel() {
+		envioDB.Estado = "Despachado"
+
+	}
+	//Actualizamos el envio en la base de datos, que ahora tiene la nueva parada
+	return true, service.envioRepository.ActualizarEnvio(envioDB)
 }
 
 func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error) {

@@ -20,8 +20,9 @@ type EnvioRepositoryInterface interface {
 	ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error)
 	InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error)
 	EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error)
-	ActualizarEnvio(envio model.Envio) (*mongo.UpdateResult, error)
+	ActualizarEnvio(envio model.Envio) error
 	ObtenerCantidadEnviosPorEstado(estado string) (int, error)
+	IniciarViaje(envio model.Envio) error
 }
 type EnvioRepository struct {
 	db DB
@@ -29,6 +30,13 @@ type EnvioRepository struct {
 
 func NewEnvioRepository(db DB) *EnvioRepository {
 	return &EnvioRepository{db: db}
+}
+func (repository EnvioRepository) IniciarViaje(envio model.Envio) error {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	filtro := bson.M{"_id": envio.Id}
+	actualizacion := bson.M{"$set": envio}
+	_, err := collection.UpdateOne(context.Background(), filtro, actualizacion)
+	return err
 }
 func (repository EnvioRepository) ObtenerEnvios() ([]model.Envio, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
@@ -141,12 +149,18 @@ func (repository EnvioRepository) EliminarEnvio(id primitive.ObjectID) (*mongo.D
 	resultado, err := collection.DeleteOne(context.TODO(), filtro)
 	return resultado, err
 }
-func (repository EnvioRepository) ActualizarEnvio(envio model.Envio) (*mongo.UpdateResult, error) {
+func (repository EnvioRepository) ActualizarEnvio(envio model.Envio) error {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
 	filtro := bson.M{"_id": envio.Id}
-	entidad := bson.M{"$set": bson.M{"estado": envio.Estado}}
-	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
-	return resultado, err
+
+	//seteo la fecha de actualizacion
+	envio.Actualizacion = time.Now()
+
+	actualizacion := bson.M{"$set": envio}
+
+	_, err := collection.UpdateOne(context.Background(), filtro, actualizacion)
+
+	return err
 }
 func (repository EnvioRepository) ObtenerCantidadEnviosPorEstado(estado string) (int, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")

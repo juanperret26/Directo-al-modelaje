@@ -27,6 +27,29 @@ func (handler *EnvioHandler) ObtenerEnvios(c *gin.Context) {
 	log.Printf("[handler:EnvioHandler] [method:ObtenerEnvios] [envios:%v] [cantidad:%d]", envios, len(envios))
 	c.JSON(http.StatusOK, envios)
 }
+func (handler *EnvioHandler) IniciarViaje(c *gin.Context) {
+	id := c.Param("id")
+	envio := handler.envioService.ObtenerEnvioPorId(id)
+	if err := c.ShouldBindJSON(&envio); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	resultado := handler.envioService.IniciarViaje(envio)
+	c.JSON(http.StatusCreated, resultado)
+
+}
+
+// func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
+// 	id := c.Param("id")
+// 	pedido := handler.pedidoService.ObtenerPedidoPorId(id)
+
+// 	if err := c.ShouldBindJSON(&pedido); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	resultado := handler.pedidoService.AceptarPedido(pedido)
+// 	c.JSON(http.StatusCreated, resultado)
+// }
 
 func (handler *EnvioHandler) ObtenerEnvioPorId(c *gin.Context) {
 	id := c.Param("id")
@@ -131,4 +154,37 @@ func (handler *EnvioHandler) ObtenerCantidadEnviosPorEstado(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, cantidad)
+}
+func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
+
+	//Recibimos el id como parametro
+	id := c.Param("id")
+
+	//Obtenemos la nueva parada
+	var parada dto.Paradas
+	if err := c.ShouldBindJSON(&parada); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	envio := dto.Envio{
+		Id: id,
+		Paradas: []dto.Paradas{
+			parada,
+		},
+	}
+
+	operacion, err := handler.envioService.AgregarParada(&envio)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !operacion {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo agregar la parada"})
+		return
+	}
+
+	//Agregamos un log para indicar información relevante del resultado
+	log.Printf("[handler:EnvioHandler][method:AgregarParada][envio:%+v][user:%s]", envio)
+
+	c.JSON(http.StatusOK, true)
 }
