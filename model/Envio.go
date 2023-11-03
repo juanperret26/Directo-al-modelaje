@@ -13,7 +13,7 @@ type Envio struct {
 	Paradas       []Paradas          `bson:"paradas"`
 	Destino       Paradas            `bson:"destino"`
 	Creacion      time.Time          `bson:"fecha_creacion"`
-	Pedido        []string           `bson:"productos"`
+	Pedido        []string           `bson:"pedidos"`
 	Actualizacion time.Time          `bson:"actualizacion"`
 	Costo         int                `bson:"costo_total"`
 }
