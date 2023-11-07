@@ -161,14 +161,14 @@ func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
 	id := c.Param("id")
 
 	//Obtenemos la nueva parada
-	var parada dto.Paradas
+	var parada dto.Parada
 	if err := c.ShouldBindJSON(&parada); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	envio := dto.Envio{
 		Id: id,
-		Paradas: []dto.Paradas{
+		Paradas: []dto.Parada{
 			parada,
 		},
 	}

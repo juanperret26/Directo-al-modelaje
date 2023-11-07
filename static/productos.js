@@ -31,31 +31,31 @@ function mostrarDatosTabla(datos){
         fila.appendChild(celdaId);
 
         var celdaNombre = document.createElement("td");
-        celdaNombre.textContent = element.Nombre;
+        celdaNombre.textContent = element.nombre;
         fila.appendChild(celdaNombre);
 
         var celdaTipo = document.createElement("td");
-        celdaTipo.textContent = element.TipoProducto;
+        celdaTipo.textContent = element.tipo_producto;
         fila.appendChild(celdaTipo);
 
         var celdaPeso = document.createElement("td");
-        celdaPeso.textContent = element.Peso_unitario;
+        celdaPeso.textContent = element.peso;
         fila.appendChild(celdaPeso);
 
         var celdaPrecio = document.createElement("td");
-        celdaPrecio.textContent = element.Precio;
+        celdaPrecio.textContent = element.precio;
         fila.appendChild(celdaPrecio);
 
         var celdaStock = document.createElement("td");
-        celdaStock.textContent = element.Stock;
+        celdaStock.textContent = element.stock;
         fila.appendChild(celdaStock);
 
         var celdaActualizacion = document.createElement("td");
-        celdaActualizacion.textContent = obtenerFechaDesdeCadena(element.Actualizacion);
+        celdaActualizacion.textContent = obtenerFechaDesdeCadena(element.actualizacion);
         fila.appendChild(celdaActualizacion);
 
         var celdaCreacion = document.createElement("td");
-        celdaCreacion.textContent = obtenerFechaDesdeCadena(element.Creacion);
+        celdaCreacion.textContent = obtenerFechaDesdeCadena(element.creacion);
         fila.appendChild(celdaCreacion);
 
         var celdaEditar = document.createElement("td");

@@ -35,8 +35,8 @@ function mostrarDatosTabla(datos){
         fila.appendChild(celdaProductos);*/
 
         var celdaProductos = document.createElement("td");
-        if (element.PedidoProductos && Array.isArray(element.PedidoProductos)) {
-                var nombresProductos = element.PedidoProductos.map(function(producto) {
+        if (element.productos && Array.isArray(element.productos)) {
+                var nombresProductos = element.productos.map(function(producto) {
                 return producto.Nombre;
         });
             celdaProductos.textContent = nombresProductos.join(", ");
@@ -46,11 +46,11 @@ function mostrarDatosTabla(datos){
         fila.appendChild(celdaProductos);
 
         var celdaCiudad = document.createElement("td");
-        celdaCiudad.textContent = element.Destino;
+        celdaCiudad.textContent = element.destino;
         fila.appendChild(celdaCiudad);
 
         var celdaEstado = document.createElement("td");
-        celdaEstado.textContent = element.Estado;
+        celdaEstado.textContent = element.estado;
         fila.appendChild(celdaEstado);
 
         var celdaAceptar = document.createElement("td");

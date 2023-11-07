@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-contrib/cors"
+	//"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
@@ -32,10 +32,10 @@ var (
 func main() {
 	router = gin.Default()
 
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
-	router.Use(cors.New(config))
+	//config := cors.DefaultConfig()
+	//config.AllowOrigins = []string{"http://localhost:8080"}
+	//config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	//router.Use(cors.New(config))
 
 	//Iniciar objetos de handler
 	dependencies()

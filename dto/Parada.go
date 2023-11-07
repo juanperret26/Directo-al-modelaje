@@ -4,12 +4,12 @@ import (
 	"github.com/juanperret/Directo-al-modelaje/model"
 )
 
-type Paradas struct {
+type Parada struct {
 	Ciudad     string `json:"ciudad"`
 	Kilometros int    `json:"kilometros"`
 }
 
-func (parada Paradas) GetModel() model.Paradas {
+func (parada Parada) GetModel() model.Paradas {
 	return model.Paradas{
 		Nombre_ciudad:         parada.Ciudad,
 		Kilometros_recorridos: parada.Kilometros,
@@ -17,8 +17,8 @@ func (parada Paradas) GetModel() model.Paradas {
 }
 
 // Metodo para crear un dto a partir del modelo
-func NewParada(parada *model.Paradas) *Paradas {
-	return &Paradas{
+func NewParada(parada *model.Paradas) *Parada {
+	return &Parada{
 		Ciudad:     parada.Nombre_ciudad,
 		Kilometros: parada.Kilometros_recorridos,
 	}

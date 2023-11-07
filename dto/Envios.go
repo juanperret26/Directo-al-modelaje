@@ -11,8 +11,8 @@ type Envio struct {
 	Id            string    `json:"id"`
 	PatenteCamion string    `json:"patente_camion"`
 	Estado        string    `json:"estado"`
-	Paradas       []Paradas `json:"paradas"`
-	Destino       Paradas   `json:"destino"`
+	Paradas       []Parada  `json:"paradas"`
+	Destino       Parada    `json:"destino"`
 	Creacion      time.Time `json:"fecha_creacion"`
 	Pedido        []string  `json:"pedidos"`
 	Actualizacion time.Time `json:"actualizacion"`
@@ -56,16 +56,16 @@ func (envio Envio) getParadas() []model.Paradas {
 }
 
 // Metodo para convertir una lista de Paradas del modelo a una lista de Paradas del dto
-func NewParadas(paradas []model.Paradas) []Paradas {
-	var paradasEnvio []Paradas
+func NewParadas(paradas []model.Paradas) []Parada {
+	var paradasEnvio []Parada
 	for _, parada := range paradas {
 		paradasEnvio = append(paradasEnvio, *NewParada(&parada))
 	}
 	return paradasEnvio
 }
 
-func NewDestino(parada model.Paradas) Paradas {
-	return Paradas{
+func NewDestino(parada model.Paradas) Parada {
+	return Parada{
 		Ciudad:     parada.Nombre_ciudad,
 		Kilometros: parada.Kilometros_recorridos,
 	}
