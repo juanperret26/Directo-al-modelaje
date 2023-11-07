@@ -47,8 +47,8 @@ func (envio Envio) GetModel() model.Envio {
 }
 
 // Metodo para convertir una lista de Paradas del dto a una lista de Paradas del modelo
-func (envio Envio) getParadas() []model.Paradas {
-	var paradasEnvio []model.Paradas
+func (envio Envio) getParadas() []model.Parada {
+	var paradasEnvio []model.Parada
 	for _, parada := range envio.Paradas {
 		paradasEnvio = append(paradasEnvio, parada.GetModel())
 	}
@@ -56,7 +56,7 @@ func (envio Envio) getParadas() []model.Paradas {
 }
 
 // Metodo para convertir una lista de Paradas del modelo a una lista de Paradas del dto
-func NewParadas(paradas []model.Paradas) []Parada {
+func NewParadas(paradas []model.Parada) []Parada {
 	var paradasEnvio []Parada
 	for _, parada := range paradas {
 		paradasEnvio = append(paradasEnvio, *NewParada(&parada))
@@ -64,15 +64,15 @@ func NewParadas(paradas []model.Paradas) []Parada {
 	return paradasEnvio
 }
 
-func NewDestino(parada model.Paradas) Parada {
+func NewDestino(parada model.Parada) Parada {
 	return Parada{
 		Ciudad:     parada.Nombre_ciudad,
 		Kilometros: parada.Kilometros_recorridos,
 	}
 }
 
-func (envio Envio) GetDestino() model.Paradas {
-	var destino model.Paradas
+func (envio Envio) GetDestino() model.Parada {
+	var destino model.Parada
 	{
 		destino.Nombre_ciudad = envio.Destino.Ciudad
 		destino.Kilometros_recorridos = envio.Destino.Kilometros

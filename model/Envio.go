@@ -10,8 +10,8 @@ type Envio struct {
 	Id            primitive.ObjectID `bson:"_id,omitempty"`
 	PatenteCamion string             `bson:"patente_camion"`
 	Estado        string             `bson:"estado"`
-	Paradas       []Paradas          `bson:"paradas"`
-	Destino       Paradas            `bson:"destino"`
+	Paradas       []Parada           `bson:"paradas"`
+	Destino       Parada             `bson:"destino"`
 	Creacion      time.Time          `bson:"fecha_creacion"`
 	Pedido        []string           `bson:"pedidos"`
 	Actualizacion time.Time          `bson:"actualizacion"`
