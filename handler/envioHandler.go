@@ -39,22 +39,13 @@ func (handler *EnvioHandler) IniciarViaje(c *gin.Context) {
 
 }
 
-// func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
-// 	id := c.Param("id")
-// 	pedido := handler.pedidoService.ObtenerPedidoPorId(id)
-
-// 	if err := c.ShouldBindJSON(&pedido); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	resultado := handler.pedidoService.AceptarPedido(pedido)
-// 	c.JSON(http.StatusCreated, resultado)
-// }
-
 func (handler *EnvioHandler) ObtenerEnvioPorId(c *gin.Context) {
 	id := c.Param("id")
 	//invocamos al metodo
 	envio := handler.envioService.ObtenerEnvioPorId(id)
+	if envio == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "envio no encontrado"})
+	}
 	//Agregamos un log para indicar informacion
 	c.JSON(http.StatusOK, envio)
 }
@@ -134,6 +125,9 @@ func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
 func (handler *EnvioHandler) EliminarEnvio(c *gin.Context) {
 	id := c.Param("id")
 	resultado := handler.envioService.EliminarEnvio(id)
+	if resultado == false {
+		c.JSON(http.StatusNotFound, gin.H{"error": "envio no encontrado"})
+	}
 	c.JSON(http.StatusOK, resultado)
 }
 

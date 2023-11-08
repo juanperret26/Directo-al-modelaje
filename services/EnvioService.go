@@ -22,7 +22,7 @@ type EnvioInterface interface {
 	EliminarEnvio(id string) bool
 	ActualizarEnvio(envio *dto.Envio) bool
 	IniciarViaje(envio *dto.Envio) error
-	ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error)
+	ObtenerCantidadEnviosPorEstado(estado string) ([]dto.Estado, error)
 	AgregarParada(envio *dto.Envio) (bool, error)
 	ObtnerBeneficiosEntreFecha(fechaInicio time.Time, fechaFinal time.Time) (int, error)
 }
@@ -203,9 +203,9 @@ func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	return true, service.envioRepository.ActualizarEnvio(envioDB)
 }
 
-func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]utils.Estados, error) {
+func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]dto.Estado, error) {
 	var cantidadEnvios []int
-	var listaEstados []utils.Estados
+	var listaEstados []dto.Estado
 	switch estado {
 	case "A despachar":
 		cantidadEnviosADespachar, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
@@ -213,21 +213,21 @@ func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]ut
 			return nil, err
 		}
 		cantidadEnvios = append(cantidadEnvios, cantidadEnviosADespachar)
-		listaEstados = append(listaEstados, utils.Estados{Estado: "A despachar", Cantidad: cantidadEnviosADespachar})
+		listaEstados = append(listaEstados, dto.Estado{Estado: "A despachar", Cantidad: cantidadEnviosADespachar})
 	case "En ruta":
 		cantidadEnviosEnRuta, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
 		if err != nil {
 			return nil, err
 		}
 		cantidadEnvios = append(cantidadEnvios, cantidadEnviosEnRuta)
-		listaEstados = append(listaEstados, utils.Estados{Estado: "En ruta", Cantidad: cantidadEnviosEnRuta})
+		listaEstados = append(listaEstados, dto.Estado{Estado: "En ruta", Cantidad: cantidadEnviosEnRuta})
 	case "Despachado":
 		cantidadEnviosDespachados, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
 		if err != nil {
 			return nil, err
 		}
 		cantidadEnvios = append(cantidadEnvios, cantidadEnviosDespachados)
-		listaEstados = append(listaEstados, utils.Estados{Estado: "Despachado", Cantidad: cantidadEnviosDespachados})
+		listaEstados = append(listaEstados, dto.Estado{Estado: "Despachado", Cantidad: cantidadEnviosDespachados})
 	default:
 		log.Printf("El estado ingresado no es valido")
 	}

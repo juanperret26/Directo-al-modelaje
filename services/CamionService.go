@@ -13,9 +13,9 @@ type CamionInterface interface {
 	//Metodos para implementar en el handler
 	ObtenerCamiones() []*dto.Camion
 	ObtenerCamionPorPatente(patente string) *dto.Camion
-	InsertarCamion(camion *dto.Camion) bool
-	EliminarCamion(id string) bool
-	ActualizarCamion(camion *dto.Camion) bool
+	InsertarCamion(camion *dto.Camion) error
+	EliminarCamion(id string) error
+	ActualizarCamion(camion *dto.Camion) error
 }
 type camionService struct {
 	camionRepository repositories.CamionRepositoryInterface
@@ -46,17 +46,17 @@ func (service *camionService) ObtenerCamionPorPatente(id string) *dto.Camion {
 	}
 	return camion
 }
-func (service *camionService) InsertarCamion(camion *dto.Camion) bool {
-	service.camionRepository.InsertarCamion(camion.GetModel())
-	return true
+func (service *camionService) InsertarCamion(camion *dto.Camion) error {
+	_, err := service.camionRepository.InsertarCamion(camion.GetModel())
+	return err
 }
 
-func (service *camionService) EliminarCamion(id string) bool {
-	service.camionRepository.EliminarCamion(utils.GetObjectIDFromStringID(id))
-	return true
+func (service *camionService) EliminarCamion(id string) error {
+	_, err := service.camionRepository.EliminarCamion(utils.GetObjectIDFromStringID(id))
+	return err
 }
 
-func (service *camionService) ActualizarCamion(camion *dto.Camion) bool {
-	service.camionRepository.ActualizarCamion(camion.GetModel())
-	return true
+func (service *camionService) ActualizarCamion(camion *dto.Camion) error {
+	_, err := service.camionRepository.ActualizarCamion(camion.GetModel())
+	return err
 }

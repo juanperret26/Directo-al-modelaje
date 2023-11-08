@@ -26,6 +26,10 @@ func (handler *CamionHandler) ObtenerCamiones(c *gin.Context) {
 
 func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
 	patente := c.Param("patente")
+	if err := c.ShouldBindJSON(&patente); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	//invocamos al metodo
 	camion := handler.camionService.ObtenerCamionPorPatente(patente)
 	//Agregamos un log para indicar informacion
@@ -34,27 +38,36 @@ func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
 
 func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 	var camion dto.Camion
-	if err := c.ShouldBindJSON(&camion); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	resultado := handler.camionService.InsertarCamion(&camion)
-	c.JSON(http.StatusCreated, resultado)
+	if resultado != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+
+	} else {
+		c.JSON(http.StatusCreated, gin.H{"mensaje": "Camion creado"})
+	}
+
 }
 
 func (handler *CamionHandler) EliminarCamion(c *gin.Context) {
 	id := c.Param("id")
 	resultado := handler.camionService.EliminarCamion(id)
-	c.JSON(http.StatusOK, resultado)
+	if resultado != nil {
+		c.JSON(http.StatusNotFound, gin.H{"mensaje": resultado.Error()})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"mensaje": "Camion eliminado"})
+
+	}
+
 }
 
 func (handler *CamionHandler) ActualizarCamion(c *gin.Context) {
 	var camion dto.Camion
-	if err := c.ShouldBindJSON(&camion); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	resultado := handler.camionService.ActualizarCamion(&camion)
-	c.JSON(http.StatusOK, resultado)
+	if resultado != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"mensaje": "Camion actualizado"})
+	}
 
 }

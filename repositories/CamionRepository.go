@@ -88,6 +88,9 @@ func (repository CamionRepository) EliminarCamion(id primitive.ObjectID) (*mongo
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
 	filtro := bson.M{"_id": id}
 	resultado, err := collection.DeleteOne(context.TODO(), filtro)
+	if resultado == nil {
+		err = fmt.Errorf("No se pudo enxontrar el camion con id %s", id)
+	}
 	return resultado, err
 }
 
