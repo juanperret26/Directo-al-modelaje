@@ -39,30 +39,41 @@ func (handler *ProductoHandler) ObtenerProductoPorId(c *gin.Context) {
 
 func (handler *ProductoHandler) InsertarProducto(c *gin.Context) {
 	var producto dto.Producto
-	if err := c.ShouldBindJSON(&producto); err != nil {
+	err := c.ShouldBindJSON(&producto)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-
 	} else {
 		resultado := handler.ProductoService.InsertarProducto(&producto)
-		c.JSON(http.StatusCreated, resultado)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		}
 	}
 }
 
 func (handler *ProductoHandler) EliminarProducto(c *gin.Context) {
 	id := c.Param("id")
 	resultado := handler.ProductoService.EliminarProducto(id)
-	c.JSON(http.StatusOK, resultado)
+	if resultado != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+	}
 }
 
 func (handler *ProductoHandler) ActualizarProducto(c *gin.Context) {
 	var producto dto.Producto
-	if err := c.ShouldBindJSON(&producto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	producto.Id = c.Param("id")
-	resultado := handler.ProductoService.ActualizarProducto(&producto)
-	c.JSON(http.StatusOK, resultado)
-
+	err := c.ShouldBindJSON(&producto)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		resultado := handler.ProductoService.ActualizarProducto(&producto)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		}
+	}
 }

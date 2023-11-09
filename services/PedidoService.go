@@ -13,10 +13,10 @@ type PedidoInterface interface {
 	ObtenerPedidos() []*dto.Pedido
 	ObtenerPedidoPorId(id string) *dto.Pedido
 	hayStockDisponiblePedido(pedido *dto.Pedido) bool
-	InsertarPedido(pedido *dto.Pedido) bool
-	EliminarPedido(id string) bool
+	InsertarPedido(pedido *dto.Pedido) error
+	EliminarPedido(id string) error
 	AceptarPedido(pedido *dto.Pedido) error
-	ActualizarPedido(pedido *dto.Pedido) bool
+	ActualizarPedido(pedido *dto.Pedido) error
 	ObtenerCantidadPedidosPorEstado(estado string) ([]dto.Estado, error)
 }
 type pedidoService struct {
@@ -45,11 +45,10 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
 	return pedido
 }
 
-func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) bool {
+func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
 
-	service.pedidoRepository.InsertarPedido(pedido.GetModel())
-
-	return true
+	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
+	return err
 }
 func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
 	//Primero buscamos el pedido a aceptar
@@ -57,21 +56,22 @@ func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error 
 
 	if err != nil {
 		return err
-	}
+	} else {
+		//Verifica que haya stock disponible para aceptar el pedido
+		if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
+			return errors.New("no hay stock disponible para aceptar el pedido")
+		} else {
 
-	//Verifica que haya stock disponible para aceptar el pedido
-	if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
-		return errors.New("no hay stock disponible para aceptar el pedido")
-	}
+			//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
+			if pedido.Estado != "Aceptado" {
+				pedido.Estado = "Aceptado"
+			}
 
-	//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
-	if pedido.Estado != "Aceptado" {
-		pedido.Estado = "Aceptado"
+			//Actualiza el pedido en la base de datos
+			_, err := service.pedidoRepository.ActualizarPedido(pedido)
+			return err
+		}
 	}
-
-	//Actualiza el pedido en la base de datos
-	service.pedidoRepository.ActualizarPedido(pedido)
-	return err
 }
 
 func (service *pedidoService) hayStockDisponiblePedido(pedido *dto.Pedido) bool {
@@ -98,13 +98,13 @@ func (service *pedidoService) hayStockDisponiblePedido(pedido *dto.Pedido) bool 
 	//Si finalice el bucle, es porque hay stock de todos los productos
 	return true
 }
-func (service *pedidoService) EliminarPedido(id string) bool {
-	service.pedidoRepository.EliminarPedido(id)
-	return true
+func (service *pedidoService) EliminarPedido(id string) error {
+	_, err := service.pedidoRepository.EliminarPedido(id)
+	return err
 }
-func (service *pedidoService) ActualizarPedido(pedido *dto.Pedido) bool {
-	service.pedidoRepository.ActualizarPedido(pedido.GetModel())
-	return true
+func (service *pedidoService) ActualizarPedido(pedido *dto.Pedido) error {
+	_, err := service.pedidoRepository.ActualizarPedido(pedido.GetModel())
+	return err
 }
 
 // Obtener la cantidad de pedidos por estado

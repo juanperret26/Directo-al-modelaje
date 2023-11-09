@@ -65,9 +65,7 @@ func (handler *CamionHandler) ActualizarCamion(c *gin.Context) {
 	resultado := handler.camionService.ActualizarCamion(&camion)
 	if resultado != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
-		return
 	} else {
 		c.JSON(http.StatusOK, gin.H{"mensaje": "Camion actualizado"})
 	}
-
 }

@@ -33,38 +33,48 @@ func (handler *PedidoHandler) ObtenerPedidoPorId(c *gin.Context) {
 }
 func (handler *PedidoHandler) InsertarPedido(c *gin.Context) {
 	var pedido dto.Pedido
-	if err := c.ShouldBindJSON(&pedido); err != nil {
+	err := c.ShouldBindJSON(&pedido)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	} else {
+		resultado := handler.pedidoService.InsertarPedido(&pedido)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusCreated, gin.H{"error": resultado.Error()})
+		}
 	}
-	resultado := handler.pedidoService.InsertarPedido(&pedido)
-	c.JSON(http.StatusCreated, resultado)
 }
 func (handler *PedidoHandler) EliminarPedido(c *gin.Context) {
 	id := c.Param("id")
-	if handler.pedidoService.EliminarPedido(id) {
+	err := handler.pedidoService.EliminarPedido(id)
+	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"mensaje": "Pedido eliminado correctamente"})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo eliminar el pedido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
 	id := c.Param("id")
 	pedido := handler.pedidoService.ObtenerPedidoPorId(id)
-
-	if err := c.ShouldBindJSON(&pedido); err != nil {
+	err := c.ShouldBindJSON(&pedido)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	} else {
+		resultado := handler.pedidoService.AceptarPedido(pedido)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusCreated, gin.H{"error": resultado.Error()})
+		}
 	}
-	resultado := handler.pedidoService.AceptarPedido(pedido)
-	c.JSON(http.StatusCreated, resultado)
 }
 func (handler *PedidoHandler) ObtenerCantidadPedidosPorEstado(c *gin.Context) {
 	estado := c.Param("estado")
 	cantidad, err := handler.pedidoService.ObtenerCantidadPedidosPorEstado(estado)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	} else {
+		c.JSON(http.StatusOK, cantidad)
 	}
-	c.JSON(http.StatusOK, cantidad)
 }

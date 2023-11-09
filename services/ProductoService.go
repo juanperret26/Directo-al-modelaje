@@ -12,9 +12,9 @@ type ProductoInterface interface {
 	ObtenerProductos() []*dto.Producto
 	ObtenerProductosStockMinimo(tipoProducto string) []*dto.Producto
 	ObtenerProductoPorId(id string) *dto.Producto
-	InsertarProducto(producto *dto.Producto) bool
-	EliminarProducto(id string) bool
-	ActualizarProducto(producto *dto.Producto) bool
+	InsertarProducto(producto *dto.Producto) error
+	EliminarProducto(id string) error
+	ActualizarProducto(producto *dto.Producto) error
 }
 
 type productoService struct {
@@ -56,19 +56,19 @@ func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
 	}
 	return producto
 }
-func (service *productoService) InsertarProducto(producto *dto.Producto) bool {
-	service.productoRepository.InsertarProducto(producto.GetModel())
+func (service *productoService) InsertarProducto(producto *dto.Producto) error {
+	_, err := service.productoRepository.InsertarProducto(producto.GetModel())
 
-	return true
+	return err
 }
 
-func (service *productoService) ActualizarProducto(producto *dto.Producto) bool {
-	service.productoRepository.ActualizarProducto(producto.GetModel())
+func (service *productoService) ActualizarProducto(producto *dto.Producto) error {
+	_, err := service.productoRepository.ActualizarProducto(producto.GetModel())
 
-	return true
+	return err
 }
 
-func (service *productoService) EliminarProducto(id string) bool {
-	service.productoRepository.EliminarProducto(id)
-	return true
+func (service *productoService) EliminarProducto(id string) error {
+	_, err := service.productoRepository.EliminarProducto(id)
+	return err
 }
