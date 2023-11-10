@@ -57,7 +57,7 @@ func (handler *ProductoHandler) InsertarProducto(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+			c.JSON(http.StatusCreated, gin.H{"estado": "Creado correctamente"})
 		}
 	}
 }
@@ -68,7 +68,7 @@ func (handler *ProductoHandler) EliminarProducto(c *gin.Context) {
 	if resultado != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		c.JSON(http.StatusOK, gin.H{"estado": "Eliminado correctamente"})
 	}
 }
 
@@ -83,7 +83,7 @@ func (handler *ProductoHandler) ActualizarProducto(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+			c.JSON(http.StatusOK, gin.H{"estado": "Se actualizo correctamente"})
 		}
 	}
 }

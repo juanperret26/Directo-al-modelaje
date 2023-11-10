@@ -42,7 +42,7 @@ func (handler *EnvioHandler) IniciarViaje(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusCreated, resultado)
+			c.JSON(http.StatusCreated, gin.H{"estado": "Viaje iniciado correctamente"})
 		}
 
 	}
@@ -133,7 +133,7 @@ func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+			c.JSON(http.StatusOK, gin.H{"error": "Creado correctamente"})
 		}
 	}
 }
@@ -144,7 +144,7 @@ func (handler *EnvioHandler) EliminarEnvio(c *gin.Context) {
 	if resultado != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		c.JSON(http.StatusOK, gin.H{"error": "Eliminado correctamente"})
 	}
 }
 
@@ -159,7 +159,7 @@ func (handler *EnvioHandler) ActualizarEnvio(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+			c.JSON(http.StatusOK, gin.H{"error": "Actualizado correctamente"})
 		}
 	}
 
@@ -200,7 +200,7 @@ func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
 		} else {
 			//Agregamos un log para indicar información relevante del resultado
 			log.Printf("[handler:EnvioHandler][method:AgregarParada][envio:%+v][user:%s]", envio)
-			c.JSON(http.StatusOK, err)
+			c.JSON(http.StatusOK, gin.H{"estado": "Parada agregada correctamente"})
 		}
 
 	}

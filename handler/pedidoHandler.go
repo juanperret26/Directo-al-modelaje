@@ -35,7 +35,7 @@ func (handler *PedidoHandler) ObtenerPedidoPorId(c *gin.Context) {
 	if pedido == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "pedido no encontrado"})
 	} else {
-		c.JSON(http.StatusOK, pedido)
+		c.JSON(http.StatusOK, gin.H{"pedido": pedido})
 	}
 }
 func (handler *PedidoHandler) InsertarPedido(c *gin.Context) {
@@ -48,7 +48,7 @@ func (handler *PedidoHandler) InsertarPedido(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusCreated, resultado)
+			c.JSON(http.StatusCreated, gin.H{"estado": "Creado correctamente"})
 		}
 
 	}
@@ -69,9 +69,15 @@ func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
 	if err := c.ShouldBindJSON(&pedido); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	} else {
+		resultado := handler.pedidoService.AceptarPedido(pedido)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusAccepted, gin.H{"resultado": "Pedido aceptado correctamente"})
+		}
 	}
-	resultado := handler.pedidoService.AceptarPedido(pedido)
-	c.JSON(http.StatusCreated, resultado)
+
 }
 func (handler *PedidoHandler) ObtenerCantidadPedidosPorEstado(c *gin.Context) {
 	estado := c.Param("estado")
