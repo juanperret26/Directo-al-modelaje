@@ -21,24 +21,38 @@ func NewPedidoHandler(pedidoService services.PedidoInterface) *PedidoHandler {
 }
 func (handler *PedidoHandler) ObtenerPedidos(c *gin.Context) {
 	pedidos := handler.pedidoService.ObtenerPedidos()
-	log.Printf("[handler:PedidoHandler] [method:ObtenerPedidos] [pedidos:%v] [cantidad:%d]", pedidos, len(pedidos))
-	c.JSON(http.StatusOK, pedidos)
-
+	if pedidos == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron pedidos"})
+	} else {
+		log.Printf("[handler:PedidoHandler] [method:ObtenerPedidos] [pedidos:%v] [cantidad:%d]", pedidos, len(pedidos))
+		c.JSON(http.StatusOK, pedidos)
+	}
 }
 
 func (handler *PedidoHandler) ObtenerPedidoPorId(c *gin.Context) {
 	id := c.Param("id")
 	pedido := handler.pedidoService.ObtenerPedidoPorId(id)
-	c.JSON(http.StatusOK, pedido)
+	if pedido == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "pedido no encontrado"})
+	} else {
+		c.JSON(http.StatusOK, pedido)
+	}
 }
 func (handler *PedidoHandler) InsertarPedido(c *gin.Context) {
 	var pedido dto.Pedido
 	if err := c.ShouldBindJSON(&pedido); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	} else {
+		resultado := handler.pedidoService.InsertarPedido(&pedido)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusCreated, resultado)
+		}
+
 	}
-	resultado := handler.pedidoService.InsertarPedido(&pedido)
-	c.JSON(http.StatusCreated, resultado)
+
 }
 func (handler *PedidoHandler) EliminarPedido(c *gin.Context) {
 	id := c.Param("id")
@@ -65,8 +79,9 @@ func (handler *PedidoHandler) ObtenerCantidadPedidosPorEstado(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	} else {
+		c.JSON(http.StatusOK, cantidad)
 	}
-	c.JSON(http.StatusOK, cantidad)
 }
 func (handler *PedidoHandler) ObtenerPedidosPorEstado(c *gin.Context) {
 	estado := c.Param("estado")
@@ -75,6 +90,7 @@ func (handler *PedidoHandler) ObtenerPedidosPorEstado(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 
+	} else {
+		c.JSON(http.StatusOK, pedidos)
 	}
-	c.JSON(http.StatusOK, pedidos)
 }

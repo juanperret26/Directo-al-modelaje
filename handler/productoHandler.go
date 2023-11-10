@@ -20,21 +20,31 @@ func NewProductoHandler(productoService services.ProductoInterface) *ProductoHan
 
 func (handler *ProductoHandler) ObtenerProductos(c *gin.Context) {
 	productos := handler.ProductoService.ObtenerProductos()
-
-	log.Printf("[handler:ProductoHandler] [method:ObtenerProductos] [productos:%v] [cantidad:%d]", productos, len(productos))
-	c.JSON(http.StatusOK, productos)
+	if productos == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron productos"})
+	} else {
+		log.Printf("[handler:ProductoHandler] [method:ObtenerProductos] [productos:%v] [cantidad:%d]", productos, len(productos))
+		c.JSON(http.StatusOK, productos)
+	}
 
 }
 func (handler *ProductoHandler) ObtenerProductosStockMinimo(c *gin.Context) {
 	tipoProducto := c.Param("tipoProducto")
 	productos := handler.ProductoService.ObtenerProductosStockMinimo(tipoProducto)
-	c.JSON(http.StatusOK, productos)
+	if productos == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron productos"})
+	} else {
+		c.JSON(http.StatusOK, productos)
+	}
 }
 func (handler *ProductoHandler) ObtenerProductoPorId(c *gin.Context) {
 	id := c.Param("id")
 	producto := handler.ProductoService.ObtenerProductoPorId(id)
-	c.JSON(http.StatusOK, producto)
-
+	if producto == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "producto no encontrado"})
+	} else {
+		c.JSON(http.StatusOK, producto)
+	}
 }
 
 func (handler *ProductoHandler) InsertarProducto(c *gin.Context) {

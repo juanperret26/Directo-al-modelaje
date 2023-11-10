@@ -38,34 +38,50 @@ func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
 
 func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 	var camion dto.Camion
-	resultado := handler.camionService.InsertarCamion(&camion)
-	if resultado != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+	err := c.ShouldBindJSON(&camion)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 	} else {
-		c.JSON(http.StatusCreated, gin.H{"mensaje": "Camion creado"})
+		resultado := handler.camionService.InsertarCamion(&camion)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		}
+
 	}
 
 }
 
 func (handler *CamionHandler) EliminarCamion(c *gin.Context) {
 	id := c.Param("id")
-	resultado := handler.camionService.EliminarCamion(id)
-	if resultado != nil {
-		c.JSON(http.StatusNotFound, gin.H{"mensaje": resultado.Error()})
+	err := c.ShouldBindJSON(&id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"mensaje": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"mensaje": "Camion eliminado"})
-
+		resultado := handler.camionService.EliminarCamion(id)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		}
 	}
-
 }
 
 func (handler *CamionHandler) ActualizarCamion(c *gin.Context) {
 	var camion dto.Camion
-	resultado := handler.camionService.ActualizarCamion(&camion)
-	if resultado != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+	err := c.ShouldBindJSON(&camion)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"mensaje": "Camion actualizado"})
+		resultado := handler.camionService.ActualizarCamion(&camion)
+		if resultado != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+		}
 	}
 }
