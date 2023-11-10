@@ -21,6 +21,7 @@ type PedidoRepositoryInterface interface {
 	EliminarPedido(id string) (*mongo.UpdateResult, error)
 	ActualizarPedido(pedido model.Pedido) (*mongo.UpdateResult, error)
 	ObtenerCantidadPedidosPorEstado(estado string) (int, error)
+	ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error)
 }
 type PedidoRepository struct {
 	db DB
@@ -110,21 +111,21 @@ func (repository *PedidoRepository) ObtenerCantidadPedidosPorEstado(estado strin
 	return int(cantidad), nil
 }
 
-// func (repository *PedidoRepository) ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error) {
-// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
-// 	filtro := bson.M{"estado": estado}
+func (repository *PedidoRepository) ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
+	filtro := bson.M{"estado": estado}
 
-// 	cursor, err := collection.Find(context.Background(), filtro)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer cursor.Close(context.Background())
+	cursor, err := collection.Find(context.Background(), filtro)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
 
-// 	var pedidos []model.Pedido
-// 	for cursor.Next(context.Background()) {
-// 		var pedido model.Pedido
-// 		pedidos = append(pedidos, pedido)
-// 	}
+	var pedidos []model.Pedido
+	for cursor.Next(context.Background()) {
+		var pedido model.Pedido
+		pedidos = append(pedidos, pedido)
+	}
 
-// 	return pedidos, nil
-// }
+	return pedidos, nil
+}

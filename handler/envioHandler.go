@@ -125,9 +125,7 @@ func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
 func (handler *EnvioHandler) EliminarEnvio(c *gin.Context) {
 	id := c.Param("id")
 	resultado := handler.envioService.EliminarEnvio(id)
-	if resultado == false {
-		c.JSON(http.StatusNotFound, gin.H{"error": "envio no encontrado"})
-	}
+
 	c.JSON(http.StatusOK, resultado)
 }
 

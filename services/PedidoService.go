@@ -18,6 +18,7 @@ type PedidoInterface interface {
 	AceptarPedido(pedido *dto.Pedido) error
 	ActualizarPedido(pedido *dto.Pedido) error
 	ObtenerCantidadPedidosPorEstado(estado string) ([]dto.Estado, error)
+	ObtenerPedidosPorEstado(estado string) ([]*dto.Pedido, error)
 }
 type pedidoService struct {
 	pedidoRepository   repositories.PedidoRepositoryInterface
@@ -48,6 +49,7 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
 func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
 
 	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
+
 	return err
 }
 func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
@@ -56,22 +58,21 @@ func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error 
 
 	if err != nil {
 		return err
-	} else {
-		//Verifica que haya stock disponible para aceptar el pedido
-		if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
-			return errors.New("no hay stock disponible para aceptar el pedido")
-		} else {
-
-			//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
-			if pedido.Estado != "Aceptado" {
-				pedido.Estado = "Aceptado"
-			}
-
-			//Actualiza el pedido en la base de datos
-			_, err := service.pedidoRepository.ActualizarPedido(pedido)
-			return err
-		}
 	}
+
+	//Verifica que haya stock disponible para aceptar el pedido
+	if !service.hayStockDisponiblePedido(pedidoPorAceptar) {
+		return errors.New("no hay stock disponible para aceptar el pedido")
+	}
+
+	//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
+	if pedido.Estado != "Aceptado" {
+		pedido.Estado = "Aceptado"
+	}
+
+	//Actualiza el pedido en la base de datos
+	service.pedidoRepository.ActualizarPedido(pedido)
+	return err
 }
 
 func (service *pedidoService) hayStockDisponiblePedido(pedido *dto.Pedido) bool {
@@ -153,4 +154,16 @@ func (service *pedidoService) ObtenerCantidadPedidosPorEstado(estado string) ([]
 	}
 
 	return listaEstados, nil
+}
+func (service pedidoService) ObtenerPedidosPorEstado(estado string) ([]*dto.Pedido, error) {
+	pedidosDB, err := service.pedidoRepository.ObtenerPedidosPorEstado(estado)
+	if err != nil {
+		return nil, err
+	}
+	var pedidos []*dto.Pedido
+	for _, pedidoDB := range pedidosDB {
+		pedido := dto.NewPedido(pedidoDB)
+		pedidos = append(pedidos, pedido)
+	}
+	return pedidos, nil
 }

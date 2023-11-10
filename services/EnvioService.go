@@ -18,9 +18,9 @@ type EnvioInterface interface {
 	ObtenerEnvioPorId(id string) *dto.Envio
 	ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]*dto.Pedido, error)
 	ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]*dto.Envio, error)
-	InsertarEnvio(envio *dto.Envio) bool
-	EliminarEnvio(id string) bool
-	ActualizarEnvio(envio *dto.Envio) bool
+	InsertarEnvio(envio *dto.Envio) error
+	EliminarEnvio(id string) error
+	ActualizarEnvio(envio *dto.Envio) error
 	IniciarViaje(envio *dto.Envio) error
 	ObtenerCantidadEnviosPorEstado(estado string) ([]dto.Estado, error)
 	AgregarParada(envio *dto.Envio) (bool, error)
@@ -80,9 +80,8 @@ func (service *envioService) ObtenerPedidosFiltrados(codigoEnvio string, estado 
 	return pedidos, nil
 }
 
-func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
+func (service *envioService) InsertarEnvio(envio *dto.Envio) error {
 	var pesoTotal float64 = 0.0
-	var resultado = false
 	var camion, err = service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
 	log.Printf("camion: %v", err)
 
@@ -108,7 +107,6 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 					envio.Estado = "A despachar"
 					envio.PatenteCamion = camion.Patente
 					service.envioRepository.InsertarEnvio(envio.GetModel())
-					resultado = true
 					pedido.Estado = "Para enviar"
 					service.pedidoRepository.ActualizarPedido(pedido)
 					service.envioRepository.ActualizarEnvio(envio.GetModel())
@@ -122,15 +120,17 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) bool {
 			log.Printf("El pedido no esta aceptado")
 		}
 	}
-	return resultado
+	return err
 }
-func (service *envioService) EliminarEnvio(id string) bool {
-	service.envioRepository.EliminarEnvio(utils.GetObjectIDFromStringID(id))
-	return true
+func (service *envioService) EliminarEnvio(id string) error {
+
+	_, err := service.envioRepository.EliminarEnvio(utils.GetObjectIDFromStringID(id))
+	return err
 }
-func (service *envioService) ActualizarEnvio(envio *dto.Envio) bool {
-	service.envioRepository.ActualizarEnvio(envio.GetModel())
-	return true
+func (service *envioService) ActualizarEnvio(envio *dto.Envio) error {
+
+	err := service.envioRepository.ActualizarEnvio(envio.GetModel())
+	return err
 }
 func (service *envioService) IniciarViaje(envio *dto.Envio) error {
 	envioABuscar, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
