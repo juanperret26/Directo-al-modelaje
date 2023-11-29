@@ -10,10 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
-	"github.com/juanperret/Directo-al-modelaje/go/handler"
-	"github.com/juanperret/Directo-al-modelaje/go/middlewares"
-	"github.com/juanperret/Directo-al-modelaje/go/repositories"
-	"github.com/juanperret/Directo-al-modelaje/go/services"
+	"github.com/juanperret26/Directo-al-modelaje/go/handler"
+	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
+	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
+	"github.com/juanperret26/Directo-al-modelaje/go/services"
 )
 
 var (
