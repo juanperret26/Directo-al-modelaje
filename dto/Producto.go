@@ -4,13 +4,8 @@ package dto
 import (
 	"time"
 
-<<<<<<< HEAD:go/dto/Producto.go
-	"github.com/juanperret26/Directo-al-modelaje/go/model"
-	"github.com/juanperret26/Directo-al-modelaje/go/utils"
-=======
 	"github.com/juanperret/Directo-al-modelaje/model"
 	"github.com/juanperret/Directo-al-modelaje/utils"
->>>>>>> parent of ad42c9c (prueba cambio de directorio):dto/Producto.go
 )
 
 type Producto struct {

@@ -7,13 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-<<<<<<< HEAD:go/handler/envioHandler.go
-	"github.com/juanperret26/Directo-al-modelaje/go/dto"
-	"github.com/juanperret26/Directo-al-modelaje/go/services"
-=======
 	"github.com/juanperret/Directo-al-modelaje/dto"
 	"github.com/juanperret/Directo-al-modelaje/services"
->>>>>>> parent of ad42c9c (prueba cambio de directorio):handler/envioHandler.go
 )
 
 type EnvioHandler struct {

@@ -1,11 +1,7 @@
 package dto
 
 import (
-<<<<<<< HEAD:go/dto/PedidoProducto.go
-	"github.com/juanperret26/Directo-al-modelaje/go/model"
-=======
 	"github.com/juanperret/Directo-al-modelaje/model"
->>>>>>> parent of ad42c9c (prueba cambio de directorio):dto/PedidoProducto.go
 )
 
 type PedidoProducto struct {

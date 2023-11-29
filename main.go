@@ -10,17 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
-<<<<<<< HEAD:go/main.go
-	"github.com/juanperret26/Directo-al-modelaje/go/handler"
-	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
-	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
-	"github.com/juanperret26/Directo-al-modelaje/go/services"
-=======
 	"github.com/juanperret/Directo-al-modelaje/handler"
 	"github.com/juanperret/Directo-al-modelaje/middlewares"
 	"github.com/juanperret/Directo-al-modelaje/repositories"
 	"github.com/juanperret/Directo-al-modelaje/services"
->>>>>>> parent of ad42c9c (prueba cambio de directorio):main.go
 )
 
 var (
