@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/juanperret/Directo-al-modelaje/clients/responses"
+import "github.com/juanperret/Directo-al-modelaje/go/clients/responses"
 
 type User struct {
 	Codigo   string `json:"codigo"`

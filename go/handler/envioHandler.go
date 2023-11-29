@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juanperret/Directo-al-modelaje/dto"
-	"github.com/juanperret/Directo-al-modelaje/services"
+	"github.com/juanperret/Directo-al-modelaje/go/dto"
+	"github.com/juanperret/Directo-al-modelaje/go/services"
 )
 
 type EnvioHandler struct {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/juanperret/Directo-al-modelaje/model"
+	"github.com/juanperret/Directo-al-modelaje/go/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

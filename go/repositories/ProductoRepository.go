@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/juanperret/Directo-al-modelaje/model"
-	"github.com/juanperret/Directo-al-modelaje/utils"
+	"github.com/juanperret/Directo-al-modelaje/go/model"
+	"github.com/juanperret/Directo-al-modelaje/go/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

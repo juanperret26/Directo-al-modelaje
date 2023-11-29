@@ -4,9 +4,9 @@ package services
 import (
 	"log"
 
-	"github.com/juanperret/Directo-al-modelaje/dto"
-	"github.com/juanperret/Directo-al-modelaje/repositories"
-	"github.com/juanperret/Directo-al-modelaje/utils"
+	"github.com/juanperret/Directo-al-modelaje/go/dto"
+	"github.com/juanperret/Directo-al-modelaje/go/repositories"
+	"github.com/juanperret/Directo-al-modelaje/go/utils"
 )
 
 type CamionInterface interface {

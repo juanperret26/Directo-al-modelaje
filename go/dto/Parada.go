@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/juanperret/Directo-al-modelaje/model"
+	"github.com/juanperret/Directo-al-modelaje/go/model"
 )
 
 type Parada struct {
