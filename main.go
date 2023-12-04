@@ -42,7 +42,7 @@ func main() {
 	//Iniciar rutas
 	mappingRoutes()
 
-	router.LoadHTMLGlob("html/*")
+	router.LoadHTMLGlob("front/html/*")
 
 	router.Static("/static", "./static")
 
