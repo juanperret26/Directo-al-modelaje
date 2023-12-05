@@ -20,13 +20,8 @@ func NewCamionHandler(camionService services.CamionInterface) *CamionHandler {
 
 func (handler *CamionHandler) ObtenerCamiones(c *gin.Context) {
 	camiones := handler.camionService.ObtenerCamiones()
-	if camiones == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron camiones"})
-	} else {
-		log.Printf("[handler:CamionHandler][method:ObtenerCamiones][cantidad:%d]", len(camiones))
-		c.JSON(http.StatusOK, gin.H{"camiones": camiones})
-	}
-
+	log.Printf("[handler:CamionHandler][method:ObtenerCamiones][cantidad:%d]", len(camiones))
+	c.JSON(http.StatusOK, camiones)
 }
 
 func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
@@ -52,7 +47,7 @@ func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": "Creado correctamente"})
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
 		}
 
 	}
@@ -70,7 +65,7 @@ func (handler *CamionHandler) EliminarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": "Eliminado correctamente"})
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
 		}
 	}
 }
@@ -86,7 +81,7 @@ func (handler *CamionHandler) ActualizarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": "Actualizado correctamente"})
+			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
 		}
 	}
 }

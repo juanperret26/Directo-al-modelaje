@@ -56,6 +56,26 @@ func (repository CamionRepository) ObtenerCamionPorPatente(patente string) (mode
 	return camion, err
 }
 
+// func (repository *CamionRepository) ObtenerCamionPorPatente(patente string) (model.Camion, error) {
+// 	if repository == nil || repository.db == nil || repository.db.GetClient() == nil {
+// 		return model.Camion{}, errors.New("El repositorio es nulo")
+// 	}
+
+// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
+// 	if collection == nil {
+// 		return model.Camion{}, errors.New("La colección de la base de datos es nula")
+// 	}
+
+// 	filtro := bson.M{"patente": patente}
+// 	var camion model.Camion
+// 	err := collection.FindOne(context.Background(), filtro).Decode(&camion)
+// 	if err != nil {
+// 		return model.Camion{}, err
+// 	}
+
+// 	return camion, nil
+// }
+
 func (repository CamionRepository) InsertarCamion(camion model.Camion) (*mongo.InsertOneResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
 	camion.Fecha_creacion = time.Now()
