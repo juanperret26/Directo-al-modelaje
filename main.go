@@ -44,7 +44,7 @@ func main() {
 
 	router.LoadHTMLGlob("front/html/*")
 
-	router.Static("/static", "./static")
+	router.Static("front/static", "front./static")
 
 	log.Println("Iniciando el servidor...")
 	router.Run(":8080")
