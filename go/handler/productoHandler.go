@@ -28,15 +28,15 @@ func (handler *ProductoHandler) ObtenerProductos(c *gin.Context) {
 	}
 
 }
-func (handler *ProductoHandler) ObtenerProductosStockMinimo(c *gin.Context) {
-	tipoProducto := c.Param("tipoProducto")
-	productos := handler.ProductoService.ObtenerProductosStockMinimo(tipoProducto)
-	if productos == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron productos"})
-	} else {
-		c.JSON(http.StatusOK, productos)
-	}
-}
+
+//	func (handler *ProductoHandler) ObtenerProductosStockMinimo(c *gin.Context) {
+//		productos := handler.ProductoService.ObtenerProductosStockMinimo()
+//		if productos == nil {
+//			c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron productos"})
+//		} else {
+//			c.JSON(http.StatusOK, productos)
+//		}
+//	}
 func (handler *ProductoHandler) ObtenerProductoPorId(c *gin.Context) {
 	id := c.Param("id")
 	producto := handler.ProductoService.ObtenerProductoPorId(id)

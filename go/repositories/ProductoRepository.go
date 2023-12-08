@@ -12,7 +12,7 @@ import (
 
 type ProductoRepositoryInterface interface {
 	ObtenerProductos() ([]model.Producto, error)
-	ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error)
+	// ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error)
 	ObtenerProductoPorId(id string) (model.Producto, error)
 	InsertarProducto(producto model.Producto) (*mongo.InsertOneResult, error)
 	EliminarProducto(id string) (*mongo.DeleteResult, error)
@@ -47,25 +47,25 @@ func (repository *ProductoRepository) ObtenerProductos() ([]model.Producto, erro
 	return productos, err
 }
 
-func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	filtro := bson.M{"tipo_producto": tipoProducto}
+// func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error) {
+// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
+// 	filtro := bson.M{"tipo_producto": tipoProducto}
 
-	cursor, err := collection.Find(context.Background(), filtro)
-	defer cursor.Close(context.Background())
-	var productos []model.Producto
-	for cursor.Next(context.Background()) {
-		var producto model.Producto
-		err := cursor.Decode(&producto)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
-		if producto.Stock < producto.Stock_minimo {
-			productos = append(productos, producto)
-		}
-	}
-	return productos, err
-}
+// 	cursor, err := collection.Find(context.Background(), filtro)
+// 	defer cursor.Close(context.Background())
+// 	var productos []model.Producto
+// 	for cursor.Next(context.Background()) {
+// 		var producto model.Producto
+// 		err := cursor.Decode(&producto)
+// 		if err != nil {
+// 			fmt.Printf("Error: %v\n", err)
+// 		}
+// 		if producto.Stock < producto.Stock_minimo {
+// 			productos = append(productos, producto)
+// 		}
+// 	}
+// 	return productos, err
+// }
 
 func (repository *ProductoRepository) ObtenerProductoPorId(id string) (model.Producto, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")

@@ -10,7 +10,7 @@ import (
 
 type ProductoInterface interface {
 	ObtenerProductos() []*dto.Producto
-	ObtenerProductosStockMinimo(tipoProducto string) []*dto.Producto
+	ObtenerProductosStockMinimo() []*dto.Producto
 	ObtenerProductoPorId(id string) *dto.Producto
 	InsertarProducto(producto *dto.Producto) error
 	EliminarProducto(id string) error
@@ -34,12 +34,13 @@ func (service *productoService) ObtenerProductos() []*dto.Producto {
 	}
 	return productos
 }
-func (service *productoService) ObtenerProductosStockMinimo(tipoProducto string) []*dto.Producto {
-	productoDB, _ := service.productoRepository.ObtenerProductosStockMinimo(tipoProducto)
+func (service *productoService) ObtenerProductosStockMinimo() []*dto.Producto {
+	productoDB, _ := service.productoRepository.ObtenerProductos()
 	var productos []*dto.Producto
 	for _, productoDB := range productoDB {
+
 		producto := dto.NewProducto(productoDB)
-		if producto.Stock < producto.Stock_minimo && producto.TipoProducto == tipoProducto {
+		if producto.Stock < producto.Stock_minimo {
 			productos = append(productos, producto)
 		}
 	}

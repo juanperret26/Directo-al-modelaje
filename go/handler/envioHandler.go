@@ -61,37 +61,6 @@ func (handler *EnvioHandler) ObtenerEnvioPorId(c *gin.Context) {
 
 }
 
-func (handler *EnvioHandler) ObtenerPedidosFiltrados(c *gin.Context) {
-	codigoEnvio := c.Param("codigoEnvio")
-	estado := c.Param("estado")
-	fechaInicioStr := c.Param("fechaInicio")
-	fechaFinalStr := c.Param("fechaFinal")
-
-	// Convertir strings a time.Time
-	fechaInicio, errInicio := time.Parse("2006-01-02", fechaInicioStr)
-	if errInicio != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaInicio incorrecto"})
-		return
-	}
-
-	fechaFinal, errFinal := time.Parse("2006-01-02", fechaFinalStr)
-	if errFinal != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaFinal incorrecto"})
-		return
-	}
-
-	// Manejo de errores
-	pedidos, err := handler.envioService.ObtenerPedidosFiltrados(codigoEnvio, estado, fechaInicio, fechaFinal)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	} else {
-		// Registro de información
-		log.Printf("Se obtuvieron pedidos filtrados para codigoEnvio %s, estado %s, fechaInicio %s, fechaFinal %s", codigoEnvio, estado, fechaInicio, fechaFinal)
-		c.JSON(http.StatusOK, pedidos)
-	}
-}
-
 func (handler *EnvioHandler) ObtenerEnviosPorParametros(c *gin.Context) {
 	patente := c.Param("patente")
 	estado := c.Param("estado")
@@ -110,8 +79,14 @@ func (handler *EnvioHandler) ObtenerEnviosPorParametros(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaCreacionHasta incorrecto"})
 		return
 	}
-
-	envios, err := handler.envioService.ObtenerEnviosPorParametros(patente, estado, ultimaParada, fechaCreacionDesde, fechaCreacionHasta)
+	filtro := dto.Filtro{
+		PatenteCamion:      patente,
+		EstadoEnvio:        estado,
+		UltimaParada:       ultimaParada,
+		FechaCreacionDesde: fechaCreacionDesde,
+		FechaCreacionHasta: fechaCreacionHasta,
+	}
+	envios, err := handler.envioService.ObtenerEnviosPorParametros(&filtro)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -206,26 +181,35 @@ func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
 	}
 }
 func (handler *EnvioHandler) ObtenerBeneficiosEntreFechas(c *gin.Context) {
-	fechaDesdeStr := c.DefaultQuery("fechaDesde", "0001-01-01T00:00:00Z")
-	fechaDesde, err := time.Parse(time.RFC3339, fechaDesdeStr)
+
+	//Convierte las fechas string a time.Time
+	fechaDesdeStr := c.DefaultQuery("fechaDesde", "0001-01-01")
+	fechaDesde, err := time.Parse("2006-01-02", fechaDesdeStr)
 	if err != nil {
-		fechaDesde = time.Time{}
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaDesde incorrecto"})
+		return
 	}
-	fechaHastaStr := c.DefaultQuery("fechaHasta", "0001-01-01T00:00:00Z")
-	fechaHasta, err := time.Parse(time.RFC3339, fechaHastaStr)
+
+	fechaHastaStr := c.DefaultQuery("fechaHasta", "0001-01-01")
+	fechaHasta, err := time.Parse("2006-01-02", fechaHastaStr)
 	if err != nil {
-		fechaHasta = time.Time{}
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaHasta incorrecto"})
+		return
 	}
-	// Manejo de errores
-	beneficios, err := handler.envioService.ObtnerBeneficiosEntreFecha(fechaDesde, fechaHasta)
+
+	filtro := dto.Filtro{
+		FechaUltimaActualizacionDesde: fechaDesde,
+		FechaUltimaActualizacionHasta: fechaHasta,
+	}
+
+	beneficio, err := handler.envioService.ObtnerBeneficiosEntreFecha(&filtro)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	// Registro de información
 	log.Printf("Se obtuvieron beneficios entre fechas %s, %s", fechaDesde, fechaHasta)
-	response := map[string]int{"beneficio": beneficios}
-	// Respuesta exitosa
+	response := map[string]int{"beneficio": beneficio}
 	c.JSON(http.StatusOK, response)
+
 }

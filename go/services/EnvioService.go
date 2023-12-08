@@ -4,7 +4,6 @@ package services
 import (
 	"errors"
 	"log"
-	"time"
 
 	"github.com/juanperret/Directo-al-modelaje/go/dto"
 	"github.com/juanperret/Directo-al-modelaje/go/model"
@@ -16,15 +15,15 @@ type EnvioInterface interface {
 	//Metodos para implementar en el handler
 	ObtenerEnvios() []*dto.Envio
 	ObtenerEnvioPorId(id string) *dto.Envio
-	ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]*dto.Pedido, error)
-	ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]*dto.Envio, error)
+	ObtenerPedidosFiltrados(filtro *dto.Filtro) ([]*dto.Pedido, error)
+	ObtenerEnviosPorParametros(filtro *dto.Filtro) ([]*dto.Envio, error)
 	InsertarEnvio(envio *dto.Envio) error
 	EliminarEnvio(id string) error
 	ActualizarEnvio(envio *dto.Envio) error
 	IniciarViaje(envio *dto.Envio) error
 	ObtenerCantidadEnviosPorEstado(estado string) ([]dto.Estado, error)
 	AgregarParada(envio *dto.Envio) (bool, error)
-	ObtnerBeneficiosEntreFecha(fechaInicio time.Time, fechaFinal time.Time) (int, error)
+	ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, error)
 }
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
@@ -50,9 +49,9 @@ func (service *envioService) ObtenerEnvios() []*dto.Envio {
 	}
 	return envios
 }
-func (service *envioService) ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]*dto.Envio, error) {
+func (service *envioService) ObtenerEnviosPorParametros(filtro *dto.Filtro) ([]*dto.Envio, error) {
 
-	enviosDB, err := service.envioRepository.ObtenerEnviosPorParametros(patente, estado, ultimaParada, fechaCreacionDesde, fechaCreacionHasta)
+	enviosDB, err := service.envioRepository.ObtenerEnviosPorParametros(filtro.PatenteCamion, filtro.EstadoEnvio, filtro.UltimaParada, filtro.FechaCreacionDesde, filtro.FechaCreacionHasta)
 	if err != nil {
 		return nil, err
 	}
@@ -69,9 +68,9 @@ func (service *envioService) ObtenerEnvioPorId(id string) *dto.Envio {
 	envio := dto.NewEnvio(envioDB)
 	return envio
 }
-func (service *envioService) ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]*dto.Pedido, error) {
+func (service *envioService) ObtenerPedidosFiltrados(filtro *dto.Filtro) ([]*dto.Pedido, error) {
 
-	pedidoDB, _ := service.envioRepository.ObtenerPedidosFiltrados(codigoEnvio, estado, fechaInicio, fechaFinal)
+	pedidoDB, _ := service.envioRepository.ObtenerPedidosFiltrados(filtro.CodigoEnvio, filtro.EstadoPedido, filtro.FechaCreacionDesde, filtro.FechaCreacionHasta)
 	var pedidos []*dto.Pedido
 	for _, pedidoDB := range pedidoDB {
 		pedido := dto.NewPedido(pedidoDB)
@@ -233,9 +232,10 @@ func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]dt
 	}
 	return listaEstados, nil
 }
-func (service *envioService) ObtnerBeneficiosEntreFecha(fechaInicio time.Time, fechaFinal time.Time) (int, error) {
+
+func (service *envioService) ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, error) {
 	var beneficio int = 0
-	envios, err := service.envioRepository.ObtenerEnviosPorParametros("", "", "", fechaInicio, fechaFinal)
+	envios, err := service.envioRepository.ObtenerEnviosPorParametros("", "", "", fecha.FechaCreacionDesde, fecha.FechaCreacionHasta)
 	if err != nil {
 		return 0, err
 	}

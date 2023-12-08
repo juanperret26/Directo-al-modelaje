@@ -4,6 +4,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juanperret/Directo-al-modelaje/go/dto"
@@ -57,9 +58,9 @@ func (handler *PedidoHandler) InsertarPedido(c *gin.Context) {
 func (handler *PedidoHandler) EliminarPedido(c *gin.Context) {
 	id := c.Param("id")
 	if err := handler.pedidoService.EliminarPedido(id); err == nil {
-		c.JSON(http.StatusOK, gin.H{"mensaje": "Pedido eliminado correctamente"})
+		c.JSON(http.StatusOK, gin.H{"mensaje": "Pedido cancelado correctamente"})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo eliminar el pedido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo cancelar el pedido"})
 	}
 }
 func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
@@ -91,6 +92,41 @@ func (handler *PedidoHandler) ObtenerPedidosPorEstado(c *gin.Context) {
 		return
 
 	} else {
+		c.JSON(http.StatusOK, pedidos)
+	}
+}
+func (handler *EnvioHandler) ObtenerPedidosFiltrados(c *gin.Context) {
+	codigoEnvio := c.Param("codigoEnvio")
+	estado := c.Param("estado")
+	fechaInicioStr := c.Param("fechaInicio")
+	fechaFinalStr := c.Param("fechaFinal")
+
+	// Convertir strings a time.Time
+	fechaInicio, errInicio := time.Parse("2006-01-02", fechaInicioStr)
+	if errInicio != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaInicio incorrecto"})
+		return
+	}
+
+	fechaFinal, errFinal := time.Parse("2006-01-02", fechaFinalStr)
+	if errFinal != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato de fechaFinal incorrecto"})
+		return
+	}
+	filtro := dto.Filtro{
+		CodigoEnvio:        codigoEnvio,
+		EstadoPedido:       estado,
+		FechaCreacionDesde: fechaInicio,
+		FechaCreacionHasta: fechaFinal,
+	}
+	// Manejo de errores
+	pedidos, err := handler.envioService.ObtenerPedidosFiltrados(&filtro)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	} else {
+		// Registro de información
+		log.Printf("Se obtuvieron pedidos filtrados para codigoEnvio %s, estado %s, fechaInicio %s, fechaFinal %s", codigoEnvio, estado, fechaInicio, fechaFinal)
 		c.JSON(http.StatusOK, pedidos)
 	}
 }
