@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/juanperret/Directo-al-modelaje/go/model"
+	"github.com/juanperret/Directo-al-modelaje/go/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -18,7 +18,7 @@ type CamionRepositoryInterface interface {
 	OtenerCamiones() ([]model.Camion, error)
 	ObtenerCamionPorPatente(patente string) (model.Camion, error)
 	InsertarCamion(camion model.Camion) (*mongo.InsertOneResult, error)
-	EliminarCamion(id primitive.ObjectID) (*mongo.DeleteResult, error)
+	EliminarCamion(id string) (*mongo.DeleteResult, error)
 	ActualizarCamion(camion model.Camion) (*mongo.UpdateResult, error)
 }
 type CamionRepository struct {
@@ -78,15 +78,20 @@ func (repository CamionRepository) ObtenerCamionPorPatente(patente string) (mode
 
 func (repository CamionRepository) InsertarCamion(camion model.Camion) (*mongo.InsertOneResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
-	camion.Fecha_creacion = time.Now()
-	camion.Actualizacion = time.Now()
+	if camion.Patente != "" && camion.Costo_km != 0 {
+		camion.Fecha_creacion = time.Now()
+		camion.Actualizacion = time.Now()
+
+	}
 	resultado, err := collection.InsertOne(context.TODO(), camion)
 	return resultado, err
 }
 
-func (repository CamionRepository) EliminarCamion(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+func (repository CamionRepository) EliminarCamion(id string) (*mongo.DeleteResult, error) {
+	objectID := utils.GetObjectIDFromStringID(id)
+
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
-	filtro := bson.M{"_id": id}
+	filtro := bson.M{"_id": objectID}
 	resultado, err := collection.DeleteOne(context.TODO(), filtro)
 	if resultado == nil {
 		err = fmt.Errorf("No se pudo enxontrar el camion con id %s", id)

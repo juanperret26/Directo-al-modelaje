@@ -2,6 +2,7 @@
 package services
 
 import (
+	"errors"
 	"log"
 
 	"github.com/juanperret/Directo-al-modelaje/go/dto"
@@ -58,9 +59,14 @@ func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
 	return producto
 }
 func (service *productoService) InsertarProducto(producto *dto.Producto) error {
-	_, err := service.productoRepository.InsertarProducto(producto.GetModel())
 
-	return err
+	if producto.Stock != 0 && producto.Precio != 0 && producto.Nombre != "" && producto.TipoProducto != "" {
+		_, err := service.productoRepository.InsertarProducto(producto.GetModel())
+		return err
+	} else {
+		err := errors.New("No se pasaron bien los datos")
+		return err
+	}
 }
 
 func (service *productoService) ActualizarProducto(producto *dto.Producto) error {

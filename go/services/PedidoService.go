@@ -47,11 +47,17 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
 }
 
 func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
+	if pedido.Estado != "" && pedido.PedidoProductos != nil && pedido.PedidoProductos[0].Cantidad != 0 && pedido.PedidoProductos[0].CodigoProducto != "" {
+		_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
 
-	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
+		return err
+	} else {
+		err := errors.New("No se pasaron bien los datos")
+		return err
+	}
 
-	return err
 }
+
 func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
 	//Primero buscamos el pedido a aceptar
 	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(pedidoPorAceptar.Id)

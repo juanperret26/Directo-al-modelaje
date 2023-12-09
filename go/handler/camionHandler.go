@@ -56,17 +56,13 @@ func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 
 func (handler *CamionHandler) EliminarCamion(c *gin.Context) {
 	id := c.Param("id")
-	err := c.ShouldBindJSON(&id)
+	resultado := handler.camionService.EliminarCamion(id)
 
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"mensaje": err.Error()})
+	if resultado != nil {
+		c.JSON(http.StatusNotFound, gin.H{"mensaje": resultado.Error()})
 	} else {
-		resultado := handler.camionService.EliminarCamion(id)
-		if resultado != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
-		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
-		}
+
+		c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 	}
 }
 
