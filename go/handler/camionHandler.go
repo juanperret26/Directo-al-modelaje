@@ -26,14 +26,12 @@ func (handler *CamionHandler) ObtenerCamiones(c *gin.Context) {
 
 func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
 	patente := c.Param("patente")
-	if err := c.ShouldBindJSON(&patente); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	//invocamos al metodo
 	camion := handler.camionService.ObtenerCamionPorPatente(patente)
-	//Agregamos un log para indicar informacion
-	c.JSON(http.StatusOK, camion)
+	if camion == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "pedido no encontrado"})
+	} else {
+		c.JSON(http.StatusOK, camion)
+	}
 }
 
 func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
@@ -47,7 +45,7 @@ func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+			c.JSON(http.StatusOK, "Creado Correctamente")
 		}
 
 	}
@@ -56,17 +54,13 @@ func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 
 func (handler *CamionHandler) EliminarCamion(c *gin.Context) {
 	id := c.Param("id")
-	err := c.ShouldBindJSON(&id)
+	resultado := handler.camionService.EliminarCamion(id)
 
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"mensaje": err.Error()})
+	if resultado != nil {
+		c.JSON(http.StatusNotFound, gin.H{"mensaje": resultado.Error()})
 	} else {
-		resultado := handler.camionService.EliminarCamion(id)
-		if resultado != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
-		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
-		}
+
+		c.JSON(http.StatusOK, "Se  elimino el camion correctamente")
 	}
 }
 
@@ -81,7 +75,7 @@ func (handler *CamionHandler) ActualizarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
+			c.JSON(http.StatusOK, "Creado Correctamente")
 		}
 	}
 }
