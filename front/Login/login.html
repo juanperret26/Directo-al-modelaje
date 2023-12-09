@@ -2,28 +2,29 @@
 <html>
 <head>
     <title>Inicio de Sesión</title>
-    <link rel="stylesheet" href="estilos.css">
+    <link href="/front/static/styles.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+    <div class="contenedorlogin">
     <h2>Iniciar Sesión</h2>
-    <form>
+    <form class="formlogin">
         <div>
-            <label for="usuario">Usuario:</label>
+            <label class="labelslogin" for="usuario">Usuario:</label>
             <input type="text" id="usuario" name="usuario" required>
         </div>
         <div>
-            <label for="contrasena">Contraseña:</label>
+            <label class="labelslogin" for="contrasena">Contraseña:</label>
             <input type="password" id="password" name="password" required>
         </div>        
         <div>
-            <a href="register.html">Nuevo usuario</a>
+            <a class="labelslogin" href="register.html">Nuevo usuario</a>
         </div>
         <div>
             <input type="button" value="Iniciar Sesión" id="btnIngresar">
         </div>
     </form>
-
-    <script src="request.js"></script>
+    </div>
+    <script src="/front/static/request.js"></script>
     <script src="login.js"></script>
 </body>
 </html>

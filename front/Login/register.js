@@ -1,5 +1,5 @@
 // Ejemplo de uso
-const url = "http://w220066.ferozo.com/tp_prog2/api/account/register";
+const url = "http://w230847.ferozo.com/tp_prog2/api/account/register";
 
 document.addEventListener("DOMContentLoaded", function (eventDOM) {
   document
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
 
 function successFn(response) {
   console.log("Éxito:", response);
-  window.location = "index.html";
+  window.location = "/front/html/index.html";
 }
 
 function errorFn(status, response) {

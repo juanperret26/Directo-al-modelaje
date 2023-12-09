@@ -209,5 +209,5 @@ function manejarEdicion(fila) {
 
   // Redirigir a la página "formPedidos" y enviar los valores como parámetros
   const queryString = new URLSearchParams(valoresCeldas).toString();
-  window.location.href = `/formPedidos?pedidoID=${pedidoID}&${queryString}`;
+  window.location.href = `/front/html/formPedidos.html?pedidoID=${pedidoID}&${queryString}`;
 }

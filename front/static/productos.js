@@ -141,7 +141,7 @@ function manejarEdicion(fila) {
 
   // Redirigir a la página "formProductos" y enviar los valores como parámetros
   const queryString = new URLSearchParams(valoresCeldas).toString();
-  window.location.href = `/formProductos?productoID=${productoID}&${queryString}`;
+  window.location.href = `/front/html/formProductos.html?productoID=${productoID}&${queryString}`;
 }
 
 //eliminar

@@ -181,3 +181,21 @@ li a:hover {
 .input-cantidad{
     width: 30px;
 }
+
+.contenedorlogin{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+.formlogin{
+    margin-left: 20px;
+}
+
+.labelslogin{
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}

@@ -2,11 +2,12 @@
 <html>
 <head>
     <title>Registrar Usuario</title>
-    <link rel="stylesheet" href="estilos.css">  
+    <link href="/front/static/styles.css" rel="stylesheet" type="text/css" />  
 </head>
 <body>
+  <div class="contenedorlogin">
     <h2>Registrarse</h2>
-    <form>
+    <form class="formlogin">
         <div>
             <label for="email">Email:</label>
             <input type="text" id="email" name="email" required>
@@ -31,8 +32,8 @@
             <input type="button" value="Registrarme" id="btnRegistrarse">
         </div>
     </form>
-
-    <script src="request.js"></script>
+  </div>
+    <script src="/front/static/request.js"></script>
     <script src="register.js"></script>
 </body>
 </html>
