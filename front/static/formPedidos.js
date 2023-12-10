@@ -10,7 +10,29 @@ function crear() {
         Destino: destino
     };
 
-    fetch("/pedidos", {
+    const url = `/pedidos`;
+    const datos = nuevo;
+    makeRequest(
+        url,
+        Method.POST, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        window.location.href = "/front/html/pedidos.html"
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+
+    /*fetch("/pedidos", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -30,7 +52,7 @@ function crear() {
     })
     .catch(error => {
         console.error("Error al crear un nuevo pedido:", error);
-    });
+    });*/
 }
 
 
@@ -40,7 +62,30 @@ document.addEventListener("DOMContentLoaded",function(){
   });    
   
   function cargarDatos(){
-      fetch("/productos", { method: "GET" })
+
+    const url = `/productos`;
+    const datos = null;
+    makeRequest(
+        url,
+        Method.GET, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        mostrarDatosTabla(data);
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+
+      /*fetch("/productos", { method: "GET" })
       .then(response => {
         if (!response.ok) {
           throw new Error("Error al obtener datos de productos.");
@@ -52,7 +97,7 @@ document.addEventListener("DOMContentLoaded",function(){
       })
       .catch(error => {
         console.error("Error al obtener datos de productos:", error);
-      });
+      });*/
   };
   
   function mostrarDatosTabla(datos){
@@ -214,7 +259,30 @@ function editar(productoID) {
         stock: stock
     };
 
-    fetch("/productos", {
+    
+    const url = `/productos`;
+    const datos = objetoEditado;
+    makeRequest(
+        url,
+        Method.PUT, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        window.location.href = "/front/html/productos.html";
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+
+    /*fetch("/productos", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -234,6 +302,6 @@ function editar(productoID) {
     })
     .catch(error => {
         console.error("Error al crear un nuevo producto:", error);
-    });
+    });*/
 }
   

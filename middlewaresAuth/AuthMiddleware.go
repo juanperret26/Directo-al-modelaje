@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juanperret/Directo-al-modelaje/clients"
-	"github.com/juanperret/Directo-al-modelaje/utils"
+	"github.com/juanperret/Directo-al-modelaje/go/clients"
+	"github.com/juanperret/Directo-al-modelaje/go/utils"
 )
 
 type AuthMiddleware struct {

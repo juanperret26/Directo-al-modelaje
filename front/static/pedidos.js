@@ -3,7 +3,28 @@ document.addEventListener("DOMContentLoaded",function(){
   });    
   
   function cargarDatos(){
-      fetch("/pedidos", { method: "GET" })
+    const url = `/pedidos`;
+    const datos = null;
+    makeRequest(
+        url,
+        Method.GET, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        mostrarDatosTabla(data)
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error al obtener pedidos . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+      /*fetch("/pedidos", { method: "GET" })
       .then(response => {
         if (!response.ok) {
           throw new Error("Error al obtener datos de pedidos.");
@@ -15,7 +36,7 @@ document.addEventListener("DOMContentLoaded",function(){
       })
       .catch(error => {
         console.error("Error al obtener datos de pedidos:", error);
-      });
+      });*/
   };
   
 
@@ -119,6 +140,28 @@ document.addEventListener("keyup",e=>{
 function eliminar(ID) {
     const id = ID;
     const url = `/pedidos/${id}`;
+    const datos = null;
+    makeRequest(
+        url,
+        Method.DELETE, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        location.reload();
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error al eliminar pedido . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+    /*const id = ID;
+    const url = `/pedidos/${id}`;
     fetch(url, {
       method: "DELETE"
     })
@@ -131,13 +174,13 @@ function eliminar(ID) {
       })
       .catch(error => {
         console.error("Error al eliminar el pedido:", error);
-      });
+      });*/
 };
 
 function aceptar(ID) {
-  /*const id = ID;
+  const id = ID;
   const url = `/pedidos/${id}`;
-  const datos = {};
+  const datos = null;
   makeRequest(
       url,
       Method.PUT, 
@@ -147,8 +190,8 @@ function aceptar(ID) {
       exitoSolicitud,
       errorSolicitud
   );
-*/
 
+/*
 const id = ID;
 const url = `/pedidos/${id}`;
 fetch(url, {
@@ -169,7 +212,7 @@ fetch(url, {
   .catch(error => {
     console.error("Error al aceptar el pedido:", error);
   });
-
+  */
   function exitoSolicitud(data) {
       console.log("éxito.");
       location.reload();
