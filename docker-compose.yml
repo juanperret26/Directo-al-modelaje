@@ -1,31 +1,35 @@
 version: '3'
+
 services:
   mongodb:
-    image: mongo
+    build:
+      context: .
+      dockerfile: mongo\Dockerfile
     ports:
       - "27017:27017"
     networks:
-      - mynetwork
+      - app-network
 
-  backend:
-    image: golang:latest  
-    ports:
-      - "8081:8080"
-    networks:
-      - mynetwork
+  go-app:
+    build:
+      context: .
+      dockerfile: go\Dockerfile
     depends_on:
       - mongodb
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
 
-  frontend:
-    image: nginx:latest  
+  front-app:
+    build:
+      context: .
+      dockerfile: front\Dockerfile
     ports:
       - "80:80"
     networks:
-      - mynetwork
-    depends_on:
-      - backend
+      - app-network
 
 networks:
-  mynetwork:
+  app-network:
     driver: bridge
-    
