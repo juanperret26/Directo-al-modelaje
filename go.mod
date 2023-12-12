@@ -1,5 +1,9 @@
 <<<<<<< HEAD:go.mod
+<<<<<<< HEAD:go.mod
 module github.com/juanperret26/Directo-al-modelaje
+=======
+module github.com/juanperret/Directo-al-modelaje/go
+>>>>>>> parent of ed9160c (.):go/go.mod
 =======
 module github.com/juanperret/Directo-al-modelaje/go
 >>>>>>> parent of ed9160c (.):go/go.mod

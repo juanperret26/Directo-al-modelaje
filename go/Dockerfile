@@ -18,6 +18,7 @@ RUN go build -o main .
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 CMD ["./main"]
 =======
 EXPOSE 8080
@@ -25,6 +26,9 @@ EXPOSE 8080
 CMD ["./main"]
 
 >>>>>>> parent of 4621b8b (.)
+=======
+CMD ["./main"]
+>>>>>>> parent of ed9160c (.)
 =======
 CMD ["./main"]
 >>>>>>> parent of ed9160c (.)
