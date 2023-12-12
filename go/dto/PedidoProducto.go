@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/juanperret26/Directo-al-modelaje/go/model"
+	"github.com/juanperret/Directo-al-modelaje/go/model"
 )
 
 type PedidoProducto struct {

@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/juanperret26/Directo-al-modelaje/go/clients/responses"
+	"github.com/juanperret/Directo-al-modelaje/go/clients/responses"
 )
 
 type AuthClientInterface interface {
