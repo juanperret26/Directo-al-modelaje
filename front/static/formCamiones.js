@@ -12,7 +12,29 @@ function crearNuevoCamion() {
         costo_km: costoKM
     };
 
-    fetch("/camiones", {
+    const url = `/camiones`;
+    const datos = nuevoCamion;
+    makeRequest(
+        url,
+        Method.POST, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        window.location.href = "/front/html/camiones.html";
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+
+    /*fetch("/camiones", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -31,5 +53,5 @@ function crearNuevoCamion() {
     })
     .catch(error => {
         console.error("Error al crear un nuevo camion:", error);
-    });
+    });*/
 }

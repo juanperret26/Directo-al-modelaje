@@ -21,7 +21,29 @@ function crear() {
         Tipo: " "
     };
 
-    fetch("/productos", {
+    const url = `/productos`;
+    const datos = nuevoProducto;
+    makeRequest(
+        url,
+        Method.POST, 
+        datos,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+    function exitoSolicitud(data) {
+        console.log("éxito.");
+        window.location.href = "/front/html/productos.html"
+        // Realiza otras acciones si es necesario
+    }
+  
+    function errorSolicitud(status, response) {
+        console.error("Error al crear producto . Estado:", status, "Respuesta:", response);
+        // Maneja el error de acuerdo a tus necesidades
+    }
+
+    /*fetch("/productos", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -41,7 +63,7 @@ function crear() {
     })
     .catch(error => {
         console.error("Error al crear un nuevo producto:", error);
-    });
+    });*/
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -111,8 +133,28 @@ function editar(productoID) {
     
         const id = productoID;
         const url = `/productos/${id}`;
-
-    fetch(url, {
+        const datos = objetoEditado;
+        makeRequest(
+            url,
+            Method.PUT, 
+            datos,
+            ContentType.JSON,
+            CallType.PRIVATE,
+            exitoSolicitud,
+            errorSolicitud
+        );
+        function exitoSolicitud(data) {
+            console.log("éxito.");
+            window.location.href = "/front/html/productos.html";
+            // Realiza otras acciones si es necesario
+        }
+      
+        function errorSolicitud(status, response) {
+            console.error("Error al crear el producto . Estado:", status, "Respuesta:", response);
+            // Maneja el error de acuerdo a tus necesidades
+        }   
+    /*
+        fetch(url, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -132,6 +174,6 @@ function editar(productoID) {
     })
     .catch(error => {
         console.error("Error al crear un nuevo producto:", error);
-    });
+    });*/
 }
   

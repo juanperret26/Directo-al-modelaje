@@ -10,19 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
-<<<<<<< HEAD:go/main.go
 
 	"github.com/juanperret26/Directo-al-modelaje/go/clients"
 	"github.com/juanperret26/Directo-al-modelaje/go/handler"
 	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
 	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
 	"github.com/juanperret26/Directo-al-modelaje/go/services"
-=======
-	"github.com/juanperret/Directo-al-modelaje/go/handler"
-	"github.com/juanperret/Directo-al-modelaje/go/middlewares"
-	"github.com/juanperret/Directo-al-modelaje/go/repositories"
-	"github.com/juanperret/Directo-al-modelaje/go/services"
->>>>>>> parent of 039e367 (Implementación de middleware auth):main.go
 )
 
 var (
@@ -39,8 +32,12 @@ var (
 )
 
 func main() {
+
+	authClient := &clients.AuthClient{}
+	AuthMiddleware := middlewares.NewAuthMiddleware(authClient)
 	router = gin.Default()
 
+	router.Use(AuthMiddleware.ValidateToken)
 	//config := cors.DefaultConfig()
 	//config.AllowOrigins = []string{"http://localhost:8080"}
 	//config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
