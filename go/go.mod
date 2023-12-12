@@ -1,4 +1,4 @@
-module github.com/juanperret/Directo-al-modelaje
+module github.com/juanperret/Directo-al-modelaje/go
 
 go 1.20
 

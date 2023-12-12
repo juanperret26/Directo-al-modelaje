@@ -7,9 +7,10 @@ import (
 	"net/http"
 
 	//"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
+
+	"github.com/gin-gonic/gin"
 	"github.com/juanperret/Directo-al-modelaje/go/handler"
 	"github.com/juanperret/Directo-al-modelaje/go/middlewares"
 	"github.com/juanperret/Directo-al-modelaje/go/repositories"
