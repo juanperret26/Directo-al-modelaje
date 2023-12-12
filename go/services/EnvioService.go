@@ -184,22 +184,17 @@ func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	}
 
 	//Agregamos la nueva parada al envio
-	if envio.Paradas[0].Kilometros == 0 && envio.Paradas[0].Ciudad == "" {
-		return false, errors.New("no se puede agregar una parada nula")
-
-	} else {
-		envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
-		envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
-		if envioDB.Destino.Nombre_ciudad == envio.Paradas[0].Ciudad {
-			envioDB.Estado = "Despachado"
-			for _, idPedido := range envioDB.Pedido {
-				pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
-				if err != nil {
-					log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
-				}
-				pedido.Estado = "Enviado"
-				service.pedidoRepository.ActualizarPedido(pedido)
+	envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
+	envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
+	if envioDB.Destino.Nombre_ciudad == envio.Paradas[0].Ciudad {
+		envioDB.Estado = "Despachado"
+		for _, idPedido := range envioDB.Pedido {
+			pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+			if err != nil {
+				log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
 			}
+			pedido.Estado = "Enviado"
+			service.pedidoRepository.ActualizarPedido(pedido)
 		}
 
 	}

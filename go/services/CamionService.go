@@ -2,7 +2,6 @@
 package services
 
 import (
-	"errors"
 	"log"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/dto"
@@ -47,15 +46,8 @@ func (service *camionService) ObtenerCamionPorPatente(id string) *dto.Camion {
 	return camion
 }
 func (service *camionService) InsertarCamion(camion *dto.Camion) error {
-
-	if camion.Patente != "" && camion.Costo_km != 0 && camion.Peso_maximo != 0 {
-		_, err := service.camionRepository.InsertarCamion(camion.GetModel())
-		return err
-	} else {
-		err := errors.New("No se pasaron bien los datos")
-		return err
-	}
-
+	_, err := service.camionRepository.InsertarCamion(camion.GetModel())
+	return err
 }
 
 func (service *camionService) EliminarCamion(id string) error {
