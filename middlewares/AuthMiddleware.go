@@ -4,8 +4,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+<<<<<<< HEAD:middlewaresAuth/AuthMiddleware.go
 	"github.com/juanperret26/Directo-al-modelaje/go/clients"
 	"github.com/juanperret26/Directo-al-modelaje/go/utils"
+=======
+	"github.com/juanperret/Directo-al-modelaje/clients"
+	"github.com/juanperret/Directo-al-modelaje/utils"
+>>>>>>> parent of 039e367 (Implementación de middleware auth):middlewares/AuthMiddleware.go
 )
 
 type AuthMiddleware struct {

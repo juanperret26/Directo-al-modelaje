@@ -35,29 +35,7 @@ function crear() {
         pedidos: [Id]
     };
 
-    const url = `/envios`;
-    const datos = nuevo;
-    makeRequest(
-        url,
-        Method.POST, 
-        datos,
-        ContentType.JSON,
-        CallType.PRIVATE,
-        exitoSolicitud,
-        errorSolicitud
-    );
-    function exitoSolicitud(data) {
-        console.log("éxito.");
-        window.location.href = "/front/html/envios.html";
-        // Realiza otras acciones si es necesario
-    }
-  
-    function errorSolicitud(status, response) {
-        console.error("Error . Estado:", status, "Respuesta:", response);
-        // Maneja el error de acuerdo a tus necesidades
-    }
-
-    /*fetch("/envios", {
+    fetch("/envios", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -77,7 +55,7 @@ function crear() {
     })
     .catch(error => {
         console.error("Error al crear un nuevo producto:", error);
-    });*/
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -144,29 +122,7 @@ function editar(productoID) {
         stock: stock
     };
 
-    const url = `/productos`;
-    const datos = objetoEditado;
-    makeRequest(
-        url,
-        Method.PUT, 
-        datos,
-        ContentType.JSON,
-        CallType.PRIVATE,
-        exitoSolicitud,
-        errorSolicitud
-    );
-    function exitoSolicitud(data) {
-        console.log("éxito.");
-        window.location.href = "/front/html/productos.html";
-        // Realiza otras acciones si es necesario
-    }
-  
-    function errorSolicitud(status, response) {
-        console.error("Error . Estado:", status, "Respuesta:", response);
-        // Maneja el error de acuerdo a tus necesidades
-    }
-
-    /*fetch("/productos", {
+    fetch("/productos", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -186,7 +142,7 @@ function editar(productoID) {
     })
     .catch(error => {
         console.error("Error al crear un nuevo producto:", error);
-    });*/
+    });
 }
 
   
@@ -196,30 +152,7 @@ document.addEventListener("DOMContentLoaded",function(){
   });    
   
   function cargarDatos(){
-
-    const url = `/pedidos`;
-    const datos = null;
-    makeRequest(
-        url,
-        Method.GET, 
-        datos,
-        ContentType.JSON,
-        CallType.PRIVATE,
-        exitoSolicitud,
-        errorSolicitud
-    );
-    function exitoSolicitud(data) {
-        console.log("éxito.");
-        mostrarDatosTabla(data);
-        // Realiza otras acciones si es necesario
-    }
-  
-    function errorSolicitud(status, response) {
-        console.error("Error . Estado:", status, "Respuesta:", response);
-        // Maneja el error de acuerdo a tus necesidades
-    }
-
-      /*fetch("/pedidos", { method: "GET" })
+      fetch("/pedidos", { method: "GET" })
       .then(response => {
         if (!response.ok) {
           throw new Error("Error al obtener datos de pedidos.");
@@ -231,7 +164,7 @@ document.addEventListener("DOMContentLoaded",function(){
       })
       .catch(error => {
         console.error("Error al obtener datos de pedidos:", error);
-      });*/
+      });
   };
   
 

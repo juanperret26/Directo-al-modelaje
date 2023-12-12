@@ -3,29 +3,7 @@ document.addEventListener("DOMContentLoaded",function(){
 });    
 
 function cargarDatos(){
-  const url = `/productos`;
-  const datos = null;
-  makeRequest(
-      url,
-      Method.GET, 
-      datos,
-      ContentType.JSON,
-      CallType.PRIVATE,
-      exitoSolicitud,
-      errorSolicitud
-  );
-  function exitoSolicitud(data) {
-      console.log("éxito.");
-      mostrarDatosTabla(data);
-      // Realiza otras acciones si es necesario
-  }
-
-  function errorSolicitud(status, response) {
-      console.error("Error . Estado:", status, "Respuesta:", response);
-      // Maneja el error de acuerdo a tus necesidades
-  }
-
-    /*fetch("/productos", { method: "GET" })
+    fetch("/productos", { method: "GET" })
     .then(response => {
       if (!response.ok) {
         throw new Error("Error al obtener datos de productos.");
@@ -37,7 +15,7 @@ function cargarDatos(){
     })
     .catch(error => {
       console.error("Error al obtener datos de productos:", error);
-    });*/
+    });
 };
 
 function mostrarDatosTabla(datos){
@@ -170,28 +148,7 @@ function manejarEdicion(fila) {
 function eliminar(ID) {
   const id = ID;
   const url = `/productos/${id}`;
-  const datos = null;
-  makeRequest(
-      url,
-      Method.DELETE, 
-      datos,
-      ContentType.JSON,
-      CallType.PRIVATE,
-      exitoSolicitud,
-      errorSolicitud
-  );
-  function exitoSolicitud(data) {
-      console.log("éxito.");
-      location.reload();
-      // Realiza otras acciones si es necesario
-  }
-
-  function errorSolicitud(status, response) {
-      console.error("Error . Estado:", status, "Respuesta:", response);
-      // Maneja el error de acuerdo a tus necesidades
-  }
-  
-  /*fetch(url, {
+  fetch(url, {
     method: "DELETE"
   })
     .then(response => {
@@ -203,5 +160,5 @@ function eliminar(ID) {
     })
     .catch(error => {
       console.error("Error al eliminar el producto:", error);
-    });*/
+    });
 }

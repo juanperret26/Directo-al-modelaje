@@ -3,30 +3,7 @@ document.addEventListener("DOMContentLoaded",function(){
   });    
   
   function cargarDatos(){
-
-    const url = `/envios`;
-    const datos = null;
-    makeRequest(
-        url,
-        Method.GET, 
-        datos,
-        ContentType.JSON,
-        CallType.PRIVATE,
-        exitoSolicitud,
-        errorSolicitud
-    );
-    function exitoSolicitud(data) {
-        console.log("éxito.");
-        mostrarDatosTabla(data);
-        // Realiza otras acciones si es necesario
-    }
-  
-    function errorSolicitud(status, response) {
-        console.error("Error . Estado:", status, "Respuesta:", response);
-        // Maneja el error de acuerdo a tus necesidades
-    }
-
-      /*fetch("/envios", { method: "GET" })
+      fetch("/envios", { method: "GET" })
       .then(response => {
         if (!response.ok) {
           throw new Error("Error al obtener datos de envios.");
@@ -38,7 +15,7 @@ document.addEventListener("DOMContentLoaded",function(){
       })
       .catch(error => {
         console.error("Error al obtener datos de envios:", error);
-      });*/
+      });
   };
   
 
