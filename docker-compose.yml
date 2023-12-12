@@ -3,9 +3,15 @@ services:
   mongodb:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     image: mongo:latest
     container_name: mongodb-container
     image: mongo
+=======
+    build:
+      context: .
+      dockerfile: mongo\Dockerfile
+>>>>>>> parent of ed9160c (.)
 =======
     build:
       context: .
