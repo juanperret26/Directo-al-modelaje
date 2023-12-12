@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juanperret/Directo-al-modelaje/go/dto"
-	"github.com/juanperret/Directo-al-modelaje/go/services"
+	"github.com/juanperret26/Directo-al-modelaje/go/dto"
+	"github.com/juanperret26/Directo-al-modelaje/go/services"
 )
 
 type CamionHandler struct {
