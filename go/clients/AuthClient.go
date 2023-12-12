@@ -7,13 +7,8 @@ package clients
 // 	"io/ioutil"
 // 	"net/http"
 
-<<<<<<< HEAD
 	"github.com/juanperret26/Directo-al-modelaje/go/clients/responses"
 )
-=======
-// 	"github.com/juanperret/Directo-al-modelaje/go/clients/responses"
-// )
->>>>>>> parent of 039e367 (Implementación de middleware auth)
 
 // type AuthClientInterface interface {
 // 	GetUserInfo(token string) (*responses.UserInfo, error)

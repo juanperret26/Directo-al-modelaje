@@ -1,41 +1,32 @@
 version: '3'
-
 services:
   mongodb:
     image: mongo:latest
     container_name: mongodb-container
+    image: mongo
     ports:
       - "27017:27017"
     networks:
       - app-network
-    volumes:
-      - volumen_tp:/data/db
 
   go-app:
     build:
-      context: ./go
-      dockerfile: Dockerfile
-    container_name: go-app-container
+      context: .
+      dockerfile: go\Dockerfile
     depends_on:
       - mongodb
-    ports:
-      - "8080:8080"
-    networks:
-      - app-network
 
   front-app:
     build:
-      context: ./front
-      dockerfile: Dockerfile
-    container_name: web-app-container
+      context: .
+      dockerfile: front\Dockerfile
     ports:
       - "80:80"
     networks:
-      - app-network
+      - mynetwork
+    depends_on:
+      - backend
 
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  volumen_tp:
