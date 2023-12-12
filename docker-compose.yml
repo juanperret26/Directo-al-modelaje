@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - mynetwork
+
+  backend:
+    image: golang:latest  
+    ports:
+      - "8081:8080"
+    networks:
+      - mynetwork
+    depends_on:
+      - mongodb
+
+  frontend:
+    image: nginx:latest  
+    ports:
+      - "80:80"
+    networks:
+      - mynetwork
+    depends_on:
+      - backend
+
+networks:
+  mynetwork:
+    driver: bridge
+    
