@@ -35,12 +35,17 @@ func (repository CamionRepository) OtenerCamiones() ([]model.Camion, error) {
 	cursor, err := collection.Find(context.Background(), filtro)
 	defer cursor.Close(context.Background())
 
+	if err != nil {
+		log.Printf("[repository:CamionRepository][method:ObtenerCamiones][reason:ERROR][error:%v]", err)
+		return nil, err
+	}
+
 	var camiones []model.Camion
 	for cursor.Next(context.Background()) {
 		var camion model.Camion
 		err := cursor.Decode(&camion)
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
+			log.Printf("[repository:CamionRepository][method:ObtenerCamiones][reason:DECODE_ERROR][error:%v]", err)
 		}
 		camiones = append(camiones, camion)
 	}

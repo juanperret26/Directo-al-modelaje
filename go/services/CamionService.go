@@ -47,15 +47,25 @@ func (service *camionService) ObtenerCamionPorPatente(id string) *dto.Camion {
 }
 func (service *camionService) InsertarCamion(camion *dto.Camion) error {
 	_, err := service.camionRepository.InsertarCamion(camion.GetModel())
+	if err != nil {
+		log.Printf("[service:CamionService][method:InsertarCamion][reason:ERROR][error:%v]", err)
+	}
 	return err
 }
 
 func (service *camionService) EliminarCamion(id string) error {
 	_, err := service.camionRepository.EliminarCamion(id)
+	if err != nil {
+		log.Printf("[service:CamionService][method:EliminarCamion][reason:ERROR][id:%d]", id)
+	}
+
 	return err
 }
 
 func (service *camionService) ActualizarCamion(camion *dto.Camion) error {
 	_, err := service.camionRepository.ActualizarCamion(camion.GetModel())
+	if err != nil {
+		log.Printf("[service:CamionService][method:ActualizarCamion][reason:ERROR][error:%v]", err)
+	}
 	return err
 }

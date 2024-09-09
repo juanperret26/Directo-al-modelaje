@@ -30,6 +30,7 @@ var (
 
 func main() {
 	router = gin.Default()
+	router.Use(middlewares.CORSMiddleware())
 
 	//config := cors.DefaultConfig()
 	//config.AllowOrigins = []string{"http://localhost:8080"}
@@ -51,8 +52,6 @@ func main() {
 
 func mappingRoutes() {
 	//cliente para api externa
-	router.Use(middlewares.CORSMiddleware())
-
 	// //Listado de rutas
 	groupEnvio := router.Group("/envios")
 	groupCamion := router.Group("/camiones")
@@ -155,6 +154,7 @@ func dependencies() {
 	pedidoService = services.NewPedidoService(pedidoRepository, productoRepository)
 	pedidoHandler = handler.NewPedidoHandler(pedidoService)
 
+	//Envio
 	var envioRepository repositories.EnvioRepositoryInterface
 	var envioService services.EnvioInterface
 	envioRepository = repositories.NewEnvioRepository(database)
