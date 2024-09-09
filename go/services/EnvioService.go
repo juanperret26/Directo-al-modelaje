@@ -5,10 +5,10 @@ import (
 	"errors"
 	"log"
 
-	"github.com/juanperret/Directo-al-modelaje/go/dto"
-	"github.com/juanperret/Directo-al-modelaje/go/model"
-	"github.com/juanperret/Directo-al-modelaje/go/repositories"
-	"github.com/juanperret/Directo-al-modelaje/go/utils"
+	"github.com/juanperret26/Directo-al-modelaje/go/dto"
+	"github.com/juanperret26/Directo-al-modelaje/go/model"
+	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
+	"github.com/juanperret26/Directo-al-modelaje/go/utils"
 )
 
 type EnvioInterface interface {

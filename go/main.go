@@ -2,7 +2,7 @@ package main
 
 import (
 	//Agregar imports de todas las clases, handlers, middlewares, etc
-	"html/template"
+
 	"log"
 	"net/http"
 
@@ -11,10 +11,10 @@ import (
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juanperret/Directo-al-modelaje/go/handler"
-	"github.com/juanperret/Directo-al-modelaje/go/middlewares"
-	"github.com/juanperret/Directo-al-modelaje/go/repositories"
-	"github.com/juanperret/Directo-al-modelaje/go/services"
+	"github.com/juanperret26/Directo-al-modelaje/go/handler"
+	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
+	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
+	"github.com/juanperret26/Directo-al-modelaje/go/services"
 )
 
 var (
@@ -26,8 +26,6 @@ var (
 
 	// Agregar router
 	router *gin.Engine
-
-	tmpl *template.Template
 )
 
 func main() {
@@ -43,9 +41,9 @@ func main() {
 	//Iniciar rutas
 	mappingRoutes()
 
-	router.LoadHTMLGlob("front/html/*")
+	router.LoadHTMLGlob("./front/html/*")
 
-	router.Static("front/static", "front./static")
+	router.Static("front/static", "/front/static")
 
 	log.Println("Iniciando el servidor...")
 	router.Run(":8080")
@@ -134,8 +132,7 @@ func dependencies() {
 
 	//Definicion de variables de interface
 	//Envios
-	var database repositories.DB
-	database = repositories.NewMongoDB()
+	database := repositories.NewMongoDB()
 
 	//Camiones
 	var camionRepository repositories.CamionRepositoryInterface
