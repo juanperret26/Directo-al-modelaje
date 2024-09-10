@@ -120,7 +120,7 @@ func (handler *EnvioHandler) ObtenerPedidosFiltrados(c *gin.Context) {
 		FechaCreacionHasta: fechaFinal,
 	}
 	// Manejo de errores
-	pedidos, err := handler.envioService.ObtenerPedidosFiltrados(&filtro)
+	pedidos, err := handler.envioService.ObtenerPedidosFiltro(&filtro)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

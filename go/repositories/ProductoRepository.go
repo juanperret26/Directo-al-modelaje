@@ -11,8 +11,7 @@ import (
 )
 
 type ProductoRepositoryInterface interface {
-	ObtenerProductos() ([]model.Producto, error)
-	// ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error)
+	ObtenerProductos(int) ([]model.Producto, error)
 	ObtenerProductoPorId(id string) (model.Producto, error)
 	InsertarProducto(producto model.Producto) (*mongo.InsertOneResult, error)
 	EliminarProducto(id string) (*mongo.DeleteResult, error)
@@ -27,11 +26,16 @@ func NewProductoRepository(db DB) *ProductoRepository {
 	return &ProductoRepository{db: db}
 }
 
-func (repository *ProductoRepository) ObtenerProductos() ([]model.Producto, error) {
+func (repository *ProductoRepository) ObtenerProductos(stockMinimo int) ([]model.Producto, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	filtro := bson.M{}
-	cursor, err := collection.Find(context.TODO(), filtro)
 
+	// Crear el filtro según el stockMinimo
+	filtro := bson.M{}
+	if stockMinimo > 0 {
+		filtro = bson.M{"stock": bson.M{"$gte": stockMinimo}}
+	}
+
+	cursor, err := collection.Find(context.TODO(), filtro)
 	defer cursor.Close(context.Background())
 
 	var productos []model.Producto
@@ -40,32 +44,13 @@ func (repository *ProductoRepository) ObtenerProductos() ([]model.Producto, erro
 		err := cursor.Decode(&producto)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
-
 		}
 		productos = append(productos, producto)
 	}
 	return productos, err
 }
 
-// func (repository *ProductoRepository) ObtenerProductosStockMinimo(tipoProducto string) ([]model.Producto, error) {
-// 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-// 	filtro := bson.M{"tipo_producto": tipoProducto}
 
-// 	cursor, err := collection.Find(context.Background(), filtro)
-// 	defer cursor.Close(context.Background())
-// 	var productos []model.Producto
-// 	for cursor.Next(context.Background()) {
-// 		var producto model.Producto
-// 		err := cursor.Decode(&producto)
-// 		if err != nil {
-// 			fmt.Printf("Error: %v\n", err)
-// 		}
-// 		if producto.Stock < producto.Stock_minimo {
-// 			productos = append(productos, producto)
-// 		}
-// 	}
-// 	return productos, err
-// }
 
 func (repository *ProductoRepository) ObtenerProductoPorId(id string) (model.Producto, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")

@@ -2,8 +2,8 @@
 package handler
 
 import (
-	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juanperret26/Directo-al-modelaje/go/dto"
@@ -19,24 +19,21 @@ func NewProductoHandler(productoService services.ProductoInterface) *ProductoHan
 }
 
 func (handler *ProductoHandler) ObtenerProductos(c *gin.Context) {
-	productos := handler.ProductoService.ObtenerProductos()
-	if productos == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron productos"})
-	} else {
-		log.Printf("[handler:ProductoHandler] [method:ObtenerProductos] [productos:%v] [cantidad:%d]", productos, len(productos))
-		c.JSON(http.StatusOK, productos)
+	// Obtener el parámetro de query 'stockMinimo' y convertirlo a int
+	stockMinimoQuery := c.DefaultQuery("stockMinimo", "0")
+	stockMinimo, err := strconv.Atoi(stockMinimoQuery)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "stockMinimo debe ser un número entero"})
+		return
 	}
+	// Llamar al servicio con el filtro de stock mínimo
+	productos := handler.ProductoService.ObtenerProductos(stockMinimo)
 
+	// Responder con los productos obtenidos
+	c.JSON(http.StatusOK, productos)
 }
 
-//	func (handler *ProductoHandler) ObtenerProductosStockMinimo(c *gin.Context) {
-//		productos := handler.ProductoService.ObtenerProductosStockMinimo()
-//		if productos == nil {
-//			c.JSON(http.StatusBadRequest, gin.H{"error": "No se encontraron productos"})
-//		} else {
-//			c.JSON(http.StatusOK, productos)
-//		}
-//	}
+//obtener producto por id
 func (handler *ProductoHandler) ObtenerProductoPorId(c *gin.Context) {
 	id := c.Param("id")
 	producto := handler.ProductoService.ObtenerProductoPorId(id)
@@ -46,6 +43,7 @@ func (handler *ProductoHandler) ObtenerProductoPorId(c *gin.Context) {
 		c.JSON(http.StatusOK, producto)
 	}
 }
+
 
 func (handler *ProductoHandler) InsertarProducto(c *gin.Context) {
 	var producto dto.Producto

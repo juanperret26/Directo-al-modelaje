@@ -4,6 +4,7 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/model"

@@ -86,7 +86,7 @@ func (handler *EnvioHandler) ObtenerEnviosPorParametros(c *gin.Context) {
 		FechaCreacionDesde: fechaCreacionDesde,
 		FechaCreacionHasta: fechaCreacionHasta,
 	}
-	envios, err := handler.envioService.ObtenerEnviosPorParametros(&filtro)
+	envios, err := handler.envioService.ObtenerEnviosFiltro(&filtro)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -104,8 +104,8 @@ func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		resultado := handler.envioService.InsertarEnvio(&envio)
-		if resultado != nil {
+		err := handler.envioService.InsertarEnvio(&envio)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo insertar el envio"})
 		} else {
 			c.JSON(http.StatusCreated, gin.H{"error": "Envio insertado correctamente"})

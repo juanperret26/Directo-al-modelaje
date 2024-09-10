@@ -16,8 +16,8 @@ import (
 type EnvioRepositoryInterface interface {
 	ObtenerEnvios() ([]model.Envio, error)
 	ObtenerEnvioPorId(id string) (model.Envio, error)
-	ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error)
-	ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error)
+	ObtenerPedidosFiltro(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error)
+	ObtenerEnviosFiltro(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error)
 	InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error)
 	EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error)
 	ActualizarEnvio(envio model.Envio) error
@@ -63,7 +63,7 @@ func (repository EnvioRepository) ObtenerEnvioPorId(id string) (model.Envio, err
 	err := collection.FindOne(context.Background(), filtro).Decode(&envio)
 	return envio, err
 }
-func (repository *EnvioRepository) ObtenerPedidosFiltrados(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error) {
+func (repository *EnvioRepository) ObtenerPedidosFiltro(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
 
 	filtro := bson.M{"codigo_envio": codigoEnvio, "estado": estado}
@@ -91,7 +91,7 @@ func (repository *EnvioRepository) ObtenerPedidosFiltrados(codigoEnvio string, e
 	return pedidos, nil
 }
 
-func (repository EnvioRepository) ObtenerEnviosPorParametros(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error) {
+func (repository EnvioRepository) ObtenerEnviosFiltro(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
 	filtro := bson.M{}
 
