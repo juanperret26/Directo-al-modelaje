@@ -28,6 +28,10 @@ func NewProductoService(productoRepository repositories.ProductoRepositoryInterf
 
 func (service *productoService) ObtenerProductos(filtroStockMinimo int) []*dto.Producto {
 	productoDB, _ := service.productoRepository.ObtenerProductos(filtroStockMinimo)
+	if productoDB == nil {
+		errors.New("No se encontraron productos")
+		return nil
+	}
 	var productos []*dto.Producto
 
 	for _, productoDB := range productoDB {
@@ -46,12 +50,18 @@ func (service *productoService) ObtenerProductos(filtroStockMinimo int) []*dto.P
 
 
 func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
-	productoDB, err := service.productoRepository.ObtenerProductoPorId(id)
+	if id == "" {
+		productoDB, err := service.productoRepository.ObtenerProductoPorId(id)
 	if err != nil {
 		log.Printf("[service:productoService] [method:ObtenerProductoPorId] [reason: NOT_FOUND][id:%d]", id)
+		return nil
 	}
 	producto := dto.NewProducto(productoDB)
 	return producto
+	}
+	errors.New("No se pasó un id")
+	return nil
+	
 }
 
 
@@ -72,9 +82,14 @@ func (service *productoService) ActualizarProducto(producto *dto.Producto) error
 }
 
 func (service *productoService) EliminarProducto(id string) error {
-	_, err := service.productoRepository.EliminarProducto(id)
-	if err != nil {
-		log.Printf("[service:productoService] [method:EliminarProducto] [reason: NOT_FOUND][id:%d]", id)
+	if id == "" {
+		_, err := service.productoRepository.EliminarProducto(id)
+		if err != nil {
+			log.Printf("[service:productoService] [method:EliminarProducto] [reason: NOT_FOUND][id:%d]", id)
+			return err
+		}
+		return err
 	}
-	return err
+	errors.New("No se pasó un id")
+	return nil
 }

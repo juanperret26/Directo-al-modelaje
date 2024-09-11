@@ -41,16 +41,26 @@ func (service *pedidoService) ObtenerPedidos() []*dto.Pedido {
 	}
 	return pedidos
 }
-func (service *pedidoService) ObtenerPedidoPorId(id string) *dto.Pedido {
+func (service *pedidoService) ObtenerPedidoPorId(id string) (*dto.Pedido) {
 	pedidoDB, err := service.pedidoRepository.ObtenerPedidoPorId(id)
-	if err == nil {
-		log.Printf("[service:PedidoService][method:ObtenerPedidoPorId][reason:NOT_FOUND][id:%d]", id)	
+	if err != nil {
+		log.Printf("[service:PedidoService][method:ObtenerPedidoPorId][reason:NOT_FOUND][id:%s]", id)
+		return nil
 	}
 	pedido := dto.NewPedido(pedidoDB)
 	return pedido
 }
 
+
 func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
+	if err := service.validarPedido(pedido); err != nil {
+		return err
+	}
+	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
+	return err
+}
+
+func (service *pedidoService) validarPedido(pedido *dto.Pedido) error {
 	if pedido.Estado == "" {
 		return errors.New("El estado del pedido está vacío")
 	}
@@ -63,11 +73,9 @@ func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
 	if pedido.PedidoProductos[0].CodigoProducto == "" {
 		return errors.New("El código del producto está vacío")
 	}
-
-	// Si los datos son válidos, insertar el pedido
-	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
-	return err
+	return nil
 }
+
 
 
 func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
