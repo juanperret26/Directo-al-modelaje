@@ -1,9 +1,10 @@
-// Crear una interface, struct y new CamionRepository
 package repositories
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/model"
@@ -13,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// EnvioRepositoryInterface define los métodos a implementar.
 type EnvioRepositoryInterface interface {
 	ObtenerEnvios() ([]model.Envio, error)
 	ObtenerEnvioPorId(id string) (model.Envio, error)
@@ -24,150 +26,110 @@ type EnvioRepositoryInterface interface {
 	ObtenerCantidadEnviosPorEstado(estado string) (int, error)
 	IniciarViaje(envio model.Envio) error
 }
+
+// EnvioRepository es la implementación de EnvioRepositoryInterface.
 type EnvioRepository struct {
 	db DB
 }
 
-func NewEnvioRepository(db DB) *EnvioRepository {
-	return &EnvioRepository{db: db}
+// NewEnvioRepository crea una nueva instancia de EnvioRepository.
+func NewEnvioRepository(db DB) (*EnvioRepository, error) {
+	if db == nil || db.GetClient() == nil {
+		return nil, errors.New("la base de datos no está inicializada")
+	}
+	return &EnvioRepository{db: db}, nil
 }
-func (repository EnvioRepository) IniciarViaje(envio model.Envio) error {
+
+// IniciarViaje actualiza el estado de un envío para iniciar el viaje.
+func (repository *EnvioRepository) IniciarViaje(envio model.Envio) error {
+	if envio.Id.IsZero() {
+		return errors.New("el ID del envío no puede estar vacío")
+	}
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
 	filtro := bson.M{"_id": envio.Id}
 	actualizacion := bson.M{"$set": envio}
+
 	_, err := collection.UpdateOne(context.Background(), filtro, actualizacion)
 	return err
 }
-func (repository EnvioRepository) ObtenerEnvios() ([]model.Envio, error) {
+
+// ObtenerEnvios devuelve todos los envíos.
+func (repository *EnvioRepository) ObtenerEnvios() ([]model.Envio, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{}
-	cursor, err := collection.Find(context.Background(), filtro)
-	defer cursor.Close(context.Background())
-	var envios []model.Envio
-	for cursor.Next(context.Background()) {
-		var envio model.Envio
-		err := cursor.Decode(&envio)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
-		envios = append(envios, envio)
-	}
-	return envios, err
-
-}
-func (repository EnvioRepository) ObtenerEnvioPorId(id string) (model.Envio, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	objectID := utils.GetObjectIDFromStringID(id)
-	filtro := bson.M{"_id": objectID}
-	var envio model.Envio
-	err := collection.FindOne(context.Background(), filtro).Decode(&envio)
-	return envio, err
-}
-func (repository *EnvioRepository) ObtenerPedidosFiltro(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-
-	filtro := bson.M{"codigo_envio": codigoEnvio, "estado": estado}
-
-	if !fechaInicio.IsZero() && !fechaFinal.IsZero() {
-		filtro["fecha_creacion"] = bson.M{"$gte": fechaInicio, "$lte": fechaFinal}
-	}
-
-	cursor, err := collection.Find(context.Background(), filtro)
+	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
+		log.Printf("Error al obtener envíos: %v", err)
 		return nil, err
 	}
 	defer cursor.Close(context.Background())
 
-	var pedidos []model.Pedido
-	for cursor.Next(context.Background()) {
-		var pedido model.Pedido
-		if err := cursor.Decode(&pedido); err != nil {
-			fmt.Printf("Error decoding pedido: %v\n", err)
-			continue
-		}
-		pedidos = append(pedidos, pedido)
-	}
-
-	return pedidos, nil
-}
-
-func (repository EnvioRepository) ObtenerEnviosFiltro(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{}
-
-	//Solo filtra por patente si le pasamos un valor distinto de ""
-	if patente != "" {
-		filtro["patente_camion"] = patente
-	}
-
-	//Solo filtra por estado si le pasamos un estado positivo
-	if estado != "" {
-		filtro["estado"] = estado
-	}
-
-	//Tomo la fecha de creacion en 0001-01-01 como la ausencia de filtro
-	if !fechaCreacionDesde.IsZero() || !fechaCreacionHasta.IsZero() {
-		filtroFecha := bson.M{}
-		if !fechaCreacionDesde.IsZero() {
-			filtroFecha["$gte"] = fechaCreacionDesde
-		}
-		if !fechaCreacionHasta.IsZero() {
-			filtroFecha["$lte"] = fechaCreacionHasta
-		}
-		filtro["fecha_creacion"] = filtroFecha
-	}
-
-	//TODO: hay que probar que este filtro ande bien
-
-	if ultimaParada != "" {
-		filtro["paradas"] = bson.M{}
-		filtro["paradas.$slice"] = -1
-	}
-
-	cursor, err := collection.Find(context.Background(), filtro)
-	defer cursor.Close(context.Background())
 	var envios []model.Envio
 	for cursor.Next(context.Background()) {
 		var envio model.Envio
-		err := cursor.Decode(&envio)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
+		if err := cursor.Decode(&envio); err != nil {
+			log.Printf("Error al decodificar envío: %v", err)
+			continue
 		}
 		envios = append(envios, envio)
 	}
-	return envios, err
-}
-func (repository EnvioRepository) InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	resultado, err := collection.InsertOne(context.Background(), envio)
-	return resultado, err
+	return envios, nil
 }
 
-func (repository EnvioRepository) EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{"_id": id}
-	resultado, err := collection.DeleteOne(context.TODO(), filtro)
-	return resultado, err
-}
-func (repository EnvioRepository) ActualizarEnvio(envio model.Envio) error {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{"_id": envio.Id}
+// ObtenerEnvioPorId devuelve un envío dado su ID.
+func (repository *EnvioRepository) ObtenerEnvioPorId(id string) (model.Envio, error) {
+	if id == "" {
+		return model.Envio{}, errors.New("el ID no puede estar vacío")
+	}
+	objectID := utils.GetObjectIDFromStringID(id)
 
-	//seteo la fecha de actualizacion
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	var envio model.Envio
+	if err := collection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&envio); err != nil {
+		return model.Envio{}, fmt.Errorf("error al buscar envío: %w", err)
+	}
+	return envio, nil
+}
+
+// InsertarEnvio agrega un nuevo envío a la base de datos.
+func (repository *EnvioRepository) InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error) {
+	if envio.Id.IsZero() {
+		envio.Id = primitive.NewObjectID()
+	}
+	envio.Creacion = time.Now()
 	envio.Actualizacion = time.Now()
 
-	actualizacion := bson.M{"$set": envio}
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	return collection.InsertOne(context.Background(), envio)
+}
 
-	_, err := collection.UpdateOne(context.Background(), filtro, actualizacion)
+// EliminarEnvio elimina un envío dado su ID.
+func (repository *EnvioRepository) EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	if id.IsZero() {
+		return nil, errors.New("el ID del envío no puede estar vacío")
+	}
 
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	return collection.DeleteOne(context.Background(), bson.M{"_id": id})
+}
+
+// ActualizarEnvio actualiza un envío en la base de datos.
+func (repository *EnvioRepository) ActualizarEnvio(envio model.Envio) error {
+	if envio.Id.IsZero() {
+		return errors.New("el ID del envío no puede estar vacío")
+	}
+	envio.Actualizacion = time.Now()
+
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	_, err := collection.UpdateOne(context.Background(), bson.M{"_id": envio.Id}, bson.M{"$set": envio})
 	return err
 }
-func (repository EnvioRepository) ObtenerCantidadEnviosPorEstado(estado string) (int, error) {
+
+// ObtenerCantidadEnviosPorEstado devuelve la cantidad de envíos en un estado específico.
+func (repository *EnvioRepository) ObtenerCantidadEnviosPorEstado(estado string) (int, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	filtro := bson.M{"estado": estado}
-	cursor, err := collection.CountDocuments(context.Background(), filtro)
+	count, err := collection.CountDocuments(context.Background(), bson.M{"estado": estado})
 	if err != nil {
 		return 0, err
 	}
-	return int(cursor), nil
+	return int(count), nil
 }

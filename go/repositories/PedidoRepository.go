@@ -1,4 +1,3 @@
-// Crear una interface, struct y new CamionRepository
 package repositories
 
 import (
@@ -9,12 +8,11 @@ import (
 	"github.com/juanperret26/Directo-al-modelaje/go/model"
 	"github.com/juanperret26/Directo-al-modelaje/go/utils"
 	"go.mongodb.org/mongo-driver/bson"
-
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type PedidoRepositoryInterface interface {
-	//Metodos para implementar en el service
+	// Métodos para implementar en el service
 	ObtenerPedidos() ([]model.Pedido, error)
 	ObtenerPedidoPorId(id string) (model.Pedido, error)
 	InsertarPedido(pedido model.Pedido) (*mongo.InsertOneResult, error)
@@ -23,6 +21,7 @@ type PedidoRepositoryInterface interface {
 	ObtenerCantidadPedidosPorEstado(estado string) (int, error)
 	ObtenerPedidosPorEstado(estado string) ([]model.Pedido, error)
 }
+
 type PedidoRepository struct {
 	db DB
 }
@@ -35,79 +34,72 @@ func (repository *PedidoRepository) ObtenerPedidos() ([]model.Pedido, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 	filtro := bson.M{}
 	cursor, err := collection.Find(context.TODO(), filtro)
-
-	defer cursor.Close(context.Background())
+	if err != nil {
+		return nil, err // Asegura manejo de errores temprano
+	}
+	defer cursor.Close(context.Background()) // Siempre cerrar el cursor
 
 	var pedidos []model.Pedido
 	for cursor.Next(context.Background()) {
 		var pedido model.Pedido
-		err := cursor.Decode(&pedido)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-
+		if err := cursor.Decode(&pedido); err != nil {
+			fmt.Printf("Error decodificando pedido: %v\n", err)
+			continue // Ignora errores individuales pero sigue procesando
 		}
 		pedidos = append(pedidos, pedido)
 	}
-	return pedidos, err
+	return pedidos, cursor.Err() // Retorna error si ocurrió al recorrer el cursor
 }
+
 func (repository *PedidoRepository) ObtenerPedidoPorId(id string) (model.Pedido, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 	objectID := utils.GetObjectIDFromStringID(id)
 	filtro := bson.M{"_id": objectID}
 
-	cursor, err := collection.Find(context.Background(), filtro)
-	defer cursor.Close(context.Background())
-
 	var pedido model.Pedido
-	for cursor.Next(context.Background()) {
-		err := cursor.Decode(&pedido)
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
-
+	err := collection.FindOne(context.Background(), filtro).Decode(&pedido) // Usa FindOne para optimizar
+	if err != nil {
+		return model.Pedido{}, err
 	}
-	return pedido, err
+	return pedido, nil
 }
-
-//Lista de pedidos. Se puede filtrar por código de envío, estado, rango de fecha de creación.
 
 func (repository *PedidoRepository) InsertarPedido(pedido model.Pedido) (*mongo.InsertOneResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 	pedido.Fecha_creacion = time.Now()
 	pedido.Actualizacion = time.Now()
-	pedido.Estado = "Pendiente"
-	resultado, err := collection.InsertOne(context.Background(), pedido)
-	return resultado, err
+	pedido.Estado = "Pendiente" // Estado predeterminado
+	return collection.InsertOne(context.Background(), pedido)
 }
 
-// agregar que se pueda cancelar unicamente cuando el estado sea pendiente
 func (repository *PedidoRepository) EliminarPedido(id string) (*mongo.UpdateResult, error) {
 	objectID := utils.GetObjectIDFromStringID(id)
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
-	filtro := bson.M{"_id": objectID}
+	filtro := bson.M{"_id": objectID, "estado": "Pendiente"} // Solo permite cancelar pedidos pendientes
 	entidad := bson.M{"$set": bson.M{"estado": "Cancelado", "actualizacion": time.Now()}}
-	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
-	return resultado, err
+	return collection.UpdateOne(context.TODO(), filtro, entidad)
 }
 
 func (repository *PedidoRepository) ActualizarPedido(pedido model.Pedido) (*mongo.UpdateResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
 	filtro := bson.M{"_id": pedido.Id}
-	entidad := bson.M{"$set": bson.M{"estado": pedido.Estado, "actualizacion": time.Now()}}
-	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
-	return resultado, err
+	entidad := bson.M{
+		"$set": bson.M{
+			"estado":       pedido.Estado,
+			"actualizacion": time.Now(),
+		},
+	}
+	return collection.UpdateOne(context.TODO(), filtro, entidad)
 }
+
 func (repository *PedidoRepository) ObtenerCantidadPedidosPorEstado(estado string) (int, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
-
 	filtro := bson.M{"estado": estado}
 
 	cantidad, err := collection.CountDocuments(context.Background(), filtro)
-
 	if err != nil {
 		return 0, err
 	}
-
 	return int(cantidad), nil
 }
 
@@ -124,8 +116,11 @@ func (repository *PedidoRepository) ObtenerPedidosPorEstado(estado string) ([]mo
 	var pedidos []model.Pedido
 	for cursor.Next(context.Background()) {
 		var pedido model.Pedido
+		if err := cursor.Decode(&pedido); err != nil {
+			fmt.Printf("Error decodificando pedido: %v\n", err)
+			continue
+		}
 		pedidos = append(pedidos, pedido)
 	}
-
-	return pedidos, nil
+	return pedidos, cursor.Err()
 }
