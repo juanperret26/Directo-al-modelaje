@@ -61,7 +61,7 @@ func (handler *EnvioHandler) ObtenerEnvioPorId(c *gin.Context) {
 
 }
 
-func (handler *EnvioHandler) ObtenerEnviosPorParametros(c *gin.Context) {
+func (handler *EnvioHandler) ObtenerEnviosFiltro(c *gin.Context) {
 	patente := c.Param("patente")
 	estado := c.Param("estado")
 	ultimaParada := c.Param("ultimaParada")
@@ -104,8 +104,8 @@ func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		err := handler.envioService.InsertarEnvio(&envio)
-		if err != nil {
+		resultado := handler.envioService.InsertarEnvio(&envio)
+		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo insertar el envio"})
 		} else {
 			c.JSON(http.StatusCreated, gin.H{"error": "Envio insertado correctamente"})
@@ -174,7 +174,7 @@ func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
 			return
 		} else {
 			//Agregamos un log para indicar información relevante del resultado
-			log.Printf("[handler:EnvioHandler][method:AgregarParada][envio:%+v][user:%s]", envio)
+			log.Printf("[handler:EnvioHandler][method:AgregarParada][envio:%+v]", envio)
 			c.JSON(http.StatusOK, "Parada agregada correctamente")
 		}
 

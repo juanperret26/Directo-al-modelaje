@@ -22,11 +22,17 @@ type camionService struct {
 	envioRepository  repositories.EnvioRepositoryInterface
 }
 
-func NewCamionService(camionRepository repositories.CamionRepositoryInterface) *camionService {
-	return &camionService{camionRepository: camionRepository}
+func NewCamionService(
+	camionRepository repositories.CamionRepositoryInterface,
+	envioRepository repositories.EnvioRepositoryInterface,
+) *camionService {
+	return &camionService{
+		camionRepository: camionRepository,
+		envioRepository:  envioRepository,
+	}
 }
 
-func (service *camionService) ObtenerCamiones() ([]*dto.Camion) {
+func (service *camionService) ObtenerCamiones() []*dto.Camion {
 	camionDB, err := service.camionRepository.OtenerCamiones()
 	if err != nil {
 		log.Printf("[service:CamionService][method:ObtenerCamiones][reason:ERROR][error:%v]", err)
@@ -41,8 +47,7 @@ func (service *camionService) ObtenerCamiones() ([]*dto.Camion) {
 	return camiones
 }
 
-
-func (service *camionService) ObtenerCamionPorPatente(id string) (*dto.Camion) {
+func (service *camionService) ObtenerCamionPorPatente(id string) *dto.Camion {
 	if id == "" {
 		err := errors.New("la patente no puede estar vacía")
 		log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:INVALID_INPUT][error:%v]", err)
@@ -64,11 +69,10 @@ func (service *camionService) InsertarCamion(camion *dto.Camion) error {
 		log.Printf("[service:CamionService][method:InsertarCamion][reason:ERROR][error:%v]", err)
 		return err
 	}
-	 _, err := service.camionRepository.InsertarCamion(camion.GetModel())
-		if err != nil {
-			log.Printf("[service:CamionService][method:InsertarCamion][reason:ERROR][error:%v]", err)
-		}
-	
+	_, err := service.camionRepository.InsertarCamion(camion.GetModel())
+	if err != nil {
+		log.Printf("[service:CamionService][method:InsertarCamion][reason:ERROR][error:%v]", err)
+	}
 
 	return err
 }
@@ -80,13 +84,12 @@ func (service *camionService) EliminarCamion(id string) error {
 		return err
 	}
 
-	_,err := service.camionRepository.EliminarCamion(id)
+	_, err := service.camionRepository.EliminarCamion(id)
 	if err != nil {
 		log.Printf("[service:CamionService][method:EliminarCamion][reason:ERROR][id:%s]", id)
 	}
 	return err
 }
-
 
 func (service *camionService) ActualizarCamion(camion *dto.Camion) error {
 	if camion == nil {
@@ -100,4 +103,3 @@ func (service *camionService) ActualizarCamion(camion *dto.Camion) error {
 	}
 	return err
 }
-

@@ -4,15 +4,15 @@ import (
 	//Agregar imports de todas las clases, handlers, middlewares, etc
 
 	"log"
-	"net/http"
+	// "net/http"
 
 	//"github.com/gin-contrib/cors"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/juanperret26/Directo-al-modelaje/go/handler"
-	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
 	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
 	"github.com/juanperret26/Directo-al-modelaje/go/services"
 )
@@ -30,22 +30,16 @@ var (
 
 func main() {
 	router = gin.Default()
-	router.Use(middlewares.CORSMiddleware())
-
+	// router.Use(middlewares.CORSMiddleware())
+	// router.LoadHTMLGlob("front/html/*")
 	//config := cors.DefaultConfig()
 	//config.AllowOrigins = []string{"http://localhost:8080"}
 	//config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
-	//router.Use(cors.New(config))
 
 	//Iniciar objetos de handler
 	dependencies()
 	//Iniciar rutas
 	mappingRoutes()
-
-	router.LoadHTMLGlob("./front/html/*")
-
-	router.Static("front/static", "/front/static")
-
 	log.Println("Iniciando el servidor...")
 	router.Run(":8080")
 }
@@ -94,70 +88,69 @@ func mappingRoutes() {
 	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
 
 	//rutas html
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
-	router.GET("/htmlproductos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "productos.html", nil)
-	})
-	router.GET("/htmlpedidos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "pedidos.html", nil)
-	})
-	router.GET("/htmlinformes", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "informes.html", nil)
-	})
-	router.GET("/htmlenvios", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "envios.html", nil)
-	})
-	router.GET("/htmlcamiones", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "camiones.html", nil)
-	})
-	router.GET("/formProductos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formProductos.html", nil)
-	})
-	router.GET("/formPedidos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formPedidos.html", nil)
-	})
-	router.GET("/formEnvios", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formEnvios.html", nil)
-	})
-	router.GET("/formCamiones", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formCamiones.html", nil)
-	})
+	// router.GET("/", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "index.html", nil)
+	// })
+	// router.GET("/htmlproductos", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "productos.html", nil)
+	// })
+	// router.GET("/htmlpedidos", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "pedidos.html", nil)
+	// })
+	// router.GET("/htmlinformes", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "informes.html", nil)
+	// })
+	// router.GET("/htmlenvios", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "envios.html", nil)
+	// })
+	// router.GET("/htmlcamiones", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "camiones.html", nil)
+	// })
+	// router.GET("/formProductos", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "formProductos.html", nil)
+	// })
+	// router.GET("/formPedidos", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "formPedidos.html", nil)
+	// })
+	// router.GET("/formEnvios", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "formEnvios.html", nil)
+	// })
+	// router.GET("/formCamiones", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "formCamiones.html", nil)
+	// })
 }
 
 // Generacion de los objetos que se van a usar en la api
 func dependencies() {
 
 	//Definicion de variables de interface
-	//Envios
 	database := repositories.NewMongoDB()
-
-	//Camiones
 	var camionRepository repositories.CamionRepositoryInterface
 	var camionService services.CamionInterface
-	camionRepository = repositories.NewCamionRepository(database)
-	camionService = services.NewCamionService(camionRepository)
-	camionHandler = handler.NewCamionHandler(camionService)
-
-	//Productos
+	var envioRepository repositories.EnvioRepositoryInterface
+	var envioService services.EnvioInterface
+	var pedidoRepository repositories.PedidoRepositoryInterface
+	var pedidoService services.PedidoInterface
 	var productoRepository repositories.ProductoRepositoryInterface
 	var productoService services.ProductoInterface
+
+	//Productos
 	productoRepository = repositories.NewProductoRepository(database)
 	productoService = services.NewProductoService(productoRepository)
 	productoHandler = handler.NewProductoHandler(productoService)
 
 	// //Pedidos
-	var pedidoRepository repositories.PedidoRepositoryInterface
-	var pedidoService services.PedidoInterface
 	pedidoRepository = repositories.NewPedidoRepository(database)
 	pedidoService = services.NewPedidoService(pedidoRepository, productoRepository)
 	pedidoHandler = handler.NewPedidoHandler(pedidoService)
 
 	//Envio
-	var envioRepository repositories.EnvioRepositoryInterface
-	var envioService services.EnvioInterface
 	envioRepository = repositories.NewEnvioRepository(database)
 	envioService = services.NewEnvioService(envioRepository, camionRepository, pedidoRepository, productoRepository)
 	envioHandler = handler.NewEnvioHandler(envioService)
+
+	//Camiones
+	camionRepository = repositories.NewCamionRepository(database)
+	camionService = services.NewCamionService(camionRepository, envioRepository)
+	camionHandler = handler.NewCamionHandler(camionService)
 }

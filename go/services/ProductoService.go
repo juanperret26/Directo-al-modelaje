@@ -10,8 +10,7 @@ import (
 )
 
 type ProductoInterface interface {
-
-    ObtenerProductos(filtroStockMinimo int) []*dto.Producto
+	ObtenerProductos(filtroStockMinimo int) []*dto.Producto
 	ObtenerProductoPorId(id string) *dto.Producto
 	InsertarProducto(producto *dto.Producto) error
 	EliminarProducto(id string) error
@@ -47,23 +46,20 @@ func (service *productoService) ObtenerProductos(filtroStockMinimo int) []*dto.P
 	return productos
 }
 
-
-
 func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
 	if id == "" {
 		productoDB, err := service.productoRepository.ObtenerProductoPorId(id)
-	if err != nil {
-		log.Printf("[service:productoService] [method:ObtenerProductoPorId] [reason: NOT_FOUND][id:%d]", id)
-		return nil
-	}
-	producto := dto.NewProducto(productoDB)
-	return producto
+		if err != nil {
+			log.Printf("[service:productoService] [method:ObtenerProductoPorId] [reason: NOT_FOUND][id:%d]", id)
+			return nil
+		}
+		producto := dto.NewProducto(productoDB)
+		return producto
 	}
 	errors.New("No se pasó un id")
 	return nil
-	
-}
 
+}
 
 func (service *productoService) InsertarProducto(producto *dto.Producto) error {
 
