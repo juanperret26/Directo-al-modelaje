@@ -4,15 +4,16 @@ import (
 	//Agregar imports de todas las clases, handlers, middlewares, etc
 
 	"log"
-	// "net/http"
+	"net/http"
 
-	//"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/handler"
+	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
 	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
 	"github.com/juanperret26/Directo-al-modelaje/go/services"
 )
@@ -30,14 +31,16 @@ var (
 
 func main() {
 	router = gin.Default()
-	// router.Use(middlewares.CORSMiddleware())
-	// router.LoadHTMLGlob("front/html/*")
-	//config := cors.DefaultConfig()
-	//config.AllowOrigins = []string{"http://localhost:8080"}
-	//config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	router.Use(middlewares.CORSMiddleware())
+	router.LoadHTMLGlob("front/html/*")
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 
 	//Iniciar objetos de handler
 	dependencies()
+
 	//Iniciar rutas
 	mappingRoutes()
 	log.Println("Iniciando el servidor...")
@@ -88,36 +91,36 @@ func mappingRoutes() {
 	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
 
 	//rutas html
-	// router.GET("/", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "index.html", nil)
-	// })
-	// router.GET("/htmlproductos", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "productos.html", nil)
-	// })
-	// router.GET("/htmlpedidos", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "pedidos.html", nil)
-	// })
-	// router.GET("/htmlinformes", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "informes.html", nil)
-	// })
-	// router.GET("/htmlenvios", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "envios.html", nil)
-	// })
-	// router.GET("/htmlcamiones", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "camiones.html", nil)
-	// })
-	// router.GET("/formProductos", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "formProductos.html", nil)
-	// })
-	// router.GET("/formPedidos", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "formPedidos.html", nil)
-	// })
-	// router.GET("/formEnvios", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "formEnvios.html", nil)
-	// })
-	// router.GET("/formCamiones", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "formCamiones.html", nil)
-	// })
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
+	router.GET("/htmlproductos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "productos.html", nil)
+	})
+	router.GET("/htmlpedidos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "pedidos.html", nil)
+	})
+	router.GET("/htmlinformes", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "informes.html", nil)
+	})
+	router.GET("/htmlenvios", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "envios.html", nil)
+	})
+	router.GET("/htmlcamiones", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "camiones.html", nil)
+	})
+	router.GET("/formProductos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formProductos.html", nil)
+	})
+	router.GET("/formPedidos", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formPedidos.html", nil)
+	})
+	router.GET("/formEnvios", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formEnvios.html", nil)
+	})
+	router.GET("/formCamiones", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "formCamiones.html", nil)
+	})
 }
 
 // Generacion de los objetos que se van a usar en la api

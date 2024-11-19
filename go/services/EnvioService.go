@@ -1,4 +1,3 @@
-// Crear interface, structura y new EnvioService
 package services
 
 import (
@@ -12,7 +11,6 @@ import (
 )
 
 type EnvioInterface interface {
-	//Metodos para implementar en el handler
 	ObtenerEnvios() []*dto.Envio
 	ObtenerEnvioPorId(id string) *dto.Envio
 	ObtenerPedidosFiltro(filtro *dto.Filtro) ([]*dto.Pedido, error)
@@ -21,11 +19,12 @@ type EnvioInterface interface {
 	EliminarEnvio(id string) error
 	ActualizarEnvio(envio *dto.Envio) error
 	IniciarViaje(envio *dto.Envio) error
-	ObtenerCantidadEnviosPorEstado(estado string) ([]dto.Estado, error)
+	ObtenerCantidadEnviosPorEstado(estado string) (int, error)
 	AgregarParada(envio *dto.Envio) (bool, error)
 	ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, error)
 	DescontarStock(pedido model.Pedido) error
 }
+
 type envioService struct {
 	envioRepository    repositories.EnvioRepositoryInterface
 	pedidoRepository   repositories.PedidoRepositoryInterface
@@ -41,6 +40,7 @@ func NewEnvioService(envioRepository repositories.EnvioRepositoryInterface, cami
 		productoRepository: productoRepository,
 	}
 }
+
 func (service *envioService) ObtenerEnvios() []*dto.Envio {
 	envioDB, err := service.envioRepository.ObtenerEnvios()
 	if err != nil {
@@ -180,13 +180,13 @@ func (service *envioService) ActualizarEnvio(envio *dto.Envio) error {
 	return err
 }
 
-func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
+func (service envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	//En teoria, recibimos un envio que tiene solamente id y la nueva parada
 	//Primero buscamos el envio por id
 	envioDB, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
 	camion, err := service.camionRepository.ObtenerCamionPorPatente(envioDB.PatenteCamion)
 	if err != nil {
-		log.Printf("[service:EnvioService][method:AgregarParada][reason:NOT_FOUND][id:%d]", envio.Id)
+		log.Printf("[service:EnvioService][method:AgregarParada][reason:NOTFOUND][id:%d]", envio.Id)
 		return false, err
 	}
 
@@ -213,88 +213,53 @@ func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	//Actualizamos el envio en la base de datos, que ahora tiene la nueva parada
 	return true, service.envioRepository.ActualizarEnvio(envioDB)
 }
-func (service *envioService) DescontarStock(pedido model.Pedido) error {
-	for _, productoPedido := range pedido.PedidoProductos {
-		// Buscar el producto correspondiente al codigo
-		producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
-		if err != nil {
-			log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
-			return err
-		}
-		producto.Stock -= productoPedido.Cantidad
 
-		service.productoRepository.ActualizarProducto(producto)
-	}
-	return nil
-}
 func (service *envioService) IniciarViaje(envio *dto.Envio) error {
-	if envio == nil {
-		err := errors.New("el envio no puede ser nulo")
+	if envio == nil || envio.PatenteCamion == "" {
+		err := errors.New("el envio o la patente del camión no pueden ser nulos")
 		log.Printf("[service:EnvioService][method:IniciarViaje][reason:INVALID_INPUT][error:%v]", err)
 		return err
 	}
-	envioABuscar, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
-	if err != nil {
-		log.Printf("[service:EnvioService][method:IniciarViaje][reason:NOT_FOUND][id:%d]", envio.Id)
+
+	// Verificar si el camión tiene alguna parada para empezar el viaje
+	if len(envio.Paradas) == 0 {
+		err := errors.New("el envío no tiene paradas programadas")
+		log.Printf("[service:EnvioService][method:IniciarViaje][reason:NO_STOPS][error:%v]", err)
 		return err
 	}
-	envioABuscar.Estado = "En ruta"
 
-	//Calcular el stock de los productos y actualizarlo
-	for _, idPedido := range envioABuscar.Pedido {
-		var pedido model.Pedido
-
-		pedido.Estado = "Para enviar"
-		service.pedidoRepository.ActualizarPedido(pedido)
-		pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
-
-		if err != nil {
-			log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
-		}
-		service.DescontarStock(pedido)
-		service.pedidoRepository.ActualizarPedido(pedido)
+	// Cambiar el estado del envío a "En viaje"
+	envio.Estado = "En viaje"
+	err := service.envioRepository.ActualizarEnvio(envio.GetModel())
+	if err != nil {
+		log.Printf("[service:EnvioService][method:IniciarViaje][reason:ERROR][error:%v]", err)
+		return err
 	}
-	service.envioRepository.ActualizarEnvio(envioABuscar)
-	return err
+
+	log.Printf("[service:EnvioService][method:IniciarViaje][reason:SUCCESS][envio_id:%s]", envio.Id)
+	return nil
 }
 
-func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) ([]dto.Estado, error) {
-	var cantidadEnvios []int
-	var listaEstados []dto.Estado
-	switch estado {
-	case "A despachar":
-		cantidadEnviosADespachar, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
-		if err != nil {
-			return nil, err
-		}
-		cantidadEnvios = append(cantidadEnvios, cantidadEnviosADespachar)
-		listaEstados = append(listaEstados, dto.Estado{Estado: "A despachar", Cantidad: cantidadEnviosADespachar})
-	case "En ruta":
-		cantidadEnviosEnRuta, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
-		if err != nil {
-			return nil, err
-		}
-		cantidadEnvios = append(cantidadEnvios, cantidadEnviosEnRuta)
-		listaEstados = append(listaEstados, dto.Estado{Estado: "En ruta", Cantidad: cantidadEnviosEnRuta})
-	case "Despachado":
-		cantidadEnviosDespachados, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
-		if err != nil {
-			return nil, err
-		}
-		cantidadEnvios = append(cantidadEnvios, cantidadEnviosDespachados)
-		listaEstados = append(listaEstados, dto.Estado{Estado: "Despachado", Cantidad: cantidadEnviosDespachados})
-	default:
-		log.Printf("El estado ingresado no es valido")
+func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) (int, error) {
+	if estado == "" {
+		err := errors.New("el estado no puede ser vacío")
+		log.Printf("[service:EnvioService][method:ObtenerCantidadEnviosPorEstado][reason:INVALID_INPUT][error:%v]", err)
+		return 0, err
 	}
-	return listaEstados, nil
+	cantidades, err := service.envioRepository.ObtenerCantidadEnviosPorEstado(estado)
+	if err != nil {
+		log.Printf("[service:EnvioService][method:ObtenerCantidadEnviosPorEstado][reason:ERROR][error:%v]", err)
+		return cantidades, err
+	}
+	return cantidades, nil
 }
 
-func (service *envioService) ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, error) {
+func (service envioService) ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, error) {
 	var beneficio int = 0
 
 	if fecha.FechaCreacionDesde.IsZero() && fecha.FechaCreacionHasta.IsZero() {
 		err := errors.New("las fechas no pueden ser nulas")
-		log.Printf("[service:EnvioService][method:ObtnerBeneficiosEntreFecha][reason:INVALID_INPUT][error:%v]", err)
+		log.Printf("[service:EnvioService][method:ObtnerBeneficiosEntreFecha][reason:INVALIDINPUT][error:%v]", err)
 		return 0, err
 	}
 	envios, err := service.envioRepository.ObtenerEnviosFiltro("", "", "", fecha.FechaCreacionDesde, fecha.FechaCreacionHasta)
@@ -318,4 +283,19 @@ func (service *envioService) ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int,
 		}
 	}
 	return beneficio, nil
+}
+
+func (service *envioService) DescontarStock(pedido model.Pedido) error {
+	for _, productoPedido := range pedido.PedidoProductos {
+		// Buscar el producto correspondiente al codigo
+		producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+		if err != nil {
+			log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
+			return err
+		}
+		producto.Stock -= productoPedido.Cantidad
+
+		service.productoRepository.ActualizarProducto(producto)
+	}
+	return nil
 }

@@ -33,11 +33,8 @@ type EnvioRepository struct {
 }
 
 // NewEnvioRepository crea una nueva instancia de EnvioRepository.
-func NewEnvioRepository(db DB) (*EnvioRepository, error) {
-	if db == nil || db.GetClient() == nil {
-		return nil, errors.New("la base de datos no está inicializada")
-	}
-	return &EnvioRepository{db: db}, nil
+func NewEnvioRepository(db DB) *EnvioRepository {
+	return &EnvioRepository{db: db}
 }
 
 // IniciarViaje actualiza el estado de un envío para iniciar el viaje.
@@ -132,4 +129,69 @@ func (repository *EnvioRepository) ObtenerCantidadEnviosPorEstado(estado string)
 		return 0, err
 	}
 	return int(count), nil
+}
+func (repository *EnvioRepository) ObtenerEnviosFiltro(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	filtro := bson.M{}
+	if patente != "" {
+		filtro["patente"] = patente
+	}
+	if estado != "" {
+		filtro["estado"] = estado
+	}
+	if ultimaParada != "" {
+		filtro["ultima_parada"] = ultimaParada
+	}
+	if !fechaCreacionDesde.IsZero() {
+		filtro["creacion"] = bson.M{"$gte": fechaCreacionDesde}
+	}
+	if !fechaCreacionHasta.IsZero() {
+		filtro["creacion"] = bson.M{"$lte": fechaCreacionHasta}
+	}
+	cursor, err := collection.Find(context.Background(), filtro)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	var envios []model.Envio
+	for cursor.Next(context.Background()) {
+		var envio model.Envio
+		if err := cursor.Decode(&envio); err != nil {
+			log.Printf("Error al decodificar envío: %v", err)
+			continue
+		}
+		envios = append(envios, envio)
+	}
+	return envios, nil
+}
+func (repository *EnvioRepository) ObtenerPedidosFiltro(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error) {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
+	filtro := bson.M{}
+	if codigoEnvio != "" {
+		filtro["codigo_envio"] = codigoEnvio
+	}
+	if estado != "" {
+		filtro["estado"] = estado
+	}
+	if !fechaInicio.IsZero() {
+		filtro["fecha_creacion"] = bson.M{"$gte": fechaInicio}
+	}
+	if !fechaFinal.IsZero() {
+		filtro["fecha_creacion"] = bson.M{"$lte": fechaFinal}
+	}
+	cursor, err := collection.Find(context.Background(), filtro)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	var pedidos []model.Pedido
+	for cursor.Next(context.Background()) {
+		var pedido model.Pedido
+		if err := cursor.Decode(&pedido); err != nil {
+			log.Printf("Error al decodificar pedido: %v", err)
+			continue
+		}
+		pedidos = append(pedidos, pedido)
+	}
+	return pedidos, nil
 }

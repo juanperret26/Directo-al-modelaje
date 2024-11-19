@@ -26,7 +26,11 @@ func (handler *CamionHandler) ObtenerCamiones(c *gin.Context) {
 
 func (handler *CamionHandler) ObtenerCamionPorPatente(c *gin.Context) {
 	patente := c.Param("patente")
-	camion := handler.camionService.ObtenerCamionPorPatente(patente)
+	camion, err := handler.camionService.ObtenerCamionPorPatente(patente)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
 	if camion == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "pedido no encontrado"})
 	} else {

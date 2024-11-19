@@ -1,4 +1,3 @@
-// Crear interface, structura y new CamionService
 package services
 
 import (
@@ -10,17 +9,21 @@ import (
 )
 
 type CamionInterface interface {
-	//Metodos para implementar en el handler
+	// Métodos para implementar en el handler
 	ObtenerCamiones() []*dto.Camion
-	ObtenerCamionPorPatente(patente string) *dto.Camion
+	ObtenerCamionPorPatente(patente string) (*dto.Camion, error)
 	InsertarCamion(camion *dto.Camion) error
 	EliminarCamion(id string) error
 	ActualizarCamion(camion *dto.Camion) error
 }
+
 type camionService struct {
 	camionRepository repositories.CamionRepositoryInterface
 	envioRepository  repositories.EnvioRepositoryInterface
 }
+
+// Asegurarse de que camionService implemente CamionInterface
+var _ CamionInterface = (*camionService)(nil)
 
 func NewCamionService(
 	camionRepository repositories.CamionRepositoryInterface,
@@ -47,28 +50,25 @@ func (service *camionService) ObtenerCamiones() []*dto.Camion {
 	return camiones
 }
 
-func (service *camionService) ObtenerCamionPorPatente(id string) *dto.Camion {
-	if id == "" {
-		err := errors.New("la patente no puede estar vacía")
-		log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:INVALID_INPUT][error:%v]", err)
-		return nil
+func (service *camionService) ObtenerCamionPorPatente(patente string) (*dto.Camion, error) {
+	if patente == "" {
+		return nil, errors.New("la patente no puede estar vacía")
 	}
 
-	camionDB, err := service.camionRepository.ObtenerCamionPorPatente(id)
+	camionDB, err := service.camionRepository.ObtenerCamionPorPatente(patente)
 	if err != nil {
-		log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:NOT_FOUND][patente:%s]", id)
-		return nil
+		log.Printf("[service:CamionService][method:ObtenerCamionPorPatente][reason:NOT_FOUND][patente:%s]", patente)
+		return nil, err
 	}
 
-	return dto.NewCamion(camionDB)
+	return dto.NewCamion(camionDB), nil
 }
 
 func (service *camionService) InsertarCamion(camion *dto.Camion) error {
 	if camion == nil {
-		err := errors.New("el objeto camion es nulo")
-		log.Printf("[service:CamionService][method:InsertarCamion][reason:ERROR][error:%v]", err)
-		return err
+		return errors.New("el objeto camion es nulo")
 	}
+
 	_, err := service.camionRepository.InsertarCamion(camion.GetModel())
 	if err != nil {
 		log.Printf("[service:CamionService][method:InsertarCamion][reason:ERROR][error:%v]", err)
@@ -79,9 +79,7 @@ func (service *camionService) InsertarCamion(camion *dto.Camion) error {
 
 func (service *camionService) EliminarCamion(id string) error {
 	if id == "" {
-		err := errors.New("la patente del camión no puede estar vacía")
-		log.Printf("[service:CamionService][method:EliminarCamion][reason:INVALID_INPUT][error:%v]", err)
-		return err
+		return errors.New("la patente del camión no puede estar vacía")
 	}
 
 	_, err := service.camionRepository.EliminarCamion(id)
@@ -93,9 +91,7 @@ func (service *camionService) EliminarCamion(id string) error {
 
 func (service *camionService) ActualizarCamion(camion *dto.Camion) error {
 	if camion == nil {
-		err := errors.New("el objeto camion es nulo")
-		log.Printf("[service:CamionService][method:ActualizarCamion][reason:INVALID_INPUT][error:%v]", err)
-		return err
+		return errors.New("el objeto camion es nulo")
 	}
 	_, err := service.camionRepository.ActualizarCamion(camion.GetModel())
 	if err != nil {
