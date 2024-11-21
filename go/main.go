@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/juanperret26/Directo-al-modelaje/go/clients"
 	"github.com/juanperret26/Directo-al-modelaje/go/handler"
 	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
 	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
@@ -32,7 +33,8 @@ var (
 func main() {
 	router = gin.Default()
 	router.Use(middlewares.CORSMiddleware())
-	router.LoadHTMLGlob("front/html/*")
+	router.LoadHTMLGlob("/app/front/html/*")
+	// router.Static("/front/static", "./front/static")
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:8080"}
@@ -49,6 +51,11 @@ func main() {
 
 func mappingRoutes() {
 	//cliente para api externa
+	authClient := clients.NewAuthClient()
+	authMiddleware := middlewares.NewAuthMiddleware(authClient)
+
+	router.Use(middlewares.CORSMiddleware())
+	router.Use(authMiddleware.ValidateToken)
 	// //Listado de rutas
 	groupEnvio := router.Group("/envios")
 	groupCamion := router.Group("/camiones")
