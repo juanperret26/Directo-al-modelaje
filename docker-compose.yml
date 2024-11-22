@@ -15,8 +15,8 @@ services:
 
   go-app:
     build:
-      context: .
-      dockerfile: go/Dockerfile
+      context: ./go
+      dockerfile: Dockerfile
     container_name: go-app-container
     depends_on:
       - mongodb      
@@ -24,9 +24,7 @@ services:
       - "8080:8080"
     networks:
       - app-network
-    volumes:
-      - ./front/html:/app/front/html
-
+      
   # Servicio del frontend (web-app)
   web-app:
     build:

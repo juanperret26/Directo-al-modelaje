@@ -4,9 +4,6 @@ import (
 	//Agregar imports de todas las clases, handlers, middlewares, etc
 
 	"log"
-	"net/http"
-
-	"github.com/gin-contrib/cors"
 
 	//"github.com/juanperret/Directo-al-modelaje/clients"
 
@@ -33,12 +30,11 @@ var (
 func main() {
 	router = gin.Default()
 	router.Use(middlewares.CORSMiddleware())
-	router.LoadHTMLGlob("/app/front/html/*")
-	// router.Static("/front/static", "./front/static")
 
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	
+	// config := cors.DefaultConfig()
+	// config.AllowOrigins = []string{"http://localhost:8080"}
+	// config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 
 	//Iniciar objetos de handler
 	dependencies()
@@ -96,38 +92,6 @@ func mappingRoutes() {
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)
 	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
-
-	//rutas html
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
-	router.GET("/htmlproductos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "productos.html", nil)
-	})
-	router.GET("/htmlpedidos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "pedidos.html", nil)
-	})
-	router.GET("/htmlinformes", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "informes.html", nil)
-	})
-	router.GET("/htmlenvios", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "envios.html", nil)
-	})
-	router.GET("/htmlcamiones", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "camiones.html", nil)
-	})
-	router.GET("/formProductos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formProductos.html", nil)
-	})
-	router.GET("/formPedidos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formPedidos.html", nil)
-	})
-	router.GET("/formEnvios", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formEnvios.html", nil)
-	})
-	router.GET("/formCamiones", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formCamiones.html", nil)
-	})
 }
 
 // Generacion de los objetos que se van a usar en la api
