@@ -25,7 +25,7 @@ function crearNuevoCamion() {
     );
     function exitoSolicitud(data) {
         console.log("éxito.");
-        window.location.href = "/front/html/camiones.html";
+        window.location.href = "/html/camiones.html";
         // Realiza otras acciones si es necesario
     }
   
