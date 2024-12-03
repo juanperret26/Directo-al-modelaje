@@ -1,0 +1,20 @@
+FROM golang:latest
+
+WORKDIR /app
+
+# Copia los archivos necesarios para las dependencias
+COPY go.mod go.sum ./
+RUN go mod download
+
+
+# Copia todo el proyecto al contenedor
+COPY . .
+
+# Compila la aplicación
+RUN go build -o main .
+
+# Expone el puerto
+EXPOSE 8080
+
+# Comando para ejecutar la aplicación
+CMD ["./main"]

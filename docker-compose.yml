@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   mongodb:
     image: mongo:latest
     container_name: mongodb-container
@@ -12,31 +11,32 @@ services:
     volumes:
       - volumen_tp:/data/db
 
+  backend:
+      build:
+        context: .
+        dockerfile: DockerfileBack
+      ports:
+        - "8080:8080"
+      volumes:
+        - /app/html  # Incluye las plantillas HTML
+        - /app/css   # Incluye los archivos CSS
+        - /app/js    # Incluye los archivos JS
+      environment:
+        - GIN_MODE=debug
 
-  go-app:
-    build:
-      context: ./go
-      dockerfile: Dockerfile
-    container_name: go-app-container
-    depends_on:
-      - mongodb      
-    ports:
-      - "8080:8080"
-    networks:
-      - app-network
+
       
-  # Servicio del frontend (web-app)
   web-app:
     build:
-      context: ./front   
-      dockerfile: Dockerfile
+      context: . 
+      dockerfile: DockerfileFront
     container_name: web-app-container
     ports:
       - "80:80"
     networks:
       - app-network
     depends_on:
-      - go-app        
+      - backend        
 
 networks:
   app-network:
@@ -44,3 +44,4 @@ networks:
 
 volumes:
   volumen_tp:
+

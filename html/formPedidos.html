@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Form Productos</title>
+    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" type="text/css" />
+    <script src="https://kit.fontawesome.com/b4bd295ebb.js" crossorigin="anonymous"></script>
+    <link href="static/css/styles.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="inputs">
+        <input class="input" type="text" placeholder="Destino">
+    </div>
+    <div class="container">
+        <table id="TablaPrincipal">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Peso unit.</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Actualización</th>
+                    <th>Creación</th>
+                    <th>Añadir</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody id="TableBody"></tbody>
+        </table>
+</div>
+    <div id="botonesForm">
+        <button id="aceptar"><i class="fa-solid fa-check" style="color: #ffffff;"></i></button>
+        <a href="pedidos.html"><button id="cancelar"><i class="fa-solid fa-xmark" style="color: #ffffff;"></i></button></a>
+    </div>
+    <script src="/static/js/formPedidos.js"></script>
+    <script src="/static/js/request.js"></script>
+</body>
+</html>

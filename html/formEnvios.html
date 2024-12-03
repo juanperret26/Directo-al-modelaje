@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Form Productos</title>
+    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" type="text/css" />
+    <script src="https://kit.fontawesome.com/b4bd295ebb.js" crossorigin="anonymous"></script>
+    <link href="static/css/styles.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="inputs">
+        <input class="input" type="text" placeholder="Patente">
+        <input class="input" type="text" placeholder="Ciudad destino">
+        <input class="input" type="text" placeholder="Km">
+    </div>
+    <div class="container">
+        <table id="TablaPrincipal">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Productos</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>Seleccionar</th>
+                </tr>
+            </thead>
+            <tbody id="TableBody"></tbody>
+        </table>
+</div>
+    <div id="botonesForm">
+        <button id="aceptar"><i class="fa-solid fa-check" style="color: #ffffff;"></i></button>
+        <a href="envios.html"><button id="cancelar"><i class="fa-solid fa-xmark" style="color: #ffffff;"></i></button></a>
+    </div>
+    <script src="/front/static/formEnvios.js"></script>
+    <script src="/front/static/request.js"></script>
+</body>
+</html>
