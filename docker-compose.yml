@@ -10,6 +10,12 @@ services:
       - app-network
     volumes:
       - volumen_tp:/data/db
+    healthcheck:
+        test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
 
   backend:
       build:
@@ -23,6 +29,10 @@ services:
         - /app/js    # Incluye los archivos JS
       environment:
         - GIN_MODE=debug
+      
+      depends_on:
+        mongodb:
+          condition: service_healthy
 
 
       
