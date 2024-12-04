@@ -8,8 +8,9 @@ import (
 )
 
 type MongoDB struct {
+	Client *mongo.Client
+}
 
-@@ -14,35 +14,56 @@ type MongoDB struct {
 
 func NewMongoDB() *MongoDB {
 	instancia := &MongoDB{}
@@ -32,14 +33,9 @@ func (mongoDB *MongoDB) GetClient() *mongo.Client {
 	return mongoDB.Client
 }
 
-// La dejamos privada, se ejecuta cuando se crea el objeto
 func (mongoDB *MongoDB) Connect() error {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	log.Println("Intentando conectar a MongoDB...")
 	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
-
-
-	client, err := mongo.Connect(context.Background(), clientOptions)
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -61,7 +57,6 @@ func (mongoDB *MongoDB) Connect() error {
 }
 
 func (mongoDB *MongoDB) Disconnect() error {
-	return mongoDB.Client.Disconnect(context.Background())
 	log.Println("Desconectando cliente de MongoDB...")
 	err := mongoDB.Client.Disconnect(context.Background())
 	if err != nil {
