@@ -34,7 +34,7 @@ function crear() {
     );
     function exitoSolicitud(data) {
         console.log("éxito.");
-        window.location.href = "/front/html/productos.html"
+        window.location.href = "/html/productos.html"
         // Realiza otras acciones si es necesario
     }
   
