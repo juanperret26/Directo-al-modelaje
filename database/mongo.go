@@ -1,16 +1,16 @@
+package database
+
 import (
 	"context"
 	"log" // Importar log para depuración
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	
 )
 
 type MongoDB struct {
 	Client *mongo.Client
 }
-
 
 func NewMongoDB() *MongoDB {
 	instancia := &MongoDB{}
