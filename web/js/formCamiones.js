@@ -12,7 +12,7 @@ function crearNuevoCamion() {
         costo_km: costoKM
     };
 
-    const url = `/htmlcamiones`;
+    const url = "http://localhost:8080/camiones/";
     const datos = nuevoCamion;
     makeRequest(
         url,
@@ -25,7 +25,7 @@ function crearNuevoCamion() {
     );
     function exitoSolicitud(data) {
         console.log("éxito.");
-        window.location.href = "/html/camiones.html";
+        window.location.href = "/camiones.html";
         // Realiza otras acciones si es necesario
     }
   

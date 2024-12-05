@@ -1,10 +1,16 @@
+const customHeaders = new Headers();
+customHeaders.append("User-Agent", "PostmanRuntime/7.33.0");
+customHeaders.append("Accept", "*/*");
+customHeaders.append("Accept-Encoding", "gzip, deflate, br");
+customHeaders.append("Connection", "keep-alive");
+
 document.addEventListener("DOMContentLoaded",function(){
     cargarDatos();  
 });    
   
   function cargarDatos(){
 
-    const url = `/htmlcamiones`;
+    const url = `/camiones`;
     const datos = null;
     makeRequest(
         url,

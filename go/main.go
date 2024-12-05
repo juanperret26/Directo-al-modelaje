@@ -4,13 +4,13 @@ import (
 	//Agregar imports de todas las clases, handlers, middlewares, etc
 
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	// "github.com/juanperret26/Directo-al-modelaje/go/clients"
+	"github.com/juanperret26/Directo-al-modelaje/go/clients"
 	"github.com/juanperret26/Directo-al-modelaje/go/handler"
-	// "github.com/juanperret26/Directo-al-modelaje/go/middlewares"
+	"github.com/juanperret26/Directo-al-modelaje/go/middlewares"
+
 	"github.com/juanperret26/Directo-al-modelaje/go/repositories"
 	"github.com/juanperret26/Directo-al-modelaje/go/services"
 )
@@ -30,9 +30,15 @@ func main() {
 	router = gin.Default()
 	// router.Use(middlewares.CORSMiddleware())
 
-	router.Static("/static/css", "./css")
-	router.Static("/static/js", "./js")
-	router.LoadHTMLGlob("./html/*")
+	// router.Use(cors.New(cors.Config{
+    //     AllowOrigins:     []string{"http://localhost"},
+    //     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+    //     AllowHeaders:     []string{"Content-Type", "Authorization"},
+    //     ExposeHeaders:    []string{"Content-Length"},
+    //     AllowCredentials: true,
+    // }))
+
+
 
 	//Iniciar objetos de handler
 	dependencies()
@@ -45,11 +51,11 @@ func main() {
 
 func mappingRoutes() {
 	//cliente para api externa
-	// authClient := &clients.AuthClient{}
-	// authMiddleware := middlewares.NewAuthMiddleware(authClient)
+	authClient := &clients.AuthClient{}
+	authMiddleware := middlewares.NewAuthMiddleware(authClient)
 
-	// router.Use(middlewares.CORSMiddleware())
-	// router.Use(authMiddleware.ValidateToken)
+	router.Use(middlewares.CORSMiddleware())
+	router.Use(authMiddleware.ValidateToken)
 	// //Listado de rutas
 	groupEnvio := router.Group("/envios")
 	groupCamion := router.Group("/camiones")
@@ -90,44 +96,6 @@ func mappingRoutes() {
 	groupPedido.POST("/", pedidoHandler.InsertarPedido)
 	groupPedido.DELETE("/:id", pedidoHandler.EliminarPedido)
 	groupPedido.PUT("/:id", pedidoHandler.AceptarPedido)
-
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
-	router.GET("/htmlproductos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "productos.html", nil)
-	})
-	router.GET("/htmlpedidos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "pedidos.html", nil)
-	})
-	router.GET("/htmlinformes", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "informes.html", nil)
-	})
-	router.GET("/htmlenvios", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "envios.html", nil)
-	})
-	router.GET("/htmlcamiones", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "camiones.html", nil)
-	})
-	router.GET("/formProductos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formProductos.html", nil)
-	})
-	router.GET("/formPedidos", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formPedidos.html", nil)
-	})
-	router.GET("/formEnvios", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formEnvios.html", nil)
-	})
-	router.GET("/formCamiones", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "formCamiones.html", nil)
-	})
-
-	router.GET("/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "login.html", nil)
-	})
-	router.GET("/register", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "register.html", nil)
-	})
 
 }
 

@@ -1,10 +1,11 @@
+package database
+
 import (
 	"context"
 	"log" // Importar log para depuración
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	
 )
 
 type MongoDB struct {
@@ -35,7 +36,7 @@ func (mongoDB *MongoDB) GetClient() *mongo.Client {
 
 func (mongoDB *MongoDB) Connect() error {
 	log.Println("Intentando conectar a MongoDB...")
-	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mongodb-container:27017")
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
