@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded",function(){
 });    
 
 function cargarDatos(){
-  const url = `/htmlproductos`;
+  const url = `http://localhost:8080/productos/`;
   const datos = null;
   makeRequest(
       url,

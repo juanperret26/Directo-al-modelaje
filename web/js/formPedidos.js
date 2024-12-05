@@ -10,7 +10,7 @@ function crear() {
         Destino: destino
     };
 
-    const url = `/pedidos`;
+    const url = `http://localhost:8080/pedios/`;
     const datos = nuevo;
     makeRequest(
         url,

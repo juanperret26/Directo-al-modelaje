@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded",function(){
   
   function cargarDatos(){
 
-    const url = `/htmlenvios`;
+    const url = `http://localhost:8080/envios/`;
     const datos = null;
     makeRequest(
         url,

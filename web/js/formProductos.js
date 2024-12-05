@@ -21,7 +21,7 @@ function crear() {
         Tipo: " "
     };
 
-    const url = `/formProductos`;
+    const url = `http://localhost:8080/productos/`;
     const datos = nuevoProducto;
     makeRequest(
         url,

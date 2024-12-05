@@ -35,7 +35,7 @@ function crear() {
         pedidos: [Id]
     };
 
-    const url = `/envios`;
+    const url = `http://localhost:8080/envios/`;
     const datos = nuevo;
     makeRequest(
         url,

@@ -28,17 +28,6 @@ var (
 
 func main() {
 	router = gin.Default()
-	// router.Use(middlewares.CORSMiddleware())
-
-	// router.Use(cors.New(cors.Config{
-    //     AllowOrigins:     []string{"http://localhost"},
-    //     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-    //     AllowHeaders:     []string{"Content-Type", "Authorization"},
-    //     ExposeHeaders:    []string{"Content-Length"},
-    //     AllowCredentials: true,
-    // }))
-
-
 
 	//Iniciar objetos de handler
 	dependencies()
@@ -62,7 +51,7 @@ func mappingRoutes() {
 	groupProducto := router.Group("/productos")
 	groupPedido := router.Group("/pedidos")
 	//Uso del middleware para todas las rutas del grupo de rutas y hago todos los POST, GET y DELETE
-	// groupEnvio.Use(authMiddleware.ValidateToken)
+	groupEnvio.Use(authMiddleware.ValidateToken)
 	groupEnvio.GET("/", envioHandler.ObtenerEnvios)
 	groupEnvio.GET("/:id", envioHandler.ObtenerEnvioPorId)
 	groupEnvio.GET("/estado/:estado", envioHandler.ObtenerCantidadEnviosPorEstado)
@@ -74,14 +63,14 @@ func mappingRoutes() {
 	groupEnvio.PUT("/:id/iniciar", envioHandler.IniciarViaje)
 
 	//Camiones
-	// groupCamion.Use(authMiddleware.ValidateToken)
+	groupCamion.Use(authMiddleware.ValidateToken)
 	groupCamion.GET("/", camionHandler.ObtenerCamiones)
 	groupCamion.GET("/:patente", camionHandler.ObtenerCamionPorPatente)
 	groupCamion.POST("/", camionHandler.InsertarCamion)
 	groupCamion.DELETE("/:id", camionHandler.EliminarCamion)
 	groupCamion.PUT("/", camionHandler.ActualizarCamion)
 	//Productos
-	// groupProducto.Use(authMiddleware.ValidateToken)
+	groupProducto.Use(authMiddleware.ValidateToken)
 	groupProducto.GET("/", productoHandler.ObtenerProductos)
 	groupProducto.GET("/:id", productoHandler.ObtenerProductoPorId)
 	// groupProducto.GET("/:tipoProducto", productoHandler.ObtenerProductosStockMinimo)
@@ -89,7 +78,7 @@ func mappingRoutes() {
 	groupProducto.DELETE("/:id", productoHandler.EliminarProducto)
 	groupProducto.PUT("/:id", productoHandler.ActualizarProducto)
 	//Pedidos
-	// groupPedido.Use(authMiddleware.ValidateToken)
+	groupPedido.Use(authMiddleware.ValidateToken)
 	groupPedido.GET("/", pedidoHandler.ObtenerPedidos)
 	groupPedido.GET("/:id", pedidoHandler.ObtenerPedidoPorId)
 	groupPedido.GET("/estado/:estado", pedidoHandler.ObtenerCantidadPedidosPorEstado)

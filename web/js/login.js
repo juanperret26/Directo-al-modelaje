@@ -16,12 +16,10 @@ document.addEventListener("DOMContentLoaded", function(eventDOM){
         return false;
     })
 })
-
 function successFn(response) {
     console.log("Éxito:", response);
-    window.location = '/';
+    window.location = '/html/index.html';
   }
-  
   function errorFn(status, response) {
     console.log("Falla:", response);
 }
