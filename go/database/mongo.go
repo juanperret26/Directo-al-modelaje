@@ -12,7 +12,6 @@ type MongoDB struct {
 	Client *mongo.Client
 }
 
-
 func NewMongoDB() *MongoDB {
 	instancia := &MongoDB{}
 	instancia.Connect()
