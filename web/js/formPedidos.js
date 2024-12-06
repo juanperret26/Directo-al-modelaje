@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded",function(){
   
   function cargarDatos(){
 
-    const url = `/productos`;
+    const url = `http://localhost:8080/productos/`;
     const datos = null;
     makeRequest(
         url,
@@ -84,22 +84,8 @@ document.addEventListener("DOMContentLoaded",function(){
         console.error("Error . Estado:", status, "Respuesta:", response);
         // Maneja el error de acuerdo a tus necesidades
     }
-
-      /*fetch("/productos", { method: "GET" })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Error al obtener datos de productos.");
-        }
-        return response.json();
-      })
-      .then(data => {
-        mostrarDatosTabla(data);
-      })
-      .catch(error => {
-        console.error("Error al obtener datos de productos:", error);
-      });*/
   };
-  
+
   function mostrarDatosTabla(datos){
       var table = document.getElementById("TablaPrincipal");
       var tbody = document.getElementById("TableBody");
@@ -113,23 +99,23 @@ document.addEventListener("DOMContentLoaded",function(){
           fila.appendChild(celdaId);
   
           var celdaNombre = document.createElement("td");
-          celdaNombre.textContent = element.Nombre;
+          celdaNombre.textContent = element.nombre;
           fila.appendChild(celdaNombre);
   
           var celdaTipo = document.createElement("td");
-          celdaTipo.textContent = element.TipoProducto;
+          celdaTipo.textContent = element.tipo_producto;
           fila.appendChild(celdaTipo);
   
           var celdaPeso = document.createElement("td");
-          celdaPeso.textContent = element.Peso_unitario;
+          celdaPeso.textContent = element.peso;
           fila.appendChild(celdaPeso);
   
           var celdaPrecio = document.createElement("td");
-          celdaPrecio.textContent = element.Precio;
+          celdaPrecio.textContent = element.precio;
           fila.appendChild(celdaPrecio);
   
           var celdaStock = document.createElement("td");
-          celdaStock.textContent = element.Stock;
+          celdaStock.textContent = element.stock;
           fila.appendChild(celdaStock);
   
           var celdaActualizacion = document.createElement("td");
