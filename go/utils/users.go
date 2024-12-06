@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	RolAdministrador = "Administrador"
-	RolUsuario       = "Usuario"
-	RolConductor     = "Conductor"
+	RolAdministrador = "ADMIN"
+	RolUsuario       = "OPERADOR"
+	RolConductor     = "CONDUCTOR"
 )
 
 func SetUserInContext(c *gin.Context, user *responses.UserInfo) {
