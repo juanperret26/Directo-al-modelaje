@@ -56,7 +56,7 @@ func (handler *ProductoHandler) InsertarProducto(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo insertar el producto"})
 		} else {
-			c.JSON(http.StatusCreated, "Creado correctamente")
+			c.JSON(http.StatusCreated, gin.H{"error": "Creado correctamente"})
 		}
 	}
 }

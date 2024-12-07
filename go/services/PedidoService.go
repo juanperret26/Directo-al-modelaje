@@ -61,6 +61,7 @@ func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
 }
 
 func (service *pedidoService) validarPedido(pedido *dto.Pedido) error {
+	
 	if pedido.Estado == "" {
 		return errors.New("El estado del pedido está vacío")
 	}

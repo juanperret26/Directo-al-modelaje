@@ -5,12 +5,17 @@ function crear() {
     const destino = document.querySelector('input[placeholder="Destino"]').value;
     const datosSeleccionados = obtenerDatosSeleccionados();
 
+    console.log(datosSeleccionados);
+
     const nuevo = {
         PedidoProductos:datosSeleccionados,
-        Destino: destino
+        Destino: destino,
+        Estado: "pendiente"
     };
 
-    const url = `http://localhost:8080/pedios/`;
+    console.log(nuevo);
+
+    const url = `http://localhost:8080/pedidos/`;
     const datos = nuevo;
     makeRequest(
         url,
@@ -94,7 +99,7 @@ document.addEventListener("DOMContentLoaded",function(){
           var fila = document.createElement("tr");
           
           var celdaId = document.createElement("td");
-          celdaId.textContent = element.Id;
+          celdaId.textContent = element.id;
           celdaId.className = "nombreCelda";
           fila.appendChild(celdaId);
   
@@ -103,11 +108,11 @@ document.addEventListener("DOMContentLoaded",function(){
           fila.appendChild(celdaNombre);
   
           var celdaTipo = document.createElement("td");
-          celdaTipo.textContent = element.tipo_producto;
+          celdaTipo.textContent = element.tipoProducto;
           fila.appendChild(celdaTipo);
   
           var celdaPeso = document.createElement("td");
-          celdaPeso.textContent = element.peso;
+          celdaPeso.textContent = element.peso_unitario;
           fila.appendChild(celdaPeso);
   
           var celdaPrecio = document.createElement("td");
@@ -117,13 +122,13 @@ document.addEventListener("DOMContentLoaded",function(){
           var celdaStock = document.createElement("td");
           celdaStock.textContent = element.stock;
           fila.appendChild(celdaStock);
-  
+
           var celdaActualizacion = document.createElement("td");
-          celdaActualizacion.textContent = obtenerFechaDesdeCadena(element.Actualizacion);
+          celdaActualizacion.textContent = obtenerFechaDesdeCadena(element.actualizacion);
           fila.appendChild(celdaActualizacion);
 
           var celdaCreacion = document.createElement("td");
-          celdaCreacion.textContent = obtenerFechaDesdeCadena(element.Creacion);
+          celdaCreacion.textContent = obtenerFechaDesdeCadena(element.creacion);
           fila.appendChild(celdaCreacion);  
   
           var celdaCheckbox = document.createElement("td");
@@ -144,9 +149,12 @@ document.addEventListener("DOMContentLoaded",function(){
 };
 
 function obtenerFechaDesdeCadena(cadenaFechaHora) {
+    if (!cadenaFechaHora || typeof cadenaFechaHora !== "string") {
+        return "Fecha no disponible"; // Devuelve un valor por defecto
+    }
+
     const partes = cadenaFechaHora.split("T");
     const fecha = partes[0];
-    
     return fecha;
 }
 

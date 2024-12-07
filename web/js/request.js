@@ -73,8 +73,8 @@ async function makeRequest(
       body: makeBody(contentType, data),
       headers: {
         "Content-Type": contentType,
-        //...(token && isPrivateCall ? { Authorization: `Bearer ${token}` } : {}),
-        Authorization: (token && isPrivateCall) ? `Bearer ${token}` : null,
+        ...(token && isPrivateCall ? { Authorization: `Bearer ${token}` } : {}),
+        //Authorization: (token && isPrivateCall) ? `Bearer ${token}` : null,
       },
     });
 

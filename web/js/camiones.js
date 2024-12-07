@@ -55,20 +55,20 @@ function mostrarDatosTabla(datos){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.ID;
+        celdaId.textContent = element.id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
 
         var celdaPatente = document.createElement("td");
-        celdaPatente.textContent = element.Patente;
+        celdaPatente.textContent = element.patente;
         fila.appendChild(celdaPatente);
 
         var celdaPeso = document.createElement("td");
-        celdaPeso.textContent = element.Peso_maximo;
+        celdaPeso.textContent = element.peso_maximo;
         fila.appendChild(celdaPeso);
 
         var celdaCosto = document.createElement("td");
-        celdaCosto.textContent = element.Costo_km;
+        celdaCosto.textContent = element.costo_km;
         fila.appendChild(celdaCosto);
 
         var celdaEditar = document.createElement("td");

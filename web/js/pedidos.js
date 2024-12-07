@@ -47,7 +47,7 @@ function mostrarDatosTabla(datos){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.Id;
+        celdaId.textContent = element.id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
         /*

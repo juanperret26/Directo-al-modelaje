@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded",function(){
   
   function cargarDatos(){
 
-    const url = `/pedidos`;
+    const url = `http://localhost:8080/pedidos/`;
     const datos = null;
     makeRequest(
         url,
@@ -238,11 +238,12 @@ document.addEventListener("DOMContentLoaded",function(){
 function mostrarDatosTabla(datos){
     var table = document.getElementById("TablaPrincipal");
     var tbody = document.getElementById("TableBody");
+    console.log(datos);
     datos.forEach(function(element){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.Id;
+        celdaId.textContent = element.id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
         /*
@@ -253,7 +254,7 @@ function mostrarDatosTabla(datos){
         var celdaProductos = document.createElement("td");
         if (element.PedidoProductos && Array.isArray(element.PedidoProductos)) {
                 var nombresProductos = element.PedidoProductos.map(function(producto) {
-                return producto.Nombre;
+                return producto.nombre;
         });
             celdaProductos.textContent = nombresProductos.join(", ");
         } else {
@@ -262,11 +263,11 @@ function mostrarDatosTabla(datos){
         fila.appendChild(celdaProductos);
 
         var celdaCiudad = document.createElement("td");
-        celdaCiudad.textContent = element.Destino;
+        celdaCiudad.textContent = element.destino;
         fila.appendChild(celdaCiudad);
 
         var celdaEstado = document.createElement("td");
-        celdaEstado.textContent = element.Estado;
+        celdaEstado.textContent = element.estado;
         fila.appendChild(celdaEstado);
 
         var celdaCheckbox = document.createElement("td");

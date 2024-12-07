@@ -49,7 +49,7 @@ func (handler *CamionHandler) InsertarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, "Creado Correctamente")
+			c.JSON(http.StatusOK, gin.H{"error": "Creado correctamente"})
 		}
 
 	}
@@ -64,7 +64,7 @@ func (handler *CamionHandler) EliminarCamion(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"mensaje": resultado.Error()})
 	} else {
 
-		c.JSON(http.StatusOK, "Se  elimino el camion correctamente")
+		c.JSON(http.StatusOK, gin.H{"error": "Camion eliminado correctamente"})
 	}
 }
 

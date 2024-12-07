@@ -49,7 +49,7 @@ func (handler *PedidoHandler) InsertarPedido(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusCreated, "Pedido creado correctamente")
+			c.JSON(http.StatusCreated, gin.H{"mensaje": "Pedido creado correctamente"})
 		}
 
 	}

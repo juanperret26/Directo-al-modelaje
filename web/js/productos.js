@@ -48,7 +48,7 @@ function mostrarDatosTabla(datos){
         var fila = document.createElement("tr");
         
         var celdaId = document.createElement("td");
-        celdaId.textContent = element.Id;
+        celdaId.textContent = element.id;
         celdaId.className = "nombreCelda";
         fila.appendChild(celdaId);
 
@@ -57,11 +57,11 @@ function mostrarDatosTabla(datos){
         fila.appendChild(celdaNombre);
 
         var celdaTipo = document.createElement("td");
-        celdaTipo.textContent = element.tipo_producto;
+        celdaTipo.textContent = element.tipoProducto;
         fila.appendChild(celdaTipo);
 
         var celdaPeso = document.createElement("td");
-        celdaPeso.textContent = element.peso;
+        celdaPeso.textContent = element.peso_unitario;
         fila.appendChild(celdaPeso);
 
         var celdaPrecio = document.createElement("td");

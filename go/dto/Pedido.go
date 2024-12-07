@@ -12,7 +12,7 @@ type Pedido struct {
 	Id              string           `json:"id"`
 	Estado          string           `json:"estado"`
 	Fecha_creacion  time.Time        `json:"fecha_creacion"`
-	PedidoProductos []PedidoProducto `json:"pedido_productos"`
+	PedidoProductos []PedidoProducto `json:"PedidoProductos"`
 	Actualizacion   time.Time        `json:"actualizacion"`
 	Destino         string           `json:"destino"`
 }
