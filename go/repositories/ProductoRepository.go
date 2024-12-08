@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/model"
 	"github.com/juanperret26/Directo-al-modelaje/go/utils"
@@ -86,14 +87,55 @@ func (repository *ProductoRepository) InsertarProducto(producto model.Producto) 
 
 func (repository *ProductoRepository) ActualizarProducto(producto model.Producto) (*mongo.UpdateResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
+	if collection == nil {
+		return nil, fmt.Errorf("la colección de productos es nula")
+	}
+
+	if producto.Id.IsZero() {
+		return nil, fmt.Errorf("el ID del producto es inválido o está vacío")
+	}
+
+	updates := bson.M{}
+	if producto.Nombre != "" {
+		updates["nombre"] = producto.Nombre
+	}
+	if producto.TipoProducto != "" {
+		updates["tipo_producto"] = producto.TipoProducto
+	}
+	if producto.Peso_unitario > 0 {
+		updates["peso"] = producto.Peso_unitario
+	}
+	if producto.Precio > 0 {
+		updates["precio"] = producto.Precio
+	}
+	if producto.Stock >= 0 {
+		updates["stock"] = producto.Stock
+	}
+	if producto.Stock_minimo >= 0 {
+		updates["stock_minimo"] = producto.Stock_minimo
+	}
+	// Actualizar siempre la fecha de actualización
+	updates["actualizacion"] = time.Now()
+
+	if len(updates) == 0 {
+		return nil, fmt.Errorf("no hay campos válidos para actualizar")
+	}
+
 	filtro := bson.M{"_id": producto.Id}
-	entity := bson.M{"$set": producto}
-	resultado, err := collection.UpdateOne(context.TODO(), filtro, entity)
+	entidad := bson.M{"$set": updates}
+
+	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
 	if err != nil {
 		return nil, fmt.Errorf("error al actualizar producto: %w", err)
 	}
+
+	if resultado.MatchedCount == 0 {
+		return nil, fmt.Errorf("no se encontró el producto con id %s para actualizar", producto.Id.Hex())
+	}
+
 	return resultado, nil
 }
+
 
 func (repository *ProductoRepository) EliminarProducto(id string) (*mongo.DeleteResult, error) {
 	objectID := utils.GetObjectIDFromStringID(id)

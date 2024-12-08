@@ -144,7 +144,7 @@ function editar(productoID) {
         stock: stock
     };
 
-    const url = `/productos`;
+    const url = `http://localhost:8080/productos`;
     const datos = objetoEditado;
     makeRequest(
         url,

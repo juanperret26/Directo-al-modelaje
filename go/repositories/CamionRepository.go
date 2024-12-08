@@ -144,6 +144,7 @@ func (repository CamionRepository) EliminarCamion(id string) (*mongo.DeleteResul
 // Método para actualizar un camión
 func (repository CamionRepository) ActualizarCamion(camion model.Camion) (*mongo.UpdateResult, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Camiones")
+
 	if collection == nil {
 		log.Println("[repository:CamionRepository][method:ActualizarCamion][reason:NIL_COLLECTION][message:La colección es nula]")
 		return nil, fmt.Errorf("la colección de camiones es nula")
@@ -152,20 +153,42 @@ func (repository CamionRepository) ActualizarCamion(camion model.Camion) (*mongo
 	if camion.ID.IsZero() {
 		return nil, fmt.Errorf("el ID del camión es inválido o está vacío")
 	}
-
 	filtro := bson.M{"_id": camion.ID}
-	entidad := bson.M{"$set": bson.M{"costo_km": camion.Costo_km, "actualizacion": time.Now()}}
+
+	updates := bson.M{}
+
+	if camion.Costo_km != 0 {
+		updates["costo_km"] = camion.Costo_km
+	}
+	if camion.Patente != "" {
+		updates["patente"] = camion.Patente
+	}
+	if camion.Peso_maximo != 0 {
+		updates["peso_maximo"] = camion.Peso_maximo
+	}
+	if camion.CapacidadParadas != 0 {
+		updates["capacidad_paradas"] = camion.CapacidadParadas
+	}
+	
+	updates["actualizacion"] = time.Now()
+
+	if len(updates) == 0 {
+		return nil, fmt.Errorf("no se encontraron campos válidos para actualizar")
+	}
+	entidad := bson.M{"$set": updates}
 
 	resultado, err := collection.UpdateOne(context.TODO(), filtro, entidad)
 	if err != nil {
 		log.Printf("[repository:CamionRepository][method:ActualizarCamion][reason:UPDATE_ERROR][id:%s][error:%v]", camion.ID.Hex(), err)
 		return nil, err
 	}
+
 	if resultado == nil || resultado.MatchedCount == 0 {
 		err := fmt.Errorf("no se encontró el camión con id %s para actualizar", camion.ID.Hex())
 		log.Printf("[repository:CamionRepository][method:ActualizarCamion][reason:NOT_FOUND][id:%s]", camion.ID.Hex())
 		return nil, err
 	}
-
+	
 	return resultado, nil
 }
+

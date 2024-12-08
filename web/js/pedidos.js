@@ -141,7 +141,7 @@ document.addEventListener("keyup",e=>{
 //eliminar
 function eliminar(ID) {
     const id = ID;
-    const url = `/pedidos/${id}`;
+    const url = `http://localhost:8080/pedidos/${id}`;
     const datos = null;
     makeRequest(
         url,
@@ -181,7 +181,7 @@ function eliminar(ID) {
 
 function aceptar(ID) {
   const id = ID;
-  const url = `/pedidos/${id}`;
+  const url = `http://localhost:8080/pedidos/${id}`;
   const datos = null;
   makeRequest(
       url,

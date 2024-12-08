@@ -113,46 +113,61 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) error {
 		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_INPUT][error:%v]", err)
 		return err
 	}
+
+	log.Printf("[service:EnvioService][method:InsertarEnvio][info:Inicio][envio:%+v]", envio)
+
 	var pesoTotal float64 = 0.0
 	camion, err := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
 	if err != nil {
-		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_CAMION][error:%v]", err)
+		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_CAMION][patente:%s][error:%v]", envio.PatenteCamion, err)
 		return errors.New("camión no encontrado")
 	}
+	log.Printf("[service:EnvioService][method:InsertarEnvio][info:Camion encontrado][camion:%+v]", camion)
 
 	for _, idPedido := range envio.Pedido {
+		log.Printf("[service:EnvioService][method:InsertarEnvio][info:Procesando pedido][pedidoId:%s]", idPedido)
 		pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
 		if err != nil {
-			log.Printf("[service:EnvioService][method:InsertarEnvio][reason:NOT_FOUND][id:%s]", idPedido)
+			log.Printf("[service:EnvioService][method:InsertarEnvio][reason:NOT_FOUND][id:%s][error:%v]", idPedido, err)
 			continue
 		}
+		log.Printf("[service:EnvioService][method:InsertarEnvio][info:Pedido encontrado][pedido:%+v]", pedido)
+
 		if pedido.Estado == "Aceptado" {
 			for _, productoPedido := range pedido.PedidoProductos {
+				log.Printf("[service:EnvioService][method:InsertarEnvio][info:Procesando producto][productoId:%d]", productoPedido.CodigoProducto)
 				producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
 				if err != nil {
-					log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
+					log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d][error:%v]", productoPedido.CodigoProducto, err)
 					continue
 				}
+				log.Printf("[service:EnvioService][method:InsertarEnvio][info:Producto encontrado][producto:%+v]", producto)
 				pesoTotal += producto.Peso_unitario * float64(productoPedido.Cantidad)
 			}
 		}
 	}
 
+	log.Printf("[service:EnvioService][method:InsertarEnvio][info:Peso total calculado][pesoTotal:%f]", pesoTotal)
+
 	if pesoTotal > camion.Peso_maximo {
 		err := errors.New("peso total excede el límite del camión")
-		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:EXCESS_WEIGHT][error:%v]", err)
+		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:EXCESS_WEIGHT][pesoTotal:%f][pesoMaximo:%f][error:%v]", pesoTotal, camion.Peso_maximo, err)
 		return err
 	}
 
 	envio.Estado = "A despachar"
 	envio.PatenteCamion = camion.Patente
+	log.Printf("[service:EnvioService][method:InsertarEnvio][info:Guardando envio][envio:%+v]", envio)
+
 	_, err = service.envioRepository.InsertarEnvio(envio.GetModel())
 	if err != nil {
 		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:ERROR][error:%v]", err)
 		return err
 	}
+	log.Printf("[service:EnvioService][method:InsertarEnvio][info:Envio insertado correctamente]")
 	return nil
 }
+
 
 func (service *envioService) EliminarEnvio(id string) error {
 	if id == "" {

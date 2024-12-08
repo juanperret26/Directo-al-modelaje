@@ -98,20 +98,28 @@ func (handler *EnvioHandler) ObtenerEnviosFiltro(c *gin.Context) {
 }
 
 func (handler *EnvioHandler) InsertarEnvio(c *gin.Context) {
-
+	log.Println("[handler:EnvioHandler][method:InsertarEnvio][info:Inicio]")
 	var envio dto.Envio
 	err := c.ShouldBindJSON(&envio)
 	if err != nil {
+		log.Printf("[handler:EnvioHandler][method:InsertarEnvio][reason:INVALID_INPUT][error:%v]", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		resultado := handler.envioService.InsertarEnvio(&envio)
-		if resultado != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo insertar el envio"})
-		} else {
-			c.JSON(http.StatusCreated, gin.H{"error": "Envio insertado correctamente"})
-		}
+		return
 	}
+
+	log.Printf("[handler:EnvioHandler][method:InsertarEnvio][info:Datos recibidos][envio:%+v]", envio)
+
+	resultado := handler.envioService.InsertarEnvio(&envio)
+	if resultado != nil {
+		log.Printf("[handler:EnvioHandler][method:InsertarEnvio][reason:SERVICE_ERROR][error:%v]", resultado)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo insertar el envio"})
+		return
+	}
+
+	log.Println("[handler:EnvioHandler][method:InsertarEnvio][info:Envio insertado correctamente]")
+	c.JSON(http.StatusCreated, gin.H{"message": "Envio insertado correctamente"})
 }
+
 
 func (handler *EnvioHandler) EliminarEnvio(c *gin.Context) {
 	id := c.Param("id")

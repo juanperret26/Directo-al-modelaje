@@ -112,7 +112,7 @@ document.addEventListener("keyup",e=>{
 
 function eliminar(ID) {
   const id = ID;
-  const url = `/camiones/${id}`;
+  const url = `http://localhost:8080/${id}`;
   const datos = null;
   makeRequest(
       url,
