@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded",function(){
   
 
 function mostrarDatosTabla(datos){
+    console.log(datos)
     var table = document.getElementById("TablaPrincipal");
     var tbody = document.getElementById("TableBody");
     datos.forEach(function(element){
@@ -58,14 +59,13 @@ function mostrarDatosTabla(datos){
         var celdaProductos = document.createElement("td");
         if (element.PedidoProductos && Array.isArray(element.PedidoProductos)) {
                 var nombresProductos = element.PedidoProductos.map(function(PedidoProductos) {
-                return PedidoProductos.Nombre;
+                return PedidoProductos.nombre;
         });
             celdaProductos.textContent = nombresProductos.join(", ");
         } else {
             celdaProductos.textContent = "N/A"; // O cualquier otro mensaje que desees mostrar
-            fila.appendChild(celdaProductos);
         }
-
+        fila.appendChild(celdaProductos);
 
 
         var celdaCiudad = document.createElement("td");
@@ -180,13 +180,13 @@ function eliminar(ID) {
 };
 
 function aceptar(ID) {
-  const id = ID;
+  const idToSend = { id: ID };
+  const id = ID
   const url = `http://localhost:8080/pedidos/${id}`;
-  const datos = null;
   makeRequest(
       url,
       Method.PUT, 
-      datos,
+      idToSend,
       ContentType.JSON,
       CallType.PRIVATE,
       exitoSolicitud,

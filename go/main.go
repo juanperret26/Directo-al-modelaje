@@ -67,7 +67,7 @@ func mappingRoutes() {
 	groupCamion.GET("/", camionHandler.ObtenerCamiones)
 	groupCamion.GET("/:patente", camionHandler.ObtenerCamionPorPatente)
 	groupCamion.POST("/", camionHandler.InsertarCamion)
-	groupCamion.DELETE("/:id", camionHandler.EliminarCamion)
+	groupCamion.DELETE("/:id", camionHandler.EliminarCamion) 
 	groupCamion.PUT("/", camionHandler.ActualizarCamion)
 	//Productos
 	groupProducto.Use(authMiddleware.ValidateToken)
