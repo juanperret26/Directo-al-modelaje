@@ -56,15 +56,17 @@ function mostrarDatosTabla(datos){
         fila.appendChild(celdaProductos);*/
 
         var celdaProductos = document.createElement("td");
-        if (element.productos && Array.isArray(element.productos)) {
-                var nombresProductos = element.productos.map(function(producto) {
-                return producto.Nombre;
+        if (element.PedidoProductos && Array.isArray(element.PedidoProductos)) {
+                var nombresProductos = element.PedidoProductos.map(function(PedidoProductos) {
+                return PedidoProductos.Nombre;
         });
             celdaProductos.textContent = nombresProductos.join(", ");
         } else {
             celdaProductos.textContent = "N/A"; // O cualquier otro mensaje que desees mostrar
+            fila.appendChild(celdaProductos);
         }
-        fila.appendChild(celdaProductos);
+
+
 
         var celdaCiudad = document.createElement("td");
         celdaCiudad.textContent = element.destino;
@@ -226,31 +228,20 @@ fetch(url, {
 }
 
 
-//Boton editar
 function manejarEdicion(fila) {
-  // Obtener elementos de la fila
   const celdas = fila.querySelectorAll("td");
-
-  // Crear un objeto para almacenar los valores de las celdas
-  const valoresCeldas = {};
-  var pedidoID = "";
-  const encabezado = document.querySelector("table thead tr");
+  const encabezados = document.querySelector("table thead tr").querySelectorAll("th");
+  const datosPedido = {};
+  let pedidoID;
 
   celdas.forEach((celda, index) => {
-    if (index >= 0 && index <= 7) {
-      if(index == 0){
-        var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
-        valoresCeldas[tituloCelda] = celda.textContent.trim();    
-        pedidoID = valoresCeldas[tituloCelda].toString();
-      }
-      else{
-      var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
-      valoresCeldas[tituloCelda] = celda.textContent.trim();
-      }
+    const tituloCelda = encabezados[index].textContent;
+    datosPedido[tituloCelda] = celda.textContent.trim();
+    if (index === 0) {
+      pedidoID = datosPedido[tituloCelda];
     }
   });
 
-  // Redirigir a la página "formPedidos" y enviar los valores como parámetros
-  const queryString = new URLSearchParams(valoresCeldas).toString();
-  window.location.href = `/html/formPedidos.html?pedidoID=${pedidoID}&${queryString}`;
+  const queryString = new URLSearchParams(datosPedido).toString();
+  window.location.href = `http://localhost:8081/html/formPedidos.html?pedidoID=${pedidoID}&${queryString}`;
 }

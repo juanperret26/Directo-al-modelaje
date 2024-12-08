@@ -139,37 +139,27 @@ function obtenerFechaDesdeCadena(cadenaFechaHora) {
 
 //Boton editar
 function manejarEdicion(fila) {
-  // Obtener elementos de la fila
   const celdas = fila.querySelectorAll("td");
-
-  // Crear un objeto para almacenar los valores de las celdas
-  const valoresCeldas = {};
-  var productoID = "";
-  const encabezado = document.querySelector("table thead tr");
+  const encabezados = document.querySelector("table thead tr").querySelectorAll("th");
+  const datosProducto = {};
+  let productoID;
 
   celdas.forEach((celda, index) => {
-    if (index >= 0 && index <= 7) {
-      if(index == 0){
-        var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
-        valoresCeldas[tituloCelda] = celda.textContent.trim();    
-        productoID = valoresCeldas[tituloCelda].toString();
-      }
-      else{
-      var tituloCelda = encabezado.querySelectorAll("th")[index].textContent;
-      valoresCeldas[tituloCelda] = celda.textContent.trim();
-      }
+    const tituloCelda = encabezados[index].textContent;
+    datosProducto[tituloCelda] = celda.textContent.trim();
+    if (index === 0) {
+      productoID = datosProducto[tituloCelda];
     }
   });
 
-  // Redirigir a la página "formProductos" y enviar los valores como parámetros
-  const queryString = new URLSearchParams(valoresCeldas).toString();
+  const queryString = new URLSearchParams(datosProducto).toString();
   window.location.href = `/html/formProductos.html?productoID=${productoID}&${queryString}`;
 }
 
 //eliminar
 function eliminar(ID) {
   const id = ID;
-  const url = `/productos/${id}`;
+  const url = `http://localhost:8080/productos/${id}`;
   const datos = null;
   makeRequest(
       url,
@@ -181,6 +171,7 @@ function eliminar(ID) {
       errorSolicitud
   );
   function exitoSolicitud(data) {
+      console.log(id);
       console.log("éxito.");
       location.reload();
       // Realiza otras acciones si es necesario

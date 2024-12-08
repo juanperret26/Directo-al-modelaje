@@ -254,7 +254,7 @@ function editar(productoID) {
     };
 
     
-    const url = `/productos`;
+    const url = `http://localhost:8080/productos/`;
     const datos = objetoEditado;
     makeRequest(
         url,

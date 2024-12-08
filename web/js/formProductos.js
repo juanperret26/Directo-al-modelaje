@@ -122,7 +122,7 @@ function editar(productoID) {
     const stock = parseFloat(document.querySelector('input[placeholder="Stock"]').value);
 
     const objetoEditado = {
-        Id: codigo,
+        id: codigo,
         nombre: nombre,
         TipoProducto: tipo,
         peso_unitario: peso,
@@ -132,7 +132,7 @@ function editar(productoID) {
 
     
         const id = productoID;
-        const url = `/productos/${id}`;
+        const url = `http://localhost:8080/productos/${id}`;
         const datos = objetoEditado;
         makeRequest(
             url,
@@ -145,7 +145,7 @@ function editar(productoID) {
         );
         function exitoSolicitud(data) {
             console.log("éxito.");
-            window.location.href = "/html/productos.html";
+            window.location.href = "http://localhost:8081/html/productos.html";
             // Realiza otras acciones si es necesario
         }
       
@@ -153,27 +153,6 @@ function editar(productoID) {
             console.error("Error al crear el producto . Estado:", status, "Respuesta:", response);
             // Maneja el error de acuerdo a tus necesidades
         }   
-    /*
-        fetch(url, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(objetoEditado)
-    })
-    .then(response => {
-        if (response.ok) {
-            // La solicitud se realizó con éxito, puedes redirigir a la página de productos u realizar alguna otra acción
-            window.location.href = "/htmlproductos";
-        } else {
-            // Manejar errores
-            response.json().then(data => {
-                console.log(data);});
-            console.error("Error al crear un nuevo producto");
-        }
-    })
-    .catch(error => {
-        console.error("Error al crear un nuevo producto:", error);
-    });*/
+
 }
   
