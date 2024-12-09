@@ -53,29 +53,43 @@ func (service *pedidoService) ObtenerPedidoPorId(id string) (*dto.Pedido) {
 
 
 func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
-	if err := service.validarPedido(pedido); err != nil {
+	// Establecer estado predeterminado si está vacío
+	if pedido.Estado == "" {
+		pedido.Estado = "Pendiente"
+	}
+
+	// Validar el pedido
+	if err := service.ValidarPedido(pedido); err != nil {
 		return err
 	}
+
+	// Insertar el pedido
 	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
 	return err
 }
 
-func (service *pedidoService) validarPedido(pedido *dto.Pedido) error {
-	
+func (service *pedidoService) ValidarPedido(pedido *dto.Pedido) error {
 	if pedido.Estado == "" {
 		return errors.New("El estado del pedido está vacío")
 	}
+
 	if pedido.PedidoProductos == nil || len(pedido.PedidoProductos) == 0 {
 		return errors.New("No se incluyeron productos en el pedido")
 	}
-	if pedido.PedidoProductos[0].Cantidad == 0 {
-		return errors.New("La cantidad de productos es cero")
+
+	// Validar todos los productos
+	for _, producto := range pedido.PedidoProductos {
+		if producto.Cantidad == 0 {
+			return errors.New("La cantidad de productos no puede ser cero")
+		}
+		if producto.CodigoProducto == "" {
+			return errors.New("El código del producto no puede estar vacío")
+		}
 	}
-	if pedido.PedidoProductos[0].CodigoProducto == "" {
-		return errors.New("El código del producto está vacío")
-	}
+
 	return nil
 }
+
 
 
 

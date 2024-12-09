@@ -76,7 +76,7 @@ func mappingRoutes() {
 	// groupProducto.GET("/:tipoProducto", productoHandler.ObtenerProductosStockMinimo)
 	groupProducto.POST("/", productoHandler.InsertarProducto)
 	groupProducto.DELETE("/:id", productoHandler.EliminarProducto)
-	groupProducto.PUT("/:id", productoHandler.ActualizarProducto)
+	groupProducto.PUT("/", productoHandler.ActualizarProducto)
 	//Pedidos
 	groupPedido.Use(authMiddleware.ValidateToken)
 	groupPedido.GET("/", pedidoHandler.ObtenerPedidos)

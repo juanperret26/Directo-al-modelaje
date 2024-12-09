@@ -166,8 +166,8 @@ func (repository CamionRepository) ActualizarCamion(camion model.Camion) (*mongo
 	if camion.Peso_maximo != 0 {
 		updates["peso_maximo"] = camion.Peso_maximo
 	}
-	if camion.CapacidadParadas != 0 {
-		updates["capacidad_paradas"] = camion.CapacidadParadas
+	if camion.Cantidad_paradas != 0 {
+		updates["capacidad_paradas"] = camion.Cantidad_paradas
 	}
 	
 	updates["actualizacion"] = time.Now()

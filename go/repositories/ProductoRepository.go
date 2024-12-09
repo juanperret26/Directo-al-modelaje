@@ -8,6 +8,7 @@ import (
 	"github.com/juanperret26/Directo-al-modelaje/go/model"
 	"github.com/juanperret26/Directo-al-modelaje/go/utils"
 	"go.mongodb.org/mongo-driver/bson"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -60,20 +61,19 @@ func (repository *ProductoRepository) ObtenerProductos(stockMinimo int) ([]model
 }
 
 func (repository *ProductoRepository) ObtenerProductoPorId(id string) (model.Producto, error) {
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	objectID := utils.GetObjectIDFromStringID(id)
-	filtro := bson.M{"_id": objectID}
+    // Convertir el ID a ObjectID
+    objectID:= utils.GetObjectIDFromStringID(id)
+    collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
+    filtro := bson.M{"_id": objectID}
 
-	var producto model.Producto
-	err := collection.FindOne(context.Background(), filtro).Decode(&producto)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return model.Producto{}, fmt.Errorf("producto no encontrado con ID: %s", id)
-		}
-		return model.Producto{}, fmt.Errorf("error al obtener producto por ID: %w", err)
-	}
+    var producto model.Producto
+    result := collection.FindOne(context.Background(), filtro)
+    // Decodificar el documento encontrado
+    if err := result.Decode(&producto); err != nil {
+        return model.Producto{}, fmt.Errorf("error al decodificar producto: %w", err)
+    }
 
-	return producto, nil
+    return producto, nil
 }
 
 func (repository *ProductoRepository) InsertarProducto(producto model.Producto) (*mongo.InsertOneResult, error) {
@@ -138,13 +138,15 @@ func (repository *ProductoRepository) ActualizarProducto(producto model.Producto
 
 
 func (repository *ProductoRepository) EliminarProducto(id string) (*mongo.DeleteResult, error) {
-	objectID := utils.GetObjectIDFromStringID(id)
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
-	filtro := bson.M{"_id": objectID}
+    // Convertir el ID a ObjectID
+    objectID := utils.GetObjectIDFromStringID(id)
+    collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Productos")
+    filtro := bson.M{"_id": objectID}
 
-	resultado, err := collection.DeleteOne(context.Background(), filtro)
-	if err != nil {
-		return nil, fmt.Errorf("error al eliminar producto: %w", err)
-	}
-	return resultado, nil
+    // Eliminar el documento
+    resultado, err := collection.DeleteOne(context.Background(), filtro)
+    if err != nil {
+        return nil, fmt.Errorf("error al eliminar producto: %w", err)
+    }
+    return resultado, nil
 }

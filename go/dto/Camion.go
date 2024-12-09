@@ -11,7 +11,7 @@ type Camion struct {
 	ID             string    `json:"id"`
 	Patente        string    `json:"patente"`
 	Peso_maximo    float64   `json:"peso_maximo"`
-	Capacidad_paradas int `json:"capacidad_paradas"`
+	Cantidad_paradas int `json:"cantidad_paradas"`
 	Costo_km       int       `json:"costo_km"`
 	Fecha_creacion time.Time `json:"fecha_creacion"`
 	Actualizacion  time.Time `json:"actualizacion"`

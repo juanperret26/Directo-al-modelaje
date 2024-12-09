@@ -46,20 +46,25 @@ func (service *productoService) ObtenerProductos(filtroStockMinimo int) []*dto.P
 	return productos
 }
 
-func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
-	if id == "" {
-		productoDB, err := service.productoRepository.ObtenerProductoPorId(id)
-		if err != nil {
-			log.Printf("[service:productoService] [method:ObtenerProductoPorId] [reason: NOT_FOUND][id:%d]", id)
-			return nil
-		}
-		producto := dto.NewProducto(productoDB)
-		return producto
-	}
-	errors.New("No se pasó un id")
-	return nil
 
+func (service *productoService) ObtenerProductoPorId(id string) *dto.Producto {
+    // Validar que el ID no esté vacío
+    if id == "" {
+        log.Println("[service:productoService] [method:ObtenerProductoPorId] [reason: EMPTY_ID]")
+        return nil
+    }
+
+    productoDB, err := service.productoRepository.ObtenerProductoPorId(id)
+    if err != nil {
+        log.Printf("[service:productoService] [method:ObtenerProductoPorId] [reason: %s] [id: %s]", err.Error(), id)
+        return nil
+    }
+
+    // Convertir a DTO y devolver
+    producto := dto.NewProducto(productoDB)
+    return producto
 }
+
 
 func (service *productoService) InsertarProducto(producto *dto.Producto) error {
 
@@ -78,14 +83,19 @@ func (service *productoService) ActualizarProducto(producto *dto.Producto) error
 }
 
 func (service *productoService) EliminarProducto(id string) error {
-	if id == "" {
-		_, err := service.productoRepository.EliminarProducto(id)
-		if err != nil {
-			log.Printf("[service:productoService] [method:EliminarProducto] [reason: NOT_FOUND][id:%d]", id)
-			return err
-		}
-		return err
-	}
-	errors.New("No se pasó un id")
-	return nil
+    // Validar que el id no sea vacío
+    if id == "" {
+        return errors.New("No se pasó un id")
+    }
+
+    // Intentar eliminar el producto
+    _, err := service.productoRepository.EliminarProducto(id)
+    if err != nil {
+        log.Printf("[service:productoService] [method:EliminarProducto] [reason: NOT_FOUND][id:%s]", id)
+        return err
+    }
+
+    // Retornar nil si todo está bien
+    return nil
 }
+
