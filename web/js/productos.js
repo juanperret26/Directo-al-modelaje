@@ -99,11 +99,11 @@ function mostrarDatosTabla(datos){
         tbody.appendChild(fila);
     });
   //evento boton editar  
-    tbody.addEventListener("click", function (event) {
-      if (event.target.classList.contains("boton-editar")) {
-          const botonEditar = event.target;
-          const fila = botonEditar.closest("tr");
-          manejarEdicion(fila);
+  tbody.addEventListener("click", function (event) {
+    if (event.target.classList.contains("boton-editar")) {
+        const botonEditar = event.target;
+        const fila = botonEditar.closest("tr");
+        manejarEdicion(fila);
       }
   });
   //evento boton eliminar

@@ -33,25 +33,91 @@ function crearNuevoCamion() {
         console.error("Error . Estado:", status, "Respuesta:", response);
         // Maneja el error de acuerdo a tus necesidades
     }
+}
 
-    /*fetch("/camiones", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(nuevoCamion)
-    })
-    .then(response => {
-        if (response.ok) {
-            window.location.href = "/htmlcamiones";
-        } else {
-            // Manejar errores
-            response.json().then(data => {
-                console.log(data);});
-            console.error("Error al crear un nuevo camion");
+
+document.addEventListener("DOMContentLoaded", function () {
+    const boton_crear = document.getElementById("aceptar");
+    boton_crear.style.display = "block";
+    const boton_editar = document.getElementById("editar");
+    boton_editar.style.display = "none";
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    
+    console.log(urlParams.toString());
+
+    var camionID = "";
+
+    if (urlParams.has("camionID")) {
+        camionID = urlParams.get("camionID");
+    }
+
+    function cargarValorEnCampo(placeholder, paramName) {
+      if (urlParams.has(paramName)) {
+
+        const boton_crear = document.getElementById("aceptar");
+        boton_crear.style.display = "none";
+        const boton_editar = document.getElementById("editar");
+        boton_editar.style.display = "block";
+
+        const input = document.querySelector(`input[placeholder="${placeholder}"]`);
+        input.value = urlParams.get(paramName);
+        console.log(input.value);
+      }
+    }
+  
+    cargarValorEnCampo("Patente", "Patente");
+    cargarValorEnCampo("Peso maximo", "Peso max.");
+    cargarValorEnCampo("Costo por Km", "Costo/KM")
+
+    document.getElementById("editar").addEventListener("click", function() {
+        editar(camionID); // Pasar productoID a la función editar
+    });
+
+    
+});
+
+
+
+function editar(camionID) {
+
+    const codigo = camionID;
+    const patente = document.querySelector('input[placeholder="Patente"]').value;
+    const peso_maximo = parseFloat(document.querySelector('input[placeholder="Peso maximo"]').value);
+    const costo_Km = parseFloat(document.querySelector('input[placeholder="Costo por Km"]').value);
+    
+    const objetoEditado = {
+        id: codigo,
+        patente: patente,
+        peso_maximo: peso_maximo,
+        costo_km: costo_Km,
+    };
+
+    
+        const id = camionID;
+        const url = `http://localhost:8080/camiones/`;
+        const datos = objetoEditado;
+        console.log(objetoEditado);
+
+        makeRequest(
+            url,
+            Method.PUT, 
+            datos,
+            ContentType.JSON,
+            CallType.PRIVATE,
+            exitoSolicitud,
+            errorSolicitud
+        );
+        function exitoSolicitud(data) {
+            console.log("éxito.");
+            window.location.href = "http://localhost:8081/html/camiones.html";
+            // Realiza otras acciones si es necesario
         }
-    })
-    .catch(error => {
-        console.error("Error al crear un nuevo camion:", error);
-    });*/
+      
+        function errorSolicitud(status, response) {
+            console.error("Error al crear el producto . Estado:", status, "Respuesta:", response);
+            // Maneja el error de acuerdo a tus necesidades
+        }   
+
 }

@@ -88,6 +88,14 @@ function mostrarDatosTabla(datos){
         tbody.appendChild(fila);
     });
     
+    tbody.addEventListener("click", function (event) {
+      if (event.target.classList.contains("boton-editar")) {
+          const botonEditar = event.target;
+          const fila = botonEditar.closest("tr");
+          manejarEdicion(fila);
+        }
+    });
+
     //evento boton eliminar
   tbody.addEventListener("click", function (event) {
     if (event.target.classList.contains("boton-eliminar")) {
@@ -147,4 +155,22 @@ function eliminar(ID) {
     .catch(error => {
       console.error("Error al eliminar:", error);
     });*/
+}
+
+function manejarEdicion(fila) {
+  const celdas = fila.querySelectorAll("td");
+  const encabezados = document.querySelector("table thead tr").querySelectorAll("th");
+  const datosCamion = {};
+  let camionID;
+
+  celdas.forEach((celda, index) => {
+    const tituloCelda = encabezados[index].textContent;
+    datosCamion[tituloCelda] = celda.textContent.trim();
+    if (index === 0) {
+      camionID = datosCamion[tituloCelda];
+    }
+  });
+
+  const queryString = new URLSearchParams(datosCamion).toString();
+  window.location.href = `/html/formCamiones.html?camionID=${camionID}&${queryString}`;
 }

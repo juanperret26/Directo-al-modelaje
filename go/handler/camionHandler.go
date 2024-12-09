@@ -79,7 +79,7 @@ func (handler *CamionHandler) ActualizarCamion(c *gin.Context) {
 		if resultado != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
 		} else {
-			c.JSON(http.StatusOK, "Creado Correctamente")
+			c.JSON(http.StatusOK, gin.H{"error": "Camion creado correctamente"})
 		}
 	}
 }
