@@ -5,7 +5,7 @@
     <title>Main</title>
     <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" type="text/css" />
     <script src="https://kit.fontawesome.com/b4bd295ebb.js" crossorigin="anonymous"></script>
-    <link href="/css/styles.css" rel="stylesheet" type="text/css" />
+    <link href="/css/styles.css" rel="stylesheet" >
 </head>
 <body>
     <div>
@@ -26,6 +26,47 @@
     </div>
     <div class="container">
     </div>
+
+    <div id="contenidoInicio">
+        <h3>Beneficio entre fechas</h3>
+        <div>
+            <label for="">Desde</label>
+            <input type="date" name="FechaDesde" id="FechaDesde">
+        </div>
+        <div>
+            <label for="">Hasta</label>
+            <input type="date" name="FechaHasta" id="FechaHasta">
+        </div>
+        <div>
+            <input type="button" value="Calcular" onclick="obtenerBeneficioEntreFechas()">
+        </div>
+        <h4>Beneficio: </h4>
+        <h4 id="mensajeSinBeneficio"></h4>
+        <canvas id="graficoBeneficioMes"></canvas>
+        <canvas id="graficoBeneficioAnio"></canvas>
+    </div>
+    
+    <div id="graficos">
+        <div>
+            <h3>Cantidad de pedidos por estado</h3>
+            <input id="estado" type="text" placeholder="Estado...">
+            <button id="btnDibujarGrafico">Dibujar Gráfico</button>
+            <h4 id="mensajeSinPedidos"></h4>
+            <canvas id="graficoPedidosTorta" class="grafico"></canvas>
+            <canvas id="graficoPedidosBarra" class="graficoBarra"></canvas>
+        </div>
+    
+        <div>
+            <h3>Cantidad de envios por estado</h3>
+            <input id="estadoEnvio" type="text" placeholder="Estado...">
+            <button id="btnDibujarGraficoEnvios">Dibujar Gráfico</button>
+            <h4 id="mensajeSinEnvios"></h4>
+            <canvas id="graficoEnviosTorta" class="grafico"></canvas>
+            <canvas id="graficoEnviosBarra" class="graficoBarra"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/informes.js"></script>
     <script src="/js/request.js"></script>
 </body>
