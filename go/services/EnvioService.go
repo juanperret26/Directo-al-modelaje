@@ -104,7 +104,18 @@ func (service *envioService) ObtenerPedidosFiltro(filtro *dto.Filtro) ([]*dto.Pe
 }
 
 func (service *envioService) InsertarEnvio(envio *dto.Envio) error {
-	camion, _ := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+	if envio == nil {
+		return errors.New("el envio no puede ser nulo")
+	}
+
+	if service.camionRepository == nil {
+		return errors.New("el repositorio de camiones no está inicializado")
+	}
+
+	camion, err := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+	if err != nil {
+		return err
+	}
 
 	pesoMaximo := camion.Peso_maximo
 	pedidos := envio.Pedido
@@ -125,59 +136,64 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) error {
 	for _, pedido := range pedidosEnvio {
 		service.pedidoRepository.ActualizarPedido(pedido)
 	}
-	err := service.envioRepository.InsertarEnvio(envio.GetModel())
-	return err
-	// if envio == nil {
-	// 	err := errors.New("el envio no puede ser nulo")
-	// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_INPUT][error:%v]", err)
-	// 	return err
-	// }
+	err = service.envioRepository.InsertarEnvio(envio.GetModel())
+	if err != nil {
+		return err
+	}
 
-	// if service.camionRepository == nil || service.pedidoRepository == nil || service.productoRepository == nil || service.envioRepository == nil {
-	// 	err := errors.New("uno o más repositorios no están inicializados")
-	// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:REPOSITORY_NOT_INITIALIZED][error:%v]", err)
-	// 	return err
-	// }
-	// camion, _ := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
-	// var pesoTotal float64 = 0.0
-	// if err != nil {
-	// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_CAMION][patente:%s][error:%v]", envio.PatenteCamion, err)
-	// 	return errors.New("camión no encontrado o no válido")
-	// }
-
-	// for _, idPedido := range envio.Pedido {
-	// 	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
-	// 	if err != nil {
-	// 		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:NOT_FOUND][id:%s][error:%v]", idPedido, err)
-	// 		continue
-	// 	}
-	// 	if pedido.Estado == "Aceptado" {
-	// 		for _, productoPedido := range pedido.PedidoProductos {
-	// 			producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
-	// 			if err != nil {
-	// 				log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d][error:%v]", productoPedido.CodigoProducto, err)
-	// 				continue
-	// 			}
-	// 			pesoTotal += producto.Peso_unitario * float64(productoPedido.Cantidad)
-	// 		}
-	// 	}
-	// }
-
-	// if pesoTotal > camion.Peso_maximo {
-	// 	err := errors.New("peso total excede el límite del camión")
-	// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:EXCESS_WEIGHT][pesoTotal:%f][pesoMaximo:%f][error:%v]", pesoTotal, camion.Peso_maximo, err)
-	// 	return err
-	// }
-
-	// envio.Estado = "A despachar"
-	// envio.PatenteCamion = camion.Patente
-	// _, err = service.envioRepository.InsertarEnvio(envio.GetModel())
-	// if err != nil {
-	// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:ERROR][error:%v]", err)
-	// 	return err
-	// }
-	// return nil
+	return nil
 }
+
+// if envio == nil {
+// 	err := errors.New("el envio no puede ser nulo")
+// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_INPUT][error:%v]", err)
+// 	return err
+// }
+
+// if service.camionRepository == nil || service.pedidoRepository == nil || service.productoRepository == nil || service.envioRepository == nil {
+// 	err := errors.New("uno o más repositorios no están inicializados")
+// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:REPOSITORY_NOT_INITIALIZED][error:%v]", err)
+// 	return err
+// }
+// camion, _ := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
+// var pesoTotal float64 = 0.0
+// if err != nil {
+// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_CAMION][patente:%s][error:%v]", envio.PatenteCamion, err)
+// 	return errors.New("camión no encontrado o no válido")
+// }
+
+// for _, idPedido := range envio.Pedido {
+// 	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+// 	if err != nil {
+// 		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:NOT_FOUND][id:%s][error:%v]", idPedido, err)
+// 		continue
+// 	}
+// 	if pedido.Estado == "Aceptado" {
+// 		for _, productoPedido := range pedido.PedidoProductos {
+// 			producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+// 			if err != nil {
+// 				log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d][error:%v]", productoPedido.CodigoProducto, err)
+// 				continue
+// 			}
+// 			pesoTotal += producto.Peso_unitario * float64(productoPedido.Cantidad)
+// 		}
+// 	}
+// }
+
+// if pesoTotal > camion.Peso_maximo {
+// 	err := errors.New("peso total excede el límite del camión")
+// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:EXCESS_WEIGHT][pesoTotal:%f][pesoMaximo:%f][error:%v]", pesoTotal, camion.Peso_maximo, err)
+// 	return err
+// }
+
+// envio.Estado = "A despachar"
+// envio.PatenteCamion = camion.Patente
+// _, err = service.envioRepository.InsertarEnvio(envio.GetModel())
+// if err != nil {
+// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:ERROR][error:%v]", err)
+// 	return err
+// }
+// return nil
 
 func (service *envioService) EliminarEnvio(id string) error {
 	if id == "" {
