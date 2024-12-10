@@ -75,7 +75,7 @@ func (repository *PedidoRepository) InsertarPedido(pedido model.Pedido) (*mongo.
 func (repository *PedidoRepository) EliminarPedido(id string) (*mongo.UpdateResult, error) {
 	objectID := utils.GetObjectIDFromStringID(id)
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")
-	filtro := bson.M{"_id": objectID, "estado": "Pendiente"} // Solo permite cancelar pedidos pendientes
+	filtro := bson.M{"_id": objectID} // Solo permite cancelar pedidos pendientes
 	entidad := bson.M{"$set": bson.M{"estado": "Cancelado", "actualizacion": time.Now()}}
 	return collection.UpdateOne(context.TODO(), filtro, entidad)
 }
