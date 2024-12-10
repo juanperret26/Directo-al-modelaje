@@ -20,7 +20,7 @@ type EnvioRepositoryInterface interface {
 	ObtenerEnvioPorId(id string) (model.Envio, error)
 	ObtenerPedidosFiltro(codigoEnvio string, estado string, fechaInicio time.Time, fechaFinal time.Time) ([]model.Pedido, error)
 	ObtenerEnviosFiltro(patente string, estado string, ultimaParada string, fechaCreacionDesde time.Time, fechaCreacionHasta time.Time) ([]model.Envio, error)
-	InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error)
+	InsertarEnvio(envio model.Envio) error
 	EliminarEnvio(id primitive.ObjectID) (*mongo.DeleteResult, error)
 	ActualizarEnvio(envio model.Envio) error
 	ObtenerCantidadEnviosPorEstado(estado string) (int, error)
@@ -88,15 +88,17 @@ func (repository *EnvioRepository) ObtenerEnvioPorId(id string) (model.Envio, er
 }
 
 // InsertarEnvio agrega un nuevo envío a la base de datos.
-func (repository *EnvioRepository) InsertarEnvio(envio model.Envio) (*mongo.InsertOneResult, error) {
+func (repository *EnvioRepository) InsertarEnvio(envio model.Envio) error {
+	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+	envio.Creacion = time.Now()
+	envio.Actualizacion = time.Now()
+	envio.Estado = "A despachar"
 	if envio.Id.IsZero() {
 		envio.Id = primitive.NewObjectID()
 	}
-	envio.Creacion = time.Now()
-	envio.Actualizacion = time.Now()
+	_, err := collection.InsertOne(context.TODO(), envio)
 
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	return collection.InsertOne(context.Background(), envio)
+	return err
 }
 
 // EliminarEnvio elimina un envío dado su ID.
