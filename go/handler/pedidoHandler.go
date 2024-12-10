@@ -66,17 +66,27 @@ func (handler *PedidoHandler) EliminarPedido(c *gin.Context) {
 
 
 func (handler *PedidoHandler) AceptarPedido(c *gin.Context) {
-	id := c.Param("id")
-	pedido := handler.pedidoService.ObtenerPedidoPorId(id)
+    // Obtener el ID del parámetro de la URL
+    id := c.Param("id")
+    if id == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "El ID del pedido es requerido"})
+        return
+    }
 
-	if err := c.ShouldBindJSON(&pedido); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}else {
-		resultado := handler.pedidoService.AceptarPedido(pedido)
-		c.JSON(http.StatusCreated, resultado)
-	}
+    peditoDto :=dto.Pedido{Id : id}	 
+    if err := handler.pedidoService.AceptarPedido(&peditoDto); err != nil {
+        if err.Error() == "pedido no encontrado" {
+            c.JSON(http.StatusNotFound, gin.H{"error": "Pedido no encontrado"})
+        } else {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        }
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Pedido actualizado a 'Aceptado'"})
 }
+
+
 
 func (handler *PedidoHandler) ObtenerCantidadPedidosPorEstado(c *gin.Context) {
 	estado := c.Param("estado")

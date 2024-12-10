@@ -89,8 +89,18 @@ func (repository *PedidoRepository) ActualizarPedido(pedido model.Pedido) (*mong
 			"actualizacion": time.Now(),
 		},
 	}
-	return collection.UpdateOne(context.TODO(), filtro, entidad)
+
+	result, err := collection.UpdateOne(context.TODO(), filtro, entidad)
+	if err != nil {
+		return nil, fmt.Errorf("error al actualizar el pedido: %w", err)
+	}
+	if result.MatchedCount == 0 {
+		return nil, fmt.Errorf("no se encontró un pedido con el ID: %s", pedido.Id)
+	}
+
+	return result, nil
 }
+
 
 func (repository *PedidoRepository) ObtenerCantidadPedidosPorEstado(estado string) (int, error) {
 	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Pedidos")

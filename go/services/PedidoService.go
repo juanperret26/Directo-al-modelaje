@@ -3,6 +3,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/dto"
@@ -36,8 +37,10 @@ func (service *pedidoService) ObtenerPedidos() []*dto.Pedido {
 	pedidoDB, _ := service.pedidoRepository.ObtenerPedidos()
 	var pedidos []*dto.Pedido
 	for _, pedidoDB := range pedidoDB {
+		if pedidoDB.Estado != "Cancelado" {
 		pedido := dto.NewPedido(pedidoDB)
 		pedidos = append(pedidos, pedido)
+		}
 	}
 	return pedidos
 }
@@ -90,32 +93,38 @@ func (service *pedidoService) ValidarPedido(pedido *dto.Pedido) error {
 	return nil
 }
 
-
-
-
-func (service *pedidoService) AceptarPedido(pedidoPorAceptar *dto.Pedido) error {
-	//Primero buscamos el pedido a aceptar
-	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(pedidoPorAceptar.Id)
+func (service *pedidoService) AceptarPedido(pedido *dto.Pedido) error {
+    
+    // Buscar el pedido en la base de datos
+	pedidoDB, err := service.pedidoRepository.ObtenerPedidoPorId(pedido.Id)
 	if err != nil {
-		log.Printf("[service:PedidoService][method:AceptarPedido][reason:NOT_FOUND][id:%d]", pedidoPorAceptar.Id)
 		return err
 	}
-
-	//Verifica que haya stock disponible para aceptar el pedido
-	if !service.HayStockDisponiblePedido(pedidoPorAceptar) {
-        return errors.New("No hay stock disponible para aceptar el pedido")
+	pedido = dto.NewPedido(pedidoDB)
+    if err != nil {
+        return errors.New("pedido no encontrado")
     }
 
+    // Verificar si ya está aceptado
+    if pedido.Estado == "Aceptado" {
+        return errors.New("el pedido ya está en estado 'Aceptado'")
+    }
 
-	//Cambia el estado del pedido a Aceptado, si es que no estaba ya en ese estado
-	if pedido.Estado != "Aceptado" {
-		pedido.Estado = "Aceptado"
-	}
+    // Cambiar el estado del pedido
+    pedido.Estado = "Aceptado"
 
-	//Actualiza el pedido en la base de datos
-	service.pedidoRepository.ActualizarPedido(pedido)
-	return err
+	pedidoDB = pedido.GetModel()
+
+    // Actualizar el pedido en la base de datos
+    _, err = service.pedidoRepository.ActualizarPedido(pedidoDB)
+    if err != nil {
+        return fmt.Errorf("error al actualizar el pedido: %w", err)
+    }
+
+    return nil
 }
+
+
 
 func (service *pedidoService) HayStockDisponiblePedido(pedido *dto.Pedido) bool {
 	//Busco los productos del pedido
