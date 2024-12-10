@@ -34,8 +34,8 @@ func (handler *EnvioHandler) ObtenerEnvios(c *gin.Context) {
 func (handler *EnvioHandler) IniciarViaje(c *gin.Context) {
 	id := c.Param("id")
 	envio := handler.envioService.ObtenerEnvioPorId(id)
-	if err := c.ShouldBindJSON(&envio); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if envio == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "envio no encontrado"})
 		return
 	} else {
 		resultado := handler.envioService.IniciarViaje(envio)
@@ -47,7 +47,6 @@ func (handler *EnvioHandler) IniciarViaje(c *gin.Context) {
 
 	}
 }
-
 func (handler *EnvioHandler) ObtenerEnvioPorId(c *gin.Context) {
 	id := c.Param("id")
 	//invocamos al metodo
@@ -168,35 +167,43 @@ func (handler *EnvioHandler) ObtenerCantidadEnviosPorEstado(c *gin.Context) {
 
 }
 func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
-
-	//Recibimos el id como parametro
+    // Recibimos la nueva parada desde el body
+    var parada dto.Parada
+    err := c.ShouldBindJSON(&parada)
+    if err != nil {
+        log.Printf("[handler:EnvioHandler][method:AgregarParada][error:Datos inválidos][detail:%s]", err.Error())
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos: " + err.Error()})
+        return
+    }
 	id := c.Param("id")
+    log.Printf("[handler:EnvioHandler][method:AgregarParada][info:Parada recibida][parada:%+v]", parada)
 
-	//Obtenemos la nueva parada
-	var parada dto.Parada
-	err := c.ShouldBindJSON(&parada)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	} else {
-		envio := dto.Envio{
-			Id: id,
-			Paradas: []dto.Parada{
-				parada,
-			},
-		}
+    envio := dto.Envio{
+        Id: id, 
+        Paradas: []dto.Parada{
+            parada,
+        },
+    }
+    log.Printf("[handler:EnvioHandler][method:AgregarParada][info:Envío preparado][envio:%+v]", envio)
 
-		_, err := handler.envioService.AgregarParada(&envio)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		} else {
-			//Agregamos un log para indicar información relevante del resultado
-			log.Printf("[handler:EnvioHandler][method:AgregarParada][envio:%+v]", envio)
-			c.JSON(http.StatusOK, "Parada agregada correctamente")
-		}
 
-	}
+    // Llamamos al servicio para agregar la parada
+    success, err := handler.envioService.AgregarParada(&envio)
+    if err != nil {
+        log.Printf("[handler:EnvioHandler][method:AgregarParada][error:Servicio falló][detail:%s]", err.Error())
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Error al agregar la parada: " + err.Error()})
+        return
+    }
+
+    if success {
+        log.Printf("[handler:EnvioHandler][method:AgregarParada][info:Parada agregada correctamente][envio:%+v]", envio)
+        c.JSON(http.StatusOK, gin.H{"message": "Parada agregada correctamente"})
+    } else {
+        log.Printf("[handler:EnvioHandler][method:AgregarParada][error:No se pudo agregar la parada][envio:%+v]", envio)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo agregar la parada"})
+    }
 }
+
 func (handler *EnvioHandler) ObtenerBeneficiosEntreFechas(c *gin.Context) {
 
 	//Convierte las fechas string a time.Time

@@ -113,14 +113,35 @@ func (repository *EnvioRepository) EliminarEnvio(id primitive.ObjectID) (*mongo.
 
 // ActualizarEnvio actualiza un envío en la base de datos.
 func (repository *EnvioRepository) ActualizarEnvio(envio model.Envio) error {
-	if envio.Id.IsZero() {
-		return errors.New("el ID del envío no puede estar vacío")
-	}
-	envio.Actualizacion = time.Now()
+    if envio.Id.IsZero() {
+        return errors.New("el ID del envío no puede estar vacío")
+    }
 
-	collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
-	_, err := collection.UpdateOne(context.Background(), bson.M{"_id": envio.Id}, bson.M{"$set": envio})
-	return err
+    collection := repository.db.GetClient().Database("DirectoAlModelaje").Collection("Envios")
+    
+    // Usar $set para actualizar campos específicos
+    update := bson.M{
+        "$set": bson.M{
+            "estado":       envio.Estado,
+            "actualizacion": envio.Actualizacion,
+			"paradas":      envio.Paradas,
+			"costo_total":  envio.Costo,
+        },
+    }
+
+    log.Printf("[repository:EnvioRepository][method:ActualizarEnvio] Actualizando envío: %+v", update)
+    
+    result, err := collection.UpdateOne(context.Background(), bson.M{"_id": envio.Id}, update)
+    if err != nil {
+        return err
+    }
+
+    // Verificar si se actualizó algún documento
+    if result.ModifiedCount == 0 {
+        return errors.New("no se encontró el envío para actualizar")
+    }
+
+    return nil
 }
 
 // ObtenerCantidadEnviosPorEstado devuelve la cantidad de envíos en un estado específico.

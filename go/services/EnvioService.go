@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/juanperret26/Directo-al-modelaje/go/dto"
 	"github.com/juanperret26/Directo-al-modelaje/go/model"
@@ -172,57 +173,85 @@ func (service *envioService) ActualizarEnvio(envio *dto.Envio) error {
     return nil
 }
 
-func (service envioService) AgregarParada(envio *dto.Envio) (bool, error) {
-	//En teoria, recibimos un envio que tiene solamente id y la nueva parada
-	//Primero buscamos el envio por id
-	envioDB, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
-	camion, err := service.camionRepository.ObtenerCamionPorPatente(envioDB.PatenteCamion)
-	if err != nil {
-		log.Printf("[service:EnvioService][method:AgregarParada][reason:NOTFOUND][id:%d]", envio.Id)
-		return false, err
-	}
+func (service *envioService) AgregarParada(envio *dto.Envio) (bool, error) {
+    envioDB, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
+    if err != nil {
+        log.Printf("[service:EnvioService][method:AgregarParada][reason:NOT_FOUND][id:%v]", envio.Id)
+        return false, err
+    }
 
-	//Validamos que el envio esté en estado EnRuta
-	// if envioDB.Estado !="En Viaje" {
-	// 	return false, errors.New("el envio no esta en viaje")
-	// }
+    camion, err := service.camionRepository.ObtenerCamionPorPatente(envioDB.PatenteCamion)
+    if err != nil {
+        log.Printf("[service:EnvioService][method:AgregarParada][reason:NOT_FOUND][patente:%v]", envioDB.PatenteCamion)
+        return false, err
+    }
 
-	//Agregamos la nueva parada al envio
-	envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
-	envioDB.Costo = envioDB.Costo + envio.Paradas[0].Kilometros*camion.Costo_km
-	if envioDB.Destino.Nombre_ciudad == envio.Paradas[0].Ciudad {
-		envioDB.Estado = "Despachado"
-		for _, idPedido := range envioDB.Pedido {
-			pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
-			if err != nil {
-				log.Printf("[service:PedidoService][method:ObtenerPedidosPorId][reason:NOT_FOUND][id:%d]", idPedido)
-			}
-			pedido.Estado = "Enviado"
-			service.pedidoRepository.ActualizarPedido(pedido)
-		}
+    log.Printf("[service:EnvioService][method:AgregarParada] Envío antes de agregar parada: %+v", envioDB)
 
-	}
-	//Actualizamos el envio en la base de datos, que ahora tiene la nueva parada
-	return true, service.envioRepository.ActualizarEnvio(envioDB)
+    // Agregar parada
+    nuevaParada := envio.Paradas[0].GetModel() // Verifica que GetModel() sea compatible
+    envioDB.Paradas = append(envioDB.Paradas, nuevaParada)
+    envioDB.Costo += nuevaParada.Kilometros_recorridos * camion.Costo_km
+
+    if envioDB.Destino.Nombre_ciudad == nuevaParada.Nombre_ciudad {
+        envioDB.Estado = "Despachado"
+        for _, idPedido := range envioDB.Pedido {
+            pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
+            if err != nil {
+                log.Printf("[service:PedidoService][method:ObtenerPedidoPorId][reason:NOT_FOUND][id:%v]", idPedido)
+                continue
+            }
+            pedido.Estado = "Enviado"
+            service.pedidoRepository.ActualizarPedido(pedido)
+        }
+    }
+
+    // Actualizar el envío
+    envioDB.Actualizacion = time.Now()
+    if err := service.envioRepository.ActualizarEnvio(envioDB); err != nil {
+        log.Printf("[service:EnvioService][method:AgregarParada][reason:UPDATE_ERROR] Error: %v", err)
+        return false, err
+    }
+
+    log.Printf("[service:EnvioService][method:AgregarParada] Envío después de agregar parada: %+v", envioDB)
+    return true, nil
 }
 
+
 func (service *envioService) IniciarViaje(envio *dto.Envio) error {
-	if envio == nil || envio.PatenteCamion == "" {
-		err := errors.New("el envio o la patente del camión no pueden ser nulos")
-		log.Printf("[service:EnvioService][method:IniciarViaje][reason:INVALID_INPUT][error:%v]", err)
-		return err
-	}
+    if envio == nil {
+        err := errors.New("el envio no puede ser nulo")
+        log.Printf("[service:EnvioService][method:IniciarViaje][reason:INVALID_INPUT][error:%v]", err)
+        return err
+    }
 
-	// Cambiar el estado del envío a "En viaje"
-	envio.Estado = "En viaje"
-	err := service.envioRepository.ActualizarEnvio(envio.GetModel())
-	if err != nil {
-		log.Printf("[service:EnvioService][method:IniciarViaje][reason:ERROR][error:%v]", err)
-		return err
-	}
+    // Primero, obtener el envío de la base de datos para asegurar que existe
+    envioDB, err := service.envioRepository.ObtenerEnvioPorId(envio.Id)
+    if err != nil {
+        log.Printf("[service:EnvioService][method:IniciarViaje][reason:ENVIO_NOT_FOUND][id:%s][error:%v]", envio.Id, err)
+        return err
+    }
 
-	log.Printf("[service:EnvioService][method:IniciarViaje][reason:SUCCESS][envio_id:%s]", envio.Id)
-	return nil
+    // Verificar la patente del camión
+    if envioDB.PatenteCamion == "" {
+        err := errors.New("la patente del camión no puede estar vacía")
+        log.Printf("[service:EnvioService][method:IniciarViaje][reason:INVALID_CAMION][error:%v]", err)
+        return err
+    }
+
+    // Cambiar el estado del envío a "En viaje"
+    envioDB.Estado = "En viaje"
+    envioDB.Actualizacion = time.Now()
+
+    // Actualizar el envío en la base de datos
+    err = service.envioRepository.ActualizarEnvio(envioDB)
+    if err != nil {
+        log.Printf("[service:EnvioService][method:IniciarViaje][reason:UPDATE_ERROR][id:%s][error:%v]", envioDB.Id, err)
+        return err
+    }
+
+    log.Printf("[service:EnvioService][method:IniciarViaje][reason:SUCCESS][envio_id:%s]", envioDB.Id)
+    return nil
 }
 
 func (service *envioService) ObtenerCantidadEnviosPorEstado(estado string) (int, error) {
