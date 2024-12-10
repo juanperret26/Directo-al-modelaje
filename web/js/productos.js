@@ -24,20 +24,6 @@ function cargarDatos(){
       console.error("Error . Estado:", status, "Respuesta:", response);
       // Maneja el error de acuerdo a tus necesidades
   }
-
-    /*fetch("/productos", { method: "GET" })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Error al obtener datos de productos.");
-      }
-      return response.json();
-    })
-    .then(data => {
-      mostrarDatosTabla(data);
-    })
-    .catch(error => {
-      console.error("Error al obtener datos de productos:", error);
-    });*/
 };
 
 function mostrarDatosTabla(datos){
@@ -109,13 +95,20 @@ function mostrarDatosTabla(datos){
   //evento boton eliminar
   tbody.addEventListener("click", function (event) {
     if (event.target.classList.contains("boton-eliminar")) {
-        const botonEditar = event.target;
-        const fila = botonEditar.closest("tr");
-        const primeraCelda = fila.querySelector("td:first-child");
-        const textoPrimeraCelda = primeraCelda.textContent;
+        event.preventDefault(); // Evita la recarga de la página
+
+        const botonEliminar = event.target;
+        const fila = botonEliminar.closest("tr"); // Encuentra la fila correspondiente
+        const primeraCelda = fila.querySelector("td:first-child"); // Encuentra la primera celda
+        const textoPrimeraCelda = primeraCelda.textContent.trim(); // Obtén y limpia el texto del ID
+
+        console.log("ID del producto a eliminar:", textoPrimeraCelda);
+
         eliminar(textoPrimeraCelda);
+
+        fila.remove();
     }
-});
+  });
 };
 
 
@@ -173,7 +166,6 @@ function eliminar(ID) {
   function exitoSolicitud(data) {
       console.log(id);
       console.log("éxito.");
-      location.reload();
       // Realiza otras acciones si es necesario
   }
 
@@ -181,18 +173,4 @@ function eliminar(ID) {
       console.error("Error . Estado:", status, "Respuesta:", response);
       // Maneja el error de acuerdo a tus necesidades
   }
-  
-  /*fetch(url, {
-    method: "DELETE"
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Error al eliminar el producto.");
-      }
-      location.reload();
-      console.log("Producto eliminado con éxito.");
-    })
-    .catch(error => {
-      console.error("Error al eliminar el producto:", error);
-    });*/
 }
