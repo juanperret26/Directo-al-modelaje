@@ -101,14 +101,21 @@ function mostrarDatosTabla(datos){
     });
     //eliminar
     tbody.addEventListener("click", function (event) {
-        if (event.target.classList.contains("boton-eliminar")) {
-            const botonEditar = event.target;
-            const fila = botonEditar.closest("tr");
-            const primeraCelda = fila.querySelector("td:first-child");
-            const textoPrimeraCelda = primeraCelda.textContent;
-            eliminar(textoPrimeraCelda);
-        }
+      if (event.target.classList.contains("boton-eliminar")) {
+        event.preventDefault();
+        const botonEliminar = event.target;
+        const fila = botonEliminar.closest("tr"); 
+        const primeraCelda = fila.querySelector("td:first-child"); 
+        const textoPrimeraCelda = primeraCelda.textContent.trim(); 
+
+        console.log("ID del producto a eliminar:", textoPrimeraCelda);
+  
+        eliminar(textoPrimeraCelda);
+        fila.remove();
+      }
     });
+  
+  
     tbody.addEventListener("click", function (event) {
       if (event.target.classList.contains("boton-aceptar")) {
           const botonEditar = event.target;
@@ -153,8 +160,8 @@ function eliminar(ID) {
         errorSolicitud
     );
     function exitoSolicitud(data) {
-        console.log("éxito.");
-        location.reload();
+      console.log(id);
+      console.log("éxito.");
         // Realiza otras acciones si es necesario
     }
   
@@ -162,21 +169,6 @@ function eliminar(ID) {
         console.error("Error al eliminar pedido . Estado:", status, "Respuesta:", response);
         // Maneja el error de acuerdo a tus necesidades
     }
-    /*const id = ID;
-    const url = `/pedidos/${id}`;
-    fetch(url, {
-      method: "DELETE"
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Error al eliminar el pedido.");
-        }
-        location.reload();
-        console.log("Pedido eliminado con éxito.");
-      })
-      .catch(error => {
-        console.error("Error al eliminar el pedido:", error);
-      });*/
 };
 
 function aceptar(ID) {
@@ -193,28 +185,6 @@ function aceptar(ID) {
       errorSolicitud
   );
 
-/*
-const id = ID;
-const url = `/pedidos/${id}`;
-fetch(url, {
-  method: "PUT",
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({}),
-
-})
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("Error al aceptar el pedido.");
-    }
-    location.reload();
-    console.log("Pedido aceptado con éxito.");
-  })
-  .catch(error => {
-    console.error("Error al aceptar el pedido:", error);
-  });
-  */
   function exitoSolicitud(data) {
       console.log("éxito.");
       location.reload();
