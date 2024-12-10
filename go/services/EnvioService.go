@@ -22,7 +22,7 @@ type EnvioInterface interface {
 	ObtenerCantidadEnviosPorEstado(estado string) (int, error)
 	AgregarParada(envio *dto.Envio) (bool, error)
 	ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, error)
-	DescontarStock(pedido model.Pedido) error
+
 }
 
 type envioService struct {
@@ -144,57 +144,6 @@ func (service *envioService) InsertarEnvio(envio *dto.Envio) error {
 	return nil
 }
 
-// if envio == nil {
-// 	err := errors.New("el envio no puede ser nulo")
-// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_INPUT][error:%v]", err)
-// 	return err
-// }
-
-// if service.camionRepository == nil || service.pedidoRepository == nil || service.productoRepository == nil || service.envioRepository == nil {
-// 	err := errors.New("uno o más repositorios no están inicializados")
-// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:REPOSITORY_NOT_INITIALIZED][error:%v]", err)
-// 	return err
-// }
-// camion, _ := service.camionRepository.ObtenerCamionPorPatente(envio.PatenteCamion)
-// var pesoTotal float64 = 0.0
-// if err != nil {
-// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:INVALID_CAMION][patente:%s][error:%v]", envio.PatenteCamion, err)
-// 	return errors.New("camión no encontrado o no válido")
-// }
-
-// for _, idPedido := range envio.Pedido {
-// 	pedido, err := service.pedidoRepository.ObtenerPedidoPorId(idPedido)
-// 	if err != nil {
-// 		log.Printf("[service:EnvioService][method:InsertarEnvio][reason:NOT_FOUND][id:%s][error:%v]", idPedido, err)
-// 		continue
-// 	}
-// 	if pedido.Estado == "Aceptado" {
-// 		for _, productoPedido := range pedido.PedidoProductos {
-// 			producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
-// 			if err != nil {
-// 				log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d][error:%v]", productoPedido.CodigoProducto, err)
-// 				continue
-// 			}
-// 			pesoTotal += producto.Peso_unitario * float64(productoPedido.Cantidad)
-// 		}
-// 	}
-// }
-
-// if pesoTotal > camion.Peso_maximo {
-// 	err := errors.New("peso total excede el límite del camión")
-// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:EXCESS_WEIGHT][pesoTotal:%f][pesoMaximo:%f][error:%v]", pesoTotal, camion.Peso_maximo, err)
-// 	return err
-// }
-
-// envio.Estado = "A despachar"
-// envio.PatenteCamion = camion.Patente
-// _, err = service.envioRepository.InsertarEnvio(envio.GetModel())
-// if err != nil {
-// 	log.Printf("[service:EnvioService][method:InsertarEnvio][reason:ERROR][error:%v]", err)
-// 	return err
-// }
-// return nil
-
 func (service *envioService) EliminarEnvio(id string) error {
 	if id == "" {
 		err := errors.New("ID vacío")
@@ -209,16 +158,18 @@ func (service *envioService) EliminarEnvio(id string) error {
 }
 
 func (service *envioService) ActualizarEnvio(envio *dto.Envio) error {
-	if envio == nil {
-		err := errors.New("el envio no puede ser nulo")
-		log.Printf("[service:EnvioService][method:ActualizarEnvio][reason:INVALID_INPUT][error:%v]", err)
-		return err
-	}
-	err := service.envioRepository.ActualizarEnvio(envio.GetModel())
-	if err != nil {
-		log.Printf("[service:EnvioService][method:ActualizarEnvio][reason:ERROR][error:%v]", err)
-	}
-	return err
+    if envio == nil {
+        err := errors.New("el envio no puede ser nulo")
+        log.Printf("[service:EnvioService][method:ActualizarEnvio][reason:INVALID_INPUT][error:%v]", err)
+        return err
+    }
+    
+    if err := service.envioRepository.ActualizarEnvio(envio.GetModel()); err != nil {
+        log.Printf("[service:EnvioService][method:ActualizarEnvio][reason:ERROR][error:%v]", err)
+        return err
+    }
+    
+    return nil
 }
 
 func (service envioService) AgregarParada(envio *dto.Envio) (bool, error) {
@@ -232,9 +183,9 @@ func (service envioService) AgregarParada(envio *dto.Envio) (bool, error) {
 	}
 
 	//Validamos que el envio esté en estado EnRuta
-	if envioDB.Estado != "En ruta" {
-		return false, errors.New("el envio no esta en ruta")
-	}
+	// if envioDB.Estado !="En Viaje" {
+	// 	return false, errors.New("el envio no esta en viaje")
+	// }
 
 	//Agregamos la nueva parada al envio
 	envioDB.Paradas = append(envioDB.Paradas, envio.Paradas[0].GetModel())
@@ -259,13 +210,6 @@ func (service *envioService) IniciarViaje(envio *dto.Envio) error {
 	if envio == nil || envio.PatenteCamion == "" {
 		err := errors.New("el envio o la patente del camión no pueden ser nulos")
 		log.Printf("[service:EnvioService][method:IniciarViaje][reason:INVALID_INPUT][error:%v]", err)
-		return err
-	}
-
-	// Verificar si el camión tiene alguna parada para empezar el viaje
-	if len(envio.Paradas) == 0 {
-		err := errors.New("el envío no tiene paradas programadas")
-		log.Printf("[service:EnvioService][method:IniciarViaje][reason:NO_STOPS][error:%v]", err)
 		return err
 	}
 
@@ -326,17 +270,3 @@ func (service envioService) ObtnerBeneficiosEntreFecha(fecha *dto.Filtro) (int, 
 	return beneficio, nil
 }
 
-func (service *envioService) DescontarStock(pedido model.Pedido) error {
-	for _, productoPedido := range pedido.PedidoProductos {
-		// Buscar el producto correspondiente al codigo
-		producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
-		if err != nil {
-			log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
-			return err
-		}
-		producto.Stock -= productoPedido.Cantidad
-
-		service.productoRepository.ActualizarProducto(producto)
-	}
-	return nil
-}

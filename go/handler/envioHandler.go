@@ -132,21 +132,30 @@ func (handler *EnvioHandler) EliminarEnvio(c *gin.Context) {
 }
 
 func (handler *EnvioHandler) ActualizarEnvio(c *gin.Context) {
-	var envio dto.Envio
-	err := c.ShouldBindJSON(&envio)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    log.Println("[handler:EnvioHandler][method:ActualizarEnvio][info:Inicio]")
+    
+    var envio dto.Envio
+    err := c.ShouldBindJSON(&envio)
+    if err != nil {
+        log.Printf("[handler:EnvioHandler][method:ActualizarEnvio][reason:INVALID_INPUT][error:%v]", err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-	} else {
-		resultado := handler.envioService.ActualizarEnvio(&envio)
-		if resultado != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
-		} else {
-			c.JSON(http.StatusOK, gin.H{"error": resultado.Error()})
-		}
-	}
+    log.Printf("[handler:EnvioHandler][method:ActualizarEnvio][info:Datos recibidos][envio:%+v]", envio)
 
+    // Cambiar el manejo del error
+    if resultado := handler.envioService.ActualizarEnvio(&envio); resultado != nil {
+        log.Printf("[handler:EnvioHandler][method:ActualizarEnvio][reason:SERVICE_ERROR][error:%v]", resultado)
+        c.JSON(http.StatusBadRequest, gin.H{"error": resultado.Error()})
+        return
+    }
+
+    log.Println("[handler:EnvioHandler][method:ActualizarEnvio][info:Envio actualizado correctamente]")
+    c.JSON(http.StatusOK, gin.H{"message": "Envio actualizado correctamente"})
 }
+
+
 func (handler *EnvioHandler) ObtenerCantidadEnviosPorEstado(c *gin.Context) {
 	estado := c.Param("estado")
 	cantidad, err := handler.envioService.ObtenerCantidadEnviosPorEstado(estado)

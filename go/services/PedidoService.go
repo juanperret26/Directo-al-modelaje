@@ -66,6 +66,10 @@ func (service *pedidoService) InsertarPedido(pedido *dto.Pedido) error {
 		return err
 	}
 
+	if !service.HayStockDisponiblePedido(pedido) {
+		return errors.New("No hay stock disponible para los productos del pedido")
+	}
+
 	// Insertar el pedido
 	_, err := service.pedidoRepository.InsertarPedido(pedido.GetModel())
 	return err
@@ -113,6 +117,9 @@ func (service *pedidoService) AceptarPedido(pedido *dto.Pedido) error {
     // Cambiar el estado del pedido
     pedido.Estado = "Aceptado"
 
+	// Descontar stock de los productos
+	err = service.DescontarStock(*pedido)
+	
 	pedidoDB = pedido.GetModel()
 
     // Actualizar el pedido en la base de datos
@@ -123,8 +130,6 @@ func (service *pedidoService) AceptarPedido(pedido *dto.Pedido) error {
 
     return nil
 }
-
-
 
 func (service *pedidoService) HayStockDisponiblePedido(pedido *dto.Pedido) bool {
 	//Busco los productos del pedido
@@ -150,6 +155,30 @@ func (service *pedidoService) HayStockDisponiblePedido(pedido *dto.Pedido) bool 
 	//Si finalice el bucle, es porque hay stock de todos los productos
 	return true
 }
+
+
+func (service *pedidoService) DescontarStock(pedido dto.Pedido) error {
+	for _, productoPedido := range pedido.PedidoProductos {
+		// Buscar el producto correspondiente al codigo
+		producto, err := service.productoRepository.ObtenerProductoPorId(productoPedido.CodigoProducto)
+		if err != nil {
+			log.Printf("[service:ProductoService][method:ObtenerProductoPorId][reason:NOT_FOUND][id:%d]", productoPedido.CodigoProducto)
+			return err
+		}
+		producto.Stock -= productoPedido.Cantidad
+
+		service.productoRepository.ActualizarProducto(producto)
+	}
+	return nil
+}
+
+
+
+
+
+
+
+
 func (service *pedidoService) EliminarPedido(id string) error {
 	_, err := service.pedidoRepository.EliminarPedido(id)
 	return err

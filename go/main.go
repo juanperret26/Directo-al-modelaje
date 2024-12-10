@@ -1,8 +1,6 @@
 package main
 
 import (
-	//Agregar imports de todas las clases, handlers, middlewares, etc
-
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +26,7 @@ var (
 
 func main() {
 	router = gin.Default()
+	
 
 	//Iniciar objetos de handler
 	dependencies()
@@ -90,35 +89,33 @@ func mappingRoutes() {
 
 // Generacion de los objetos que se van a usar en la api
 func dependencies() {
+    database := repositories.NewMongoDB()
+    var camionRepository repositories.CamionRepositoryInterface
+    var camionService services.CamionInterface
+    var envioRepository repositories.EnvioRepositoryInterface
+    var envioService services.EnvioInterface
+    var pedidoRepository repositories.PedidoRepositoryInterface
+    var pedidoService services.PedidoInterface
+    var productoRepository repositories.ProductoRepositoryInterface
+    var productoService services.ProductoInterface
 
-	//Definicion de variables de interface
-	database := repositories.NewMongoDB()
-	var camionRepository repositories.CamionRepositoryInterface
-	var camionService services.CamionInterface
-	var envioRepository repositories.EnvioRepositoryInterface
-	var envioService services.EnvioInterface
-	var pedidoRepository repositories.PedidoRepositoryInterface
-	var pedidoService services.PedidoInterface
-	var productoRepository repositories.ProductoRepositoryInterface
-	var productoService services.ProductoInterface
+    //Productos
+    productoRepository = repositories.NewProductoRepository(database)
+    productoService = services.NewProductoService(productoRepository)
+    productoHandler = handler.NewProductoHandler(productoService)
 
-	//Productos
-	productoRepository = repositories.NewProductoRepository(database)
-	productoService = services.NewProductoService(productoRepository)
-	productoHandler = handler.NewProductoHandler(productoService)
+    // //Pedidos
+    pedidoRepository = repositories.NewPedidoRepository(database)
+    pedidoService = services.NewPedidoService(pedidoRepository, productoRepository)
+    pedidoHandler = handler.NewPedidoHandler(pedidoService)
 
-	// //Pedidos
-	pedidoRepository = repositories.NewPedidoRepository(database)
-	pedidoService = services.NewPedidoService(pedidoRepository, productoRepository)
-	pedidoHandler = handler.NewPedidoHandler(pedidoService)
+    //Camiones - MOVER ESTA SECCIÓN ANTES DE ENVIOS
+    camionRepository = repositories.NewCamionRepository(database)
+    camionService = services.NewCamionService(camionRepository, envioRepository)
+    camionHandler = handler.NewCamionHandler(camionService)
 
-	//Envio
-	envioRepository = repositories.NewEnvioRepository(database)
-	envioService = services.NewEnvioService(envioRepository, camionRepository, pedidoRepository, productoRepository)
-	envioHandler = handler.NewEnvioHandler(envioService)
-
-	//Camiones
-	camionRepository = repositories.NewCamionRepository(database)
-	camionService = services.NewCamionService(camionRepository, envioRepository)
-	camionHandler = handler.NewCamionHandler(camionService)
+    //Envio - AHORA USAR camionRepository YA INICIALIZADO
+    envioRepository = repositories.NewEnvioRepository(database)
+    envioService = services.NewEnvioService(envioRepository, camionRepository, pedidoRepository, productoRepository)
+    envioHandler = handler.NewEnvioHandler(envioService)
 }

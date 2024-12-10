@@ -23,12 +23,9 @@ type camionService struct {
 }
 
 // Asegurarse de que camionService implemente CamionInterface
-var _ CamionInterface = (*camionService)(nil)
 
-func NewCamionService(
-	camionRepository repositories.CamionRepositoryInterface,
-	envioRepository repositories.EnvioRepositoryInterface,
-) *camionService {
+
+func NewCamionService(camionRepository repositories.CamionRepositoryInterface,envioRepository repositories.EnvioRepositoryInterface) *camionService {
 	return &camionService{
 		camionRepository: camionRepository,
 		envioRepository:  envioRepository,
