@@ -6,34 +6,18 @@ function crear() {
     const CiudadDestino = document.querySelector('input[placeholder="Ciudad destino"]').value;
     const KM = parseInt(document.querySelector('input[placeholder="Km"]').value);
     const Id = obtenerDatosSeleccionados();
-    /*<input class="input" type="text" placeholder="Patente">
-        <input class="input" type="text" placeholder="Tipo">
-        <input class="input" type="text" placeholder="Peso unitario">
-        <input class="input" type="text" placeholder="Precio">
-        <input class="input" type="text" placeholder="Stock">
-        <input class="input" type="text" placeholder="Stock minimo">
-        <input class="input" type="text" placeholder="Tipo">
-        
-        {
-        "patente_camion": "ABC123",
-        "destino": {
-             "Ciudad": "Santa Fe",
-             "Kilometros": 100
-        },
-
-        "pedidos": ["654525ae2f0e529636076e85"]
-}
-        
-        */
 
     const nuevo = {
-        patente_camion: Patente,
+        pedidos: [Id],
         destino: {
-            Ciudad: CiudadDestino,
-            Kilometros: KM
+            ciudad: CiudadDestino,
+            kilometros: KM
         },
-        pedidos: [Id]
+        patente_camion: Patente,
     };
+
+    console.log("Datos enviados:", JSON.stringify(nuevo, null, 2));
+
 
     const url = `http://localhost:8080/envios/`;
     const datos = nuevo;
@@ -56,139 +40,7 @@ function crear() {
         console.error("Error . Estado:", status, "Respuesta:", response);
         // Maneja el error de acuerdo a tus necesidades
     }
-
-    /*fetch("/envios", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(nuevo)
-    })
-    .then(response => {
-        if (response.ok) {
-            // La solicitud se realizó con éxito, puedes redirigir a la página de productos u realizar alguna otra acción
-            window.location.href = "/htmlenvios";
-        } else {
-            // Manejar errores
-            response.json().then(data => {
-                console.log(data);});
-            console.error("Error al crear un nuevo producto");
-        }
-    })
-    .catch(error => {
-        console.error("Error al crear un nuevo producto:", error);
-    });*/
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    //const boton_crear = document.getElementById("aceptar");
-    //boton_crear.style.display = "block";
-    //const boton_editar = document.getElementById("editar");
-    //boton_editar.style.display = "none";
-
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-  
-    var productoID = "";
-
-    if (urlParams.has("productoID")) {
-        productoID = urlParams.get("productoID");
-    }
-
-    function cargarValorEnCampo(placeholder, paramName) {
-      if (urlParams.has(paramName)) {
-
-        const boton_crear = document.getElementById("aceptar");
-        boton_crear.style.display = "none";
-        const boton_editar = document.getElementById("editar");
-        boton_editar.style.display = "block";
-
-        const input = document.querySelector(`input[placeholder="${placeholder}"]`);
-        input.value = urlParams.get(paramName);
-      }
-    }
-  
-    cargarValorEnCampo("Nombre", "Nombre");
-    cargarValorEnCampo("Tipo", "Tipo");
-    cargarValorEnCampo("Peso unit.", "Peso unit.");
-    cargarValorEnCampo("Precio", "Precio");
-    cargarValorEnCampo("Stock", "Stock");
-    cargarValorEnCampo("Stock minimo", "StockMinimo");
-    cargarValorEnCampo("Tipo", "Tipo");
-
-    /*document.getElementById("editar").addEventListener("click", function() {
-        editar(productoID); // Pasar productoID a la función editar
-    });*/
-});
-
-
-//funcion para el boton editar
-//document.getElementById("editar").addEventListener("click", function() {
-//    editar();
-//});
-function editar(productoID) {
-
-    const codigo = productoID;
-    const nombre = document.querySelector('input[placeholder="Nombre"]').value;
-    const tipo = document.querySelector('input[placeholder="Tipo"]').value;
-    const peso = parseFloat(document.querySelector('input[placeholder="Peso unit."]').value);
-    const precio = parseFloat(document.querySelector('input[placeholder="Precio"]').value);
-    const stock = parseFloat(document.querySelector('input[placeholder="Stock"]').value);
-
-    const objetoEditado = {
-        Id: codigo,
-        nombre: nombre,
-        TipoProducto: tipo,
-        peso_unitario: peso,
-        precio: precio,
-        stock: stock
-    };
-
-    const url = `http://localhost:8080/productos`;
-    const datos = objetoEditado;
-    makeRequest(
-        url,
-        Method.PUT, 
-        datos,
-        ContentType.JSON,
-        CallType.PRIVATE,
-        exitoSolicitud,
-        errorSolicitud
-    );
-    function exitoSolicitud(data) {
-        console.log("éxito.");
-        window.location.href = "/front/html/productos.html";
-        // Realiza otras acciones si es necesario
-    }
-  
-    function errorSolicitud(status, response) {
-        console.error("Error . Estado:", status, "Respuesta:", response);
-        // Maneja el error de acuerdo a tus necesidades
-    }
-
-    /*fetch("/productos", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(objetoEditado)
-    })
-    .then(response => {
-        if (response.ok) {
-            // La solicitud se realizó con éxito, puedes redirigir a la página de productos u realizar alguna otra acción
-            window.location.href = "/htmlproductos";
-        } else {
-            // Manejar errores
-            response.json().then(data => {
-                console.log(data);});
-            console.error("Error al crear un nuevo producto");
-        }
-    })
-    .catch(error => {
-        console.error("Error al crear un nuevo producto:", error);
-    });*/
-}
-
   
 //cargar lista pedidos
 document.addEventListener("DOMContentLoaded",function(){
@@ -218,20 +70,6 @@ document.addEventListener("DOMContentLoaded",function(){
         console.error("Error . Estado:", status, "Respuesta:", response);
         // Maneja el error de acuerdo a tus necesidades
     }
-
-      /*fetch("/pedidos", { method: "GET" })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Error al obtener datos de pedidos.");
-        }
-        return response.json();
-      })
-      .then(data => {
-        mostrarDatosTabla(data);
-      })
-      .catch(error => {
-        console.error("Error al obtener datos de pedidos:", error);
-      });*/
   };
   
 
@@ -293,9 +131,142 @@ function obtenerDatosSeleccionados() {
             const celdaCodigo = fila.querySelector(".nombreCelda");
 
             const CodigoProducto = celdaCodigo.textContent;
-            datosSeleccionados = CodigoProducto;
+            datosSeleccionados = CodigoProducto.toString();
         }
     });
 
     return datosSeleccionados;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const boton_crear = document.getElementById("aceptar");
+    const boton_editar = document.getElementById("editar");
+
+    // Inicializar el formulario en modo crear
+    boton_crear.style.display = "block";
+    boton_editar.style.display = "none";
+
+    // Obtener los parámetros de la URL
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    var envioID = "";
+
+    if (urlParams.has("envioID")) {
+        envioID = urlParams.get("envioID");
+    }
+
+    // Función para cargar los valores en el formulario
+    function cargarValorEnCampo(placeholder, paramName, data) {
+        const input = document.querySelector(`input[placeholder="${placeholder}"]`);
+        const keys = paramName.split('.');  // Permite acceder a campos anidados como "destino.ciudad"
+        let value = data;
+
+        keys.forEach(key => {
+            value = value[key];
+        });
+
+        input.value = value || ''; // Establecer el valor del campo
+    }
+
+    // Si existe envioID, realizar la carga de datos para edición
+    if (envioID) {
+        boton_crear.style.display = "none";
+        boton_editar.style.display = "block";
+
+        // Cargar los datos del envío en el formulario usando makeRequest (Petición GET)
+        const url = `http://localhost:8080/envios/${envioID}`;
+        const datos = null;
+
+        makeRequest(
+            url,
+            Method.GET,  // Método GET
+            datos,
+            ContentType.JSON,  // Tipo de contenido JSON
+            CallType.PRIVATE,  // Llamada privada
+            exitoSolicitud,
+            errorSolicitud
+        );
+
+        function exitoSolicitud(data) {
+            // Llenar los campos del formulario con los datos obtenidos
+            cargarValorEnCampo("Patente", "patente_camion", data);
+            cargarValorEnCampo("Km", "destino.kilometros", data);
+            cargarValorEnCampo("Ciudad destino", "destino.ciudad", data);
+        }
+
+        function errorSolicitud(status, response) {
+            console.error("Error al cargar los datos del envío. Estado:", status, "Respuesta:", response);
+        }
+    }
+
+    // Acción para el botón de editar
+    document.getElementById("editar").addEventListener("click", function () {
+        editar(envioID);  // Pasar envioID a la función editar
+    });
+});
+
+
+
+
+function editar(envioID) {
+    const Patente = document.querySelector('input[placeholder="Patente"]').value;
+    const CiudadDestino = document.querySelector('input[placeholder="Ciudad destino"]').value;
+    const KM = parseFloat(document.querySelector('input[placeholder="Km"]').value);
+    const Id = obtenerDatosSeleccionados();
+    const id = envioID;
+    estado = null;
+
+    if (envioID) {
+        // Solicitar los detalles del envío por ID usando makeRequest
+        const url = `http://localhost:8080/envios/${envioID}`;
+        const datos = null;
+
+        makeRequest(
+            url,
+            Method.GET, 
+            datos,
+            ContentType.JSON,
+            CallType.PRIVATE,
+            exitoSolicitud,
+            errorSolicitud
+        );
+        function exitoSolicitud(data) {
+            estado = data.estado;
+        }
+    }
+
+
+    const objetoEditado = {
+        estado: estado,
+        id: id,
+        pedidos: [Id],
+        destino: {
+            ciudad: CiudadDestino,
+            kilometros: KM
+        },
+        patente_camion: Patente,
+    };
+
+    // Realizar la solicitud PUT para editar el envío
+    const url = `http://localhost:8080/envios/`;
+    makeRequest(
+        url,
+        Method.PUT,
+        objetoEditado,
+        ContentType.JSON,
+        CallType.PRIVATE,
+        exitoSolicitud,
+        errorSolicitud
+    );
+
+    function exitoSolicitud(data) {
+        console.log("Éxito al editar el envío.");
+        window.location.href = "http://localhost:8081/html/envios.html"; // Redirigir a la página principal de envíos
+    }
+
+    function errorSolicitud(status, response) {
+        console.error("Error al editar. Estado:", status, "Respuesta:", response);
+        window.location.href = "http://localhost:8081/html/envios.html";
+    }
 }

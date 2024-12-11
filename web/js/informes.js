@@ -42,44 +42,50 @@ document.getElementById("btnDibujarGraficoEnvios").addEventListener("click", dib
   
     Chart.defaults.font.size = 16;
   
-    if (data.length === 0) {
-      document.getElementById("mensajeSinBeneficio").innerHTML = "No hay beneficios cargados en esas fechas";
-      return; // Agregamos un return para salir de la función si no hay datos
+    // Verificar si data.meses y data.anios existen y son arreglos
+    if (!data.meses || !Array.isArray(data.meses) || data.meses.length === 0) {
+        document.getElementById("mensajeSinBeneficio").innerHTML = "No hay beneficios mensuales cargados en esas fechas";
+        return; // Si no hay datos en 'meses', salimos de la función
+    }
+
+    if (!data.anios || !Array.isArray(data.anios) || data.anios.length === 0) {
+        document.getElementById("mensajeSinBeneficio").innerHTML = "No hay beneficios anuales cargados en esas fechas";
+        return; // Si no hay datos en 'anios', salimos de la función
     }
   
     // Procesar datos por mes
     data.meses.forEach((element) => {
-      montoFechasMes.push(element.Monto);
-      meses.push(element.Nombre);
+        montoFechasMes.push(element.Monto);
+        meses.push(element.Nombre);
     });
   
     // Procesar datos por año
     data.anios.forEach((element) => {
-      montoFechasAnio.push(element.Monto);
-      anios.push(element.Nombre);
+        montoFechasAnio.push(element.Monto);
+        anios.push(element.Nombre);
     });
   
     const configuracionBarras = {
-      plugins: {
-        legend: {
-          position: 'top',
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Beneficio Mensual'
+            }
         },
-        title: {
-          display: true,
-          text: 'Beneficio Mensual'
-        }
-      },
-      responsive: true
+        responsive: true
     };
   
     const datosMeses = {
-      labels: meses,
-      datasets: [
-        {
-          data: montoFechasMes,
-          backgroundColor: ["#FF5733", "#FFC300", "#33FF57", "#339CFF", "#FFA500"],
-        },
-      ],
+        labels: meses,
+        datasets: [
+            {
+                data: montoFechasMes,
+                backgroundColor: ["#FF5733", "#FFC300", "#33FF57", "#339CFF", "#FFA500"],
+            },
+        ],
     };
   
     // Obtener el contexto del lienzo de barras de meses
@@ -87,60 +93,61 @@ document.getElementById("btnDibujarGraficoEnvios").addEventListener("click", dib
   
     // Crear el gráfico de barras de meses
     const configBarrasMeses = {
-      type: 'bar',
-      data: datosMeses,
-      options: configuracionBarras,
+        type: 'bar',
+        data: datosMeses,
+        options: configuracionBarras,
     };
   
     // Destroy existing chart if it exists
     if (window.myChartMeses) {
-      window.myChartMeses.destroy();
+        window.myChartMeses.destroy();
     }
   
     // Create the new chart for months
     window.myChartMeses = new Chart(contextoBarrasMeses, configBarrasMeses);
   
     const datosAnios = {
-      labels: anios,
-      datasets: [
-        {
-          data: montoFechasAnio,
-          backgroundColor: ["#FF5733", "#FFC300", "#33FF57", "#339CFF", "#FFA500"],
-        },
-      ],
+        labels: anios,
+        datasets: [
+            {
+                data: montoFechasAnio,
+                backgroundColor: ["#FF5733", "#FFC300", "#33FF57", "#339CFF", "#FFA500"],
+            },
+        ],
     };
   
     // Obtener el contexto del lienzo de barras de años
     const contextoBarrasAnio = document.getElementById('graficoBeneficioAnio').getContext('2d');
   
     const configuracionBarrasAnio = {
-      plugins: {
-        legend: {
-          position: 'top',
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Beneficio Anual'
+            }
         },
-        title: {
-          display: true,
-          text: 'Beneficio Anual'
-        }
-      },
-      responsive: true
+        responsive: true
     };
   
     // Crear el gráfico de barras de años
     const configBarrasAnios = {
-      type: 'bar',
-      data: datosAnios,
-      options: configuracionBarrasAnio,
+        type: 'bar',
+        data: datosAnios,
+        options: configuracionBarrasAnio,
     };
   
     // Destroy existing chart if it exists
     if (window.myChartAnios) {
-      window.myChartAnios.destroy();
+        window.myChartAnios.destroy();
     }
   
     // Create the new chart for years
     window.myChartAnios = new Chart(contextoBarrasAnio, configBarrasAnios);
-  }
+}
+
   
   
   function errorGraficos(status, body) {
@@ -263,70 +270,73 @@ document.getElementById("btnDibujarGraficoEnvios").addEventListener("click", dib
   }
   
   function exitoObtenerGraficoEnvios(data) {
+    console.log("Respuesta de la API:", data);  // Inspeccionamos la respuesta completa
+
     var cantidadEnvios = [];
     var estadoEnvios = [];
-  
-    Chart.defaults.font.size = 16;
-  
-    if (data.length == 0) {
-      document.getElementById("mensajeSinEnvios").innerHTML = "No hay envios cargados";
-      return;
+
+    // Verificar si 'cantidad' está presente en la respuesta
+    if (data && 'cantidad' in data) {
+        console.log("Cantidad de envíos:", data.cantidad);  // Verificar la cantidad
+        cantidadEnvios.push(data.cantidad);  // Acceder a 'cantidad' de la respuesta
+        estadoEnvios.push('A despachar'); // Puedes usar el estado que te corresponda, ya que solo tienes la cantidad
+    } else {
+        document.getElementById("mensajeSinEnvios").innerHTML = "No hay envíos cargados";
+        return;
     }
-  
-    for (let i = 0; i < data.length; i++) {
-      const element = data[i];
-      cantidadEnvios.push(element.Cantidad);
-      estadoEnvios.push(element.Estado);
+
+    // Si 'cantidad' es cero, mostrar el mensaje correspondiente
+    if (data.cantidad === 0) {
+        document.getElementById("mensajeSinEnvios").innerHTML = "No hay envíos disponibles para mostrar";
+        return;
     }
-  
+
+    // Configuración del gráfico
     const datos = {
-      labels: estadoEnvios,
-      datasets: [
-        {
-          data: cantidadEnvios, // Cantidad de pedidos por estado
-          backgroundColor: [
-            "#FF5733",
-            "#FFC300",
-            "#33FF57",
-            "#339CFF",
-            "#FFA500",
-          ], // Colores para cada sector del gráfico
-        },
-      ],
+        labels: estadoEnvios,  // Estado de los envíos
+        datasets: [
+            {
+                data: cantidadEnvios,  // Cantidad de envíos
+                backgroundColor: [
+                    "#FF5733", "#FFC300", "#33FF57", "#339CFF", "#FFA500",
+                ],  // Colores para cada sector del gráfico
+            },
+        ],
     };
-  
-    // Configuración del gráfico de torta
+
     const config = {
-      type: "pie",
-      data: datos,
+        type: "pie",  // Tipo de gráfico: torta
+        data: datos,
     };
-  
-    // Dibuja el gráfico de torta en el elemento canvas 
+
+    // Dibuja el gráfico de torta en el elemento canvas
     const ctx = document.getElementById("graficoEnviosTorta").getContext("2d");
     new Chart(ctx, config);
-  
+
     // Configuración del gráfico de barras
     var configuracionBarras = {
-      plugins: {
-        legend: {
-          position: 'top',
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Cantidad Envíos por Estado',
+            },
         },
-        title: {
-          display: true,
-          text: 'Cantidad Envios por Estado'
-        }
-      },
-      responsive: true
+        responsive: true,
     };
-  
+
     const configBarras = {
-      type: 'bar',
+        type: 'bar',  // Tipo de gráfico: barras
         data: datos,
-        options: configuracionBarras
+        options: configuracionBarras,
     };
-  
-    // Dibuja el gráfico de barras en el elemento canvas 
+
+    // Dibuja el gráfico de barras en el elemento canvas
     const ctxBarras = document.getElementById("graficoEnviosBarra").getContext("2d");
     new Chart(ctxBarras, configBarras);
-  }
+}
+
+
   

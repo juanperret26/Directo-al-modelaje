@@ -163,7 +163,7 @@ func (handler *EnvioHandler) ObtenerCantidadEnviosPorEstado(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 	} else {
-		c.JSON(http.StatusOK, cantidad)
+		c.JSON(http.StatusOK, gin.H{"cantidad": cantidad})
 	}
 
 }
@@ -192,7 +192,7 @@ func (handler *EnvioHandler) AgregarParada(c *gin.Context) {
 		} else {
 			//Agregamos un log para indicar información relevante del resultado
 			log.Printf("[handler:EnvioHandler][method:AgregarParada][envio:%+v]", envio)
-			c.JSON(http.StatusOK, "Parada agregada correctamente")
+			c.JSON(http.StatusOK, gin.H{"error": "parada cargada correctamente"})
 		}
 
 	}

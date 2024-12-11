@@ -28,7 +28,7 @@
     </div>
 
     <div id="contenidoInicio">
-        <h3>Beneficio entre fechas</h3>
+        <h3 style="color: #ffffff;">Beneficio entre fechas</h3>
         <div>
             <label for="">Desde</label>
             <input type="date" name="FechaDesde" id="FechaDesde">
@@ -40,27 +40,27 @@
         <div>
             <input type="button" value="Calcular" onclick="obtenerBeneficioEntreFechas()">
         </div>
-        <h4>Beneficio: </h4>
-        <h4 id="mensajeSinBeneficio"></h4>
+        <h4 style="color: #ffffff;">Beneficio: </h4>
+        <h4 id="mensajeSinBeneficio" style="color: #ffffff;"></h4>
         <canvas id="graficoBeneficioMes"></canvas>
         <canvas id="graficoBeneficioAnio"></canvas>
     </div>
     
     <div id="graficos">
         <div>
-            <h3>Cantidad de pedidos por estado</h3>
-            <input id="estado" type="text" placeholder="Estado...">
+            <h3 style="color: #ffffff;">Cantidad de pedidos por estado</h3>
+            <input style="color: #ffffff;" id="estado" type="text" placeholder="Estado...">
             <button id="btnDibujarGrafico">Dibujar Gráfico</button>
-            <h4 id="mensajeSinPedidos"></h4>
+            <h4 style="color: #ffffff;" id="mensajeSinPedidos"></h4>
             <canvas id="graficoPedidosTorta" class="grafico"></canvas>
             <canvas id="graficoPedidosBarra" class="graficoBarra"></canvas>
         </div>
     
         <div>
-            <h3>Cantidad de envios por estado</h3>
+            <h3 style="color: #ffffff;">Cantidad de envios por estado</h3>
             <input id="estadoEnvio" type="text" placeholder="Estado...">
             <button id="btnDibujarGraficoEnvios">Dibujar Gráfico</button>
-            <h4 id="mensajeSinEnvios"></h4>
+            <h4 style="color: #ffffff;" id="mensajeSinEnvios"></h4>
             <canvas id="graficoEnviosTorta" class="grafico"></canvas>
             <canvas id="graficoEnviosBarra" class="graficoBarra"></canvas>
         </div>
