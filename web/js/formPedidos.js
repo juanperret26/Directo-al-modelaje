@@ -160,29 +160,34 @@ function obtenerFechaDesdeCadena(cadenaFechaHora) {
 
 //obtener filas check
 function obtenerDatosSeleccionados() {
-    const filas = document.querySelectorAll("#TableBody tr");
-    const datosSeleccionados = [];
+    const filas = document.querySelectorAll("#TableBody tr"); // Selecciona todas las filas
+    const productosSeleccionados = [];
 
-    filas.forEach(function (fila) {
+    filas.forEach(fila => {
         const checkbox = fila.querySelector(".checkbox-fila");
         const inputCantidad = fila.querySelector(".input-cantidad");
 
         if (checkbox.checked) {
-            const celdaCodigo = fila.querySelector(".nombreCelda");
-            const celdaNombre = fila.querySelector("td:nth-child(3)"); // Cambia el índice según la posición de la columna Nombre
-            const celdaPrecio = fila.querySelector("td:nth-child(5)"); // Cambia el índice según la posición de la columna Precio
+            const codigoProducto = fila.cells[0].textContent; // Columna "Código"
+            const nombre = fila.cells[1].textContent; // Columna "Nombre"
+            const tipoProducto = fila.cells[2].textContent; // Columna "Tipo"
+            const precio_unitario = parseInt(fila.cells[5].textContent, 10); // Columna "Precio"
+            const cantidad = parseInt(inputCantidad.value, 10) || 1;
 
-            const CodigoProducto = celdaCodigo.textContent;
-            const Nombre = celdaNombre.textContent;
-            const Cantidad = parseInt(inputCantidad.value);
-            const Precio_unitario = parseInt(celdaPrecio.textContent);            
-
-            datosSeleccionados.push({ CodigoProducto, Nombre, Cantidad, Precio_unitario });
+            // Crear objeto correctamente
+            productosSeleccionados.push({
+                codigoProducto: codigoProducto,
+                nombre: nombre, // Asegura que esto sea el nombre (HP Victus 16, etc.)
+                tipoProducto: tipoProducto,
+                precio_unitario: precio_unitario,
+                cantidad: cantidad
+            });
         }
     });
 
-    return datosSeleccionados;
+    return productosSeleccionados;
 }
+
 
 
 //editar

@@ -8,23 +8,40 @@
     <link href="/css/styles.css" rel="stylesheet" type="text/css" >
 </head>
 <body>
-    <div>
-        <ul id="menu-Desplegable">
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="pedidos.html">Pedidos</a></li>
-            <li><a href="productos.html">Productos</a></li>
-            <li><a href="envios.html">Envios</a></li>
-            <li><a href="camiones.html">Camiones</a></li>
-            <li><a href="informes.html">Informes</a></li>
-            <li><a href="login.html">Iniciar Sesion</a></li>
-            <li><a href="register.html">Registrarse</a></li>
-          </ul>
-    </div>
-        <div>
+    <div class="index-container">
+        <div class="welcome-message">
+          <h1>¡Bienvenido a nuestro sistema!</h1>
+          <p>Gestiona tus pedidos, productos y más desde aquí.</p>
         </div>
-    </div>
-        <div class="container">
+      
+        <div class="quick-actions">
+          <div class="action-card">
+            <i class="fas fa-box"></i>
+            <h2>Pedidos</h2>
+            <a href="pedidos.html" class="btn-action">Ver Pedidos</a>
+          </div>
+          <div class="action-card">
+            <i class="fas fa-shopping-cart"></i>
+            <h2>Productos</h2>
+            <a href="productos.html" class="btn-action">Explorar Productos</a>
+          </div>
+          <div class="action-card">
+            <i class="fa-solid fa-calendar-days"></i>
+            <h2>Envíos</h2>
+            <a href="envios.html" class="btn-action">Gestionar Envíos</a>
+          </div>
+            <div class="action-card">
+                <i class="fas fa-truck-moving"></i>
+                <h2>Camiones</h2>
+                <a href="camiones.html" class="btn-action">Ver Camiones</a>
         </div>
+            <div class="action-card">
+                <i class="fas fa-chart-line"></i>
+                <h2>Informes</h2>
+                <a href="informes.html" class="btn-action">Ver Informes</a>
+            </div>
+      </div>
+      
         <script src="/js/request.js"></script>
         <script src="/js/main.js"></script>
 </body>

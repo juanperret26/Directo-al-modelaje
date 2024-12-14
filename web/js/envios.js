@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded",function(){
         errorSolicitud
     );
     function exitoSolicitud(data) {
-        console.log("éxito.");
+      console.log("Datos recibidos desde la API:", data);
         mostrarDatosTabla(data);
         // Realiza otras acciones si es necesario
     }
@@ -46,16 +46,17 @@ function mostrarDatosTabla(datos){
       celdaEstado.textContent = element.estado;
       fila.appendChild(celdaEstado);
 
-      // Celda Paradas
-      var celdaParadas = document.createElement("td");
-      if (element.paradas && element.paradas.length > 0) {
-          // Si hay paradas, mostrar la ciudad de la primera parada
-          celdaParadas.textContent = element.paradas[0].ciudad;
-      } else {
-          // Si no hay paradas, mostrar "Sin paradas asignadas"
-          celdaParadas.textContent = "Sin paradas asignadas";
-      }
-      fila.appendChild(celdaParadas);
+   // Celda Paradas del Envío
+   var celdaParadas = document.createElement("td");
+   if (element.paradas && Array.isArray(element.paradas) && element.paradas.length > 0) {
+       var nombresParadas = element.paradas.map(function (parada) {
+           return parada.ciudad;
+       });
+       celdaParadas.textContent = nombresParadas.join(", ");
+   } else {
+       celdaParadas.textContent = "Sin paradas asignadas";
+   }
+   fila.appendChild(celdaParadas);
 
       // Celda Destino
       var celdaDestino = document.createElement("td");

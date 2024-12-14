@@ -1,30 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Inicio de Sesión</title>
-    <link href="/css/styles.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <div class="contenedorlogin">
-    <h2>Iniciar Sesión</h2>
-    <form class="formlogin">
-        <div>
-            <label class="labelslogin" for="usuario">Usuario:</label>
-            <input type="text" id="usuario" name="usuario" required>
+    <header>
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pedidos.html">Pedidos</a></li>
+                <li><a href="productos.html">Productos</a></li>
+                <li><a href="envios.html">Envíos</a></li>
+                <li><a href="camiones.html">Camiones</a></li>
+                <li><a href="informes.html">Informes</a></li>
+            </ul>
+            <form class="search-bar">
+                <input type="text" placeholder="Buscar...">
+                <button type="submit">
+                    <img src="search-icon.png" alt="Buscar">
+                </button>
+            </form>
+        </nav>
+    </header>
+    <main class="login-container">
+        <div class="form-box">
+            <h2>Iniciar Sesión</h2>
+            <form action="index.html" method="GET">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="usuario" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="btnIngresar">Ingresar</button>
+                    <a href="register.html" class="btn-secondary">Registrarse</a>
+                </div>
+            </form>
         </div>
-        <div>
-            <label class="labelslogin" for="contrasena">Contraseña:</label>
-            <input type="password" id="password" name="password" required>
-        </div>        
-        <div>
-            <a class="labelslogin" href="register.html">Nuevo usuario</a>
-        </div>
-        <div>
-            <input type="button" href = "/" value="Iniciar Sesión" id="btnIngresar">
-        </div>
-    </form>
-    </div>
+    </main>
     <script src="/js/login.js"></script>
     <script src="/js/request.js"></script>
+    <footer>
+        <p>&copy; 2024 Tu Empresa. Todos los derechos reservados.</p>
+    </footer>
 </body>
 </html>
